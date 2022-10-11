@@ -46,11 +46,13 @@ public class Main {
         Pattern infoboxStartPattern = Pattern.compile("\\{\\{Infobox ?([\\w. ]*)", Pattern.CASE_INSENSITIVE);
         Pattern startBracketsPattern = Pattern.compile("\\{\\{");
         Pattern endBracketsPattern = Pattern.compile("}}");
+        Pattern categoryPattern = Pattern.compile("\\[\\[Category:.*Soccer player.*]]", Pattern.CASE_INSENSITIVE);
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath));
         ) {
             Matcher titleMatcher;
             Matcher infoboxMatcher;
+            Matcher categoryMatcher;
 
             StringBuilder pageBuilder;
             StringBuilder infoboxBuilder;
@@ -58,7 +60,7 @@ public class Main {
             int stack;
             int numPages = 0;
 
-            boolean isRelevant;  // TODO: filter out relevant pages
+            boolean isSoccerPlayer;
 
             String title;
             String infoboxType;
@@ -73,7 +75,7 @@ public class Main {
 
                     title = "";
                     infoboxType = "";
-                    isRelevant = false;
+                    isSoccerPlayer = false;
 
                     do {
                         // get title from page
@@ -82,21 +84,32 @@ public class Main {
                             title = titleMatcher.group(1);
                         }
 
-                        // get infobox from page
-                        infoboxMatcher = infoboxStartPattern.matcher(line);
-                        if (infoboxMatcher.find()) {
-                            infoboxType = infoboxMatcher.group(1).toLowerCase();
-                            stack = (int) startBracketsPattern.matcher(line).results().count();
-                            while (stack > 0) {
-                                pageBuilder.append(line);
-                                pageBuilder.append("\n");
-                                infoboxBuilder.append(line);
-                                infoboxBuilder.append("\n");
-                                line = reader.readLine();
-                                stack += startBracketsPattern.matcher(line).results().count();
-                                stack -= endBracketsPattern.matcher(line).results().count();
-                            }
+                        categoryMatcher = categoryPattern.matcher(line);
+                        if (!isSoccerPlayer && categoryMatcher.find()) {
+                            isSoccerPlayer = true;
                         }
+
+                        infoboxMatcher = infoboxStartPattern.matcher(line);
+                        if (infoboxType.isEmpty() && infoboxMatcher.find()) {
+                            infoboxType = infoboxMatcher.group(1);
+                        }
+
+                        // TODO: do this only for relevant pages (it slows down the program)
+                        // get infobox from page
+//                        infoboxMatcher = infoboxStartPattern.matcher(line);
+//                        if (infoboxMatcher.find()) {
+//                            infoboxType = infoboxMatcher.group(1).toLowerCase();
+//                            stack = (int) startBracketsPattern.matcher(line).results().count();
+//                            while (stack > 0) {
+//                                pageBuilder.append(line);
+//                                pageBuilder.append("\n");
+//                                infoboxBuilder.append(line);
+//                                infoboxBuilder.append("\n");
+//                                line = reader.readLine();
+//                                stack += startBracketsPattern.matcher(line).results().count();
+//                                stack -= endBracketsPattern.matcher(line).results().count();
+//                            }
+//                        }
 
                         // read next line of page
                         pageBuilder.append(line);
@@ -107,12 +120,16 @@ public class Main {
                     pageBuilder.append("\n");
                     numPages++;
 
-//                    System.out.println("----------------------------------------");
-//                    System.out.println("Title: " + title);
-//                    System.out.println("Infobox type: " + infoboxType);
-//                    System.out.println("Infobox: " + infoboxBuilder);
-//                    System.out.println("Page num: " + numPages);
-//                    System.out.println("Page: " + pageBuilder);
+                    // filter out soccer players
+                    if (isSoccerPlayer) {
+                        // TODO: parse page
+//                        System.out.println("----------------------------------------");
+//                        System.out.println("Title: " + title);
+//                        System.out.println("Infobox type: " + infoboxType);
+//                        System.out.println("Infobox: " + infoboxBuilder);
+//                        System.out.println("Page num: " + numPages);
+//                        System.out.println("Page: " + pageBuilder);
+                    }
                 }
             }
         } catch (IOException e) {
