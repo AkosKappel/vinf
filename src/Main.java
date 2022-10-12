@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Main {
     public static void main(String[] args) {
@@ -8,6 +7,7 @@ public class Main {
         String[] xmlFiles = {
                 "wiki-data-partial.xml",
                 "DavidBeckham.xml",
+                "soccer-players-1.xml",
                 "enwiki-latest-pages-articles1.xml",
                 "enwiki-latest-pages-articles2.xml",
                 "enwiki-latest-pages-articles3.xml",
@@ -39,95 +39,43 @@ public class Main {
     }
 
     private static void parseFile(String filePath) {
-        // patterns for parsing
-        Pattern pageStartPattern = Pattern.compile("<page>");
-        Pattern pageEndPattern = Pattern.compile("</page>");
-        Pattern titlePattern = Pattern.compile("<title>(.*)</title>");
-        Pattern infoboxStartPattern = Pattern.compile("\\{\\{Infobox ?([\\w. ]*)", Pattern.CASE_INSENSITIVE);
-        Pattern startBracketsPattern = Pattern.compile("\\{\\{");
-        Pattern endBracketsPattern = Pattern.compile("}}");
-        Pattern categoryPattern = Pattern.compile("\\[\\[Category:.*Soccer player.*]]", Pattern.CASE_INSENSITIVE);
-
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath));
         ) {
-            Matcher titleMatcher;
-            Matcher infoboxMatcher;
-            Matcher categoryMatcher;
-
-            StringBuilder pageBuilder;
-            StringBuilder infoboxBuilder;
-
-            int stack;
-            int numPages = 0;
-
-            boolean isSoccerPlayer;
-
-            String title;
-            String infoboxType;
             String line;
-
             while ((line = reader.readLine()) != null) {
-                // check if page start
-                if (pageStartPattern.matcher(line).find()) {
+                // check if page starts with <page>
+                if (Regex.pageStartPattern.matcher(line).find()) {
                     // reset page variables
-                    pageBuilder = new StringBuilder();
-                    infoboxBuilder = new StringBuilder();
-
-                    title = "";
-                    infoboxType = "";
-                    isSoccerPlayer = false;
+                    StringBuilder pageBuilder = new StringBuilder();
+                    String title = "";
+                    boolean isSoccerPlayer = false;
 
                     do {
                         // get title from page
-                        titleMatcher = titlePattern.matcher(line);
+                        Matcher titleMatcher = Regex.titlePattern.matcher(line);
                         if (title.isEmpty() && titleMatcher.find()) {
                             title = titleMatcher.group(1);
                         }
 
-                        categoryMatcher = categoryPattern.matcher(line);
+                        Matcher categoryMatcher = Regex.playerCategoryPattern.matcher(line);
                         if (!isSoccerPlayer && categoryMatcher.find()) {
                             isSoccerPlayer = true;
                         }
-
-                        infoboxMatcher = infoboxStartPattern.matcher(line);
-                        if (infoboxType.isEmpty() && infoboxMatcher.find()) {
-                            infoboxType = infoboxMatcher.group(1);
-                        }
-
-                        // TODO: do this only for relevant pages (it slows down the program)
-                        // get infobox from page
-//                        infoboxMatcher = infoboxStartPattern.matcher(line);
-//                        if (infoboxMatcher.find()) {
-//                            infoboxType = infoboxMatcher.group(1).toLowerCase();
-//                            stack = (int) startBracketsPattern.matcher(line).results().count();
-//                            while (stack > 0) {
-//                                pageBuilder.append(line);
-//                                pageBuilder.append("\n");
-//                                infoboxBuilder.append(line);
-//                                infoboxBuilder.append("\n");
-//                                line = reader.readLine();
-//                                stack += startBracketsPattern.matcher(line).results().count();
-//                                stack -= endBracketsPattern.matcher(line).results().count();
-//                            }
-//                        }
 
                         // read next line of page
                         pageBuilder.append(line);
                         pageBuilder.append("\n");
                         line = reader.readLine();
-                    } while (!pageEndPattern.matcher(line).find());
+                    } while (!Regex.pageEndPattern.matcher(line).find());
                     pageBuilder.append(line);
                     pageBuilder.append("\n");
-                    numPages++;
 
                     // filter out soccer players
                     if (isSoccerPlayer) {
-                        // TODO: parse page
-//                        System.out.println("----------------------------------------");
-//                        System.out.println("Title: " + title);
-//                        System.out.println("Infobox type: " + infoboxType);
-//                        System.out.println("Infobox: " + infoboxBuilder);
-//                        System.out.println("Page num: " + numPages);
+                        // TODO: parse pages about soccer players
+                        System.out.println("Title: " + title);
+//                        StringBuilder infobox = parseInfobox(pageBuilder.toString());
+//                        System.out.println("Infobox: " + infobox);
 //                        System.out.println("Page: " + pageBuilder);
                     }
                 }
@@ -135,6 +83,40 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static StringBuilder parseInfobox(String page) throws IOException {
+        StringBuilder infoboxBuilder = new StringBuilder();
+
+        BufferedReader reader = new BufferedReader(new StringReader(page));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            Matcher infoboxMatcher = Regex.infoboxStartPattern.matcher(line);
+            if (infoboxMatcher.find()) {
+                // TODO: parse infoboxes with certain types
+                String infoboxType = infoboxMatcher.group(1).toLowerCase();
+
+//                Matcher infoboxMatcher = Regex.infoboxStartPattern.matcher(line);
+//                if (infoboxType.isEmpty() && infoboxMatcher.find()) {
+//                    infoboxType = infoboxMatcher.group(1);
+//                }
+
+                long stack = Regex.startBracketsPattern.matcher(line).results().count();
+                while (stack > 0) {
+                    infoboxBuilder.append(line);
+                    infoboxBuilder.append("\n");
+                    line = reader.readLine();
+                    stack += Regex.startBracketsPattern.matcher(line).results().count();
+                    stack -= Regex.endBracketsPattern.matcher(line).results().count();
+                }
+//                System.out.println("infoboxType: " + infoboxType);
+                infoboxBuilder.append(line);
+                infoboxBuilder.append("\n");
+                break;
+            }
+        }
+
+        return infoboxBuilder;
     }
 
 }
