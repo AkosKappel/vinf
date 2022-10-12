@@ -76,47 +76,13 @@ public class Main {
                         System.out.println("Title: " + title);
 //                        StringBuilder infobox = parseInfobox(pageBuilder.toString());
 //                        System.out.println("Infobox: " + infobox);
-//                        System.out.println("Page: " + pageBuilder);
+                        System.out.println("Page: " + pageBuilder);
                     }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static StringBuilder parseInfobox(String page) throws IOException {
-        StringBuilder infoboxBuilder = new StringBuilder();
-
-        BufferedReader reader = new BufferedReader(new StringReader(page));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            Matcher infoboxMatcher = Regex.infoboxStartPattern.matcher(line);
-            if (infoboxMatcher.find()) {
-                // TODO: parse infoboxes with certain types
-                String infoboxType = infoboxMatcher.group(1).toLowerCase();
-
-//                Matcher infoboxMatcher = Regex.infoboxStartPattern.matcher(line);
-//                if (infoboxType.isEmpty() && infoboxMatcher.find()) {
-//                    infoboxType = infoboxMatcher.group(1);
-//                }
-
-                long stack = Regex.startBracketsPattern.matcher(line).results().count();
-                while (stack > 0) {
-                    infoboxBuilder.append(line);
-                    infoboxBuilder.append("\n");
-                    line = reader.readLine();
-                    stack += Regex.startBracketsPattern.matcher(line).results().count();
-                    stack -= Regex.endBracketsPattern.matcher(line).results().count();
-                }
-//                System.out.println("infoboxType: " + infoboxType);
-                infoboxBuilder.append(line);
-                infoboxBuilder.append("\n");
-                break;
-            }
-        }
-
-        return infoboxBuilder;
     }
 
 }
