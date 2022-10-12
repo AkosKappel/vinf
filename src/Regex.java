@@ -24,7 +24,7 @@ public class Regex {
             "\\[\\[Category:.*Soccer player.*]]", Pattern.CASE_INSENSITIVE
     );
     public static final Pattern wikiLinkPattern = Pattern.compile(
-            "\\[\\[(?:[^]|]*\\|)?([^]]+)]]"
+            "\\[\\[([^]|]+)\\|?([^]|]*)]]"
     );
     public static final Pattern namePattern = Pattern.compile(
             "\\| *name *= *([\\w .-]*)", Pattern.CASE_INSENSITIVE
@@ -47,7 +47,7 @@ public class Regex {
             "\\| *years(\\d+) *= *(\\d+)[–-]?(\\d+)?", Pattern.CASE_INSENSITIVE
     );
     public static final Pattern clubsPattern = Pattern.compile(
-            "\\| *clubs(\\d+) *= *→? *\\[?\\[?(?:([^]|]*)\\|)?([^]|]+)]?]?", Pattern.CASE_INSENSITIVE
+            "\\| *clubs(\\d+) *= *→? *\\[?\\[?([^]|]+)\\|?([^]|]*)]?]?", Pattern.CASE_INSENSITIVE
     );
     public static final Pattern capsPattern = Pattern.compile(
             "\\| *caps(\\d+) *= *(\\d+)", Pattern.CASE_INSENSITIVE
@@ -63,7 +63,7 @@ public class Regex {
             "\\| *youthyears(\\d+) *= *(\\d+)[–-]?(\\d+)?", Pattern.CASE_INSENSITIVE
     );
     public static final Pattern youthClubsPattern = Pattern.compile(
-            "\\| *youthclubs(\\d+) *= *→? *\\[?\\[?(?:([^]|]*)\\|)?([^]|]+)]?]?", Pattern.CASE_INSENSITIVE
+            "\\| *youthclubs(\\d+) *= *→? *\\[?\\[?([^]|]+)\\|?([^]|]*)]?]?", Pattern.CASE_INSENSITIVE
     );
     // | nationalyears1  = 1992–1993 |nationalteam1 = [[England national under-18 football team|England U18]] |nationalcaps1 = 3   |nationalgoals1 = 0
     // | nationalyears2  = 1994–1996 |nationalteam2 = [[England national under-21 football team|England U21]] |nationalcaps2 = 9   |nationalgoals2 = 0
@@ -73,6 +73,6 @@ public class Regex {
             "\\| *nationalyears(\\d+) *= *(\\d+)[–-]?(\\d+)?", Pattern.CASE_INSENSITIVE
     );
     public static final Pattern nationalTeamPattern = Pattern.compile(
-            "\\| *nationalteam(\\d+) *= *\\[?\\[?(?:([^]|]*)\\|)?([^]|]+)]?]?", Pattern.CASE_INSENSITIVE
+            "\\| *nationalteam(\\d+) *= *\\[?\\[?([^]|]+)\\|?([^]|]*)]?]?", Pattern.CASE_INSENSITIVE
     );
 }

@@ -16,20 +16,6 @@ public class Main {
         };
         String filePath = wikipediaFolder + xmlFiles[2];
 
-        String[] infoboxLabels = {
-                "person",
-                "sport",
-                "sportsperson",
-                "football club",
-                "sports league",
-                "Australian football club",
-                "national football team",
-                "football biography",
-                "football tournament",
-                "football league",
-                "football match"
-        };
-
         // time execution
         long startTime = System.nanoTime();
         parseFile(filePath);
@@ -73,6 +59,7 @@ public class Main {
                     // filter out soccer players
                     if (isSoccerPlayer) {
                         // TODO: parse pages about soccer players
+                        Page.parse(pageBuilder.toString());
                         System.out.println("Title: " + title);
 //                        StringBuilder infobox = parseInfobox(pageBuilder.toString());
 //                        System.out.println("Infobox: " + infobox);
