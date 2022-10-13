@@ -25,8 +25,6 @@ public class Page {
         BufferedReader reader = new BufferedReader(new StringReader(page));
 
         String title = "";
-        String name = "";
-        String position = "";
 
         String line;
         // read until end of infobox
@@ -37,35 +35,17 @@ public class Page {
                 title = titleMatcher.group(1);
             }
 
-            Matcher infoboxMatcher = Regex.infoboxStartPattern.matcher(line);
+            Matcher infoboxMatcher = Regex.infoboxFootballBiographyPattern.matcher(line);
             if (infoboxMatcher.find()) {
-                String infoboxType = infoboxMatcher.group(1);
-
                 long stack = Regex.bracketsStartPattern.matcher(line).results().count();
                 while (stack > 0) {
-//                    infoboxMatcher = Regex.infoboxStartPattern.matcher(line);
-//                    if (infoboxMatcher.find()) {
-//                        infoboxType = infoboxMatcher.group(1);
-//                    }
-
-                    // get name from infobox
-                    Matcher nameMatcher = Regex.namePattern.matcher(line);
-                    if (name.isEmpty() && nameMatcher.find()) {
-                        name = nameMatcher.group(1);
-                    }
-
-                    // get position from infobox
-                    Matcher positionMatcher = Regex.positionPattern.matcher(line);
-                    if (position.isEmpty() && positionMatcher.find()) {
-                        position = positionMatcher.group(1);
-                    }
-
                     // get years from infobox
                     Matcher yearsMatcher = Regex.yearsPattern.matcher(line);
                     if (yearsMatcher.find()) {
                         String yearsNum = yearsMatcher.group(1);
                         String yearsStart = yearsMatcher.group(2);
                         String yearsEnd = yearsMatcher.group(3);
+                        if (yearsEnd == null) yearsEnd = yearsStart;
                         System.out.println("Years " + yearsNum + ": " + yearsStart + " - " + yearsEnd);
                     }
 
@@ -87,8 +67,6 @@ public class Page {
         }
 
         System.out.println("Title: " + title);
-        System.out.println("Name: " + name);
-        System.out.println("Position: " + position);
         System.out.println("########################################");
 
         return new Page(title);

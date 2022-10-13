@@ -14,7 +14,7 @@ public class Main {
                 "enwiki-latest-pages-articles4.xml",
                 "enwiki-latest-pages-articles5.xml",
         };
-        String filePath = wikipediaFolder + xmlFiles[4];
+        String filePath = wikipediaFolder + xmlFiles[3];
 
         // time execution
         long startTime = System.nanoTime();

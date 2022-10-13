@@ -11,8 +11,14 @@ public class Regex {
     public static final Pattern titlePattern = Pattern.compile(
             "<title>(.*)</title>"
     );
-    public static final Pattern infoboxStartPattern = Pattern.compile(
+    public static final Pattern infoboxPattern = Pattern.compile(
             "\\{\\{Infobox ?([\\w .-]*)", Pattern.CASE_INSENSITIVE
+    );
+    public static final Pattern infoboxPersonPattern = Pattern.compile(
+            "\\{\\{Infobox ?person", Pattern.CASE_INSENSITIVE
+    );
+    public static final Pattern infoboxFootballBiographyPattern = Pattern.compile(
+            "\\{\\{Infobox ?football biography", Pattern.CASE_INSENSITIVE
     );
     public static final Pattern bracketsStartPattern = Pattern.compile(
             "\\{\\{"
