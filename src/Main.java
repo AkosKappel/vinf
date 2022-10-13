@@ -14,7 +14,7 @@ public class Main {
                 "enwiki-latest-pages-articles4.xml",
                 "enwiki-latest-pages-articles5.xml",
         };
-        String filePath = wikipediaFolder + xmlFiles[2];
+        String filePath = wikipediaFolder + xmlFiles[4];
 
         // time execution
         long startTime = System.nanoTime();
@@ -33,16 +33,9 @@ public class Main {
                 if (Regex.pageStartPattern.matcher(line).find()) {
                     // reset page variables
                     StringBuilder pageBuilder = new StringBuilder();
-                    String title = "";
                     boolean isSoccerPlayer = false;
 
                     do {
-                        // get title from page
-                        Matcher titleMatcher = Regex.titlePattern.matcher(line);
-                        if (title.isEmpty() && titleMatcher.find()) {
-                            title = titleMatcher.group(1);
-                        }
-
                         Matcher categoryMatcher = Regex.playerCategoryPattern.matcher(line);
                         if (!isSoccerPlayer && categoryMatcher.find()) {
                             isSoccerPlayer = true;
@@ -60,10 +53,6 @@ public class Main {
                     if (isSoccerPlayer) {
                         // TODO: parse pages about soccer players
                         Page.parse(pageBuilder.toString());
-                        System.out.println("Title: " + title);
-//                        StringBuilder infobox = parseInfobox(pageBuilder.toString());
-//                        System.out.println("Infobox: " + infobox);
-                        System.out.println("Page: " + pageBuilder);
                     }
                 }
             }

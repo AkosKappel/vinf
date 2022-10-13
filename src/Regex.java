@@ -27,16 +27,16 @@ public class Regex {
             "\\[\\[([^]|]+)\\|?([^]|]*)]]"
     );
     public static final Pattern namePattern = Pattern.compile(
-            "\\| *name *= *([\\w .-]*)", Pattern.CASE_INSENSITIVE
+            "\\| *name *= *([\\p{L}\\d .-]*)", Pattern.CASE_INSENSITIVE
     );
     public static final Pattern birthDatePattern = Pattern.compile(
-            "\\| *birth_date *= *([\\w .-]*)", Pattern.CASE_INSENSITIVE
+            "\\| *birth_date *= *([\\p{L}\\d .-]*)", Pattern.CASE_INSENSITIVE
     );
     public static final Pattern birthPlacePattern = Pattern.compile(
-            "\\| *birth_place *= *([\\w .-]*)", Pattern.CASE_INSENSITIVE
+            "\\| *birth_place *= *([\\p{L}\\d .-]*)", Pattern.CASE_INSENSITIVE
     );
     public static final Pattern positionPattern = Pattern.compile(
-            "\\| *position *= *([\\w .-]*)", Pattern.CASE_INSENSITIVE
+            "\\| *position *= *([\\p{L}\\d .-]*)", Pattern.CASE_INSENSITIVE
     );
     // | years1         = 1956–1973 |clubs1 = [[Manchester United F.C.|Manchester United]] |caps1 = 606 |goals1 = 199
     // | years2         = 1974–1975 |clubs2 = [[Preston North End|Preston North End]]      |caps2 = 38  |goals2 = 8
