@@ -20,10 +20,13 @@ public class Player {
         return switch (type) {
             case YOUTH -> youthClubs;
             case COLLEGE -> collegeClubs;
-            case DEFAULT -> clubs;
+            case PROFESSIONAL -> clubs;
             case NATIONAL -> nationalTeams;
-            default -> null;
         };
+    }
+
+    public boolean hasClubHistory() {
+        return !youthClubs.isEmpty() || !collegeClubs.isEmpty() || !clubs.isEmpty() || !nationalTeams.isEmpty();
     }
 
     public void updateClubName(int clubIndex, String clubName, ClubType type) {

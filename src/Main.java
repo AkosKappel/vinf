@@ -51,8 +51,10 @@ public class Main {
 
                     // filter out soccer players
                     if (isSoccerPlayer) {
-                        // TODO: parse pages about soccer players
-                        Page.parse(pageBuilder.toString());
+                        Player p = Page.parse(pageBuilder.toString());
+                        if (p != null) {
+                            System.out.println(p);
+                        }
                     }
                 }
             }

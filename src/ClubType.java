@@ -1,6 +1,6 @@
 public enum ClubType {
     YOUTH,
     COLLEGE,
-    DEFAULT,
+    PROFESSIONAL,
     NATIONAL
 }
