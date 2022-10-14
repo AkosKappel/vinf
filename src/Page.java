@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 
 public class Page {
@@ -21,10 +22,11 @@ public class Page {
         this.content = content;
     }
 
-    public static Page parse(String page) throws IOException {
+    public static Player parse(String page) throws IOException {
         BufferedReader reader = new BufferedReader(new StringReader(page));
 
         String title = "";
+        Player player = null;
 
         String line;
         // read until end of infobox
@@ -37,24 +39,28 @@ public class Page {
 
             Matcher infoboxMatcher = Regex.infoboxFootballBiographyPattern.matcher(line);
             if (infoboxMatcher.find()) {
+                player = new Player(title);
+
                 long stack = Regex.bracketsStartPattern.matcher(line).results().count();
                 while (stack > 0) {
                     // get years from infobox
                     Matcher yearsMatcher = Regex.yearsPattern.matcher(line);
                     if (yearsMatcher.find()) {
-                        String yearsNum = yearsMatcher.group(1);
+                        int yearsIndex = Integer.parseInt(yearsMatcher.group(1)) - 1;
                         String yearsStart = yearsMatcher.group(2);
                         String yearsEnd = yearsMatcher.group(3);
-                        if (yearsEnd == null) yearsEnd = yearsStart;
-                        System.out.println("Years " + yearsNum + ": " + yearsStart + " - " + yearsEnd);
+                        player.updateYearJoined(yearsIndex, yearsStart);
+                        player.updateYearLeft(yearsIndex, yearsEnd);
+//                        System.out.println("Years " + yearsIndex + ": " + yearsStart + " - " + yearsEnd);
                     }
 
                     // get clubs from infobox
                     Matcher clubsMatcher = Regex.clubsPattern.matcher(line);
                     if (clubsMatcher.find()) {
-                        String clubsNum = clubsMatcher.group(1);
+                        int clubsIndex = Integer.parseInt(clubsMatcher.group(1)) - 1;
                         String clubs = clubsMatcher.group(2);
-                        System.out.println("Clubs " + clubsNum + ": " + clubs);
+                        player.updateClubName(clubsIndex, clubs);
+//                        System.out.println("Clubs " + clubsIndex + ": " + clubs);
                     }
 
                     // read next line of infobox
@@ -66,10 +72,12 @@ public class Page {
             }
         }
 
-        System.out.println("Title: " + title);
-        System.out.println("########################################");
+        if (player != null) {
+            System.out.println(player);
+            return player;
+        }
 
-        return new Page(title);
+        return null;
     }
 
 }
