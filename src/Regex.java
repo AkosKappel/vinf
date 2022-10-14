@@ -1,6 +1,5 @@
 import java.util.regex.Pattern;
 
-// TODO: remove Pattern.CASE_INSENSITIVE where not necessary
 public class Regex {
     public static final Pattern pageStartPattern = Pattern.compile(
             "<page>"
@@ -26,14 +25,17 @@ public class Regex {
     public static final Pattern bracketsEndPattern = Pattern.compile(
             "}}"
     );
-    public static final Pattern playerCategoryPattern = Pattern.compile(
+    public static final Pattern categorySoccerPlayerPattern = Pattern.compile(
             "\\[\\[Category:.*Soccer player.*]]", Pattern.CASE_INSENSITIVE
     );
     public static final Pattern wikiLinkPattern = Pattern.compile(
             "\\[\\[([^]|]+)\\|?([^]|]*)]]"
     );
+    public static final Pattern playerNamePattern = Pattern.compile(
+            "([\\p{L}\\d\\]\\[ .-]*).*"
+    );
     public static final Pattern namePattern = Pattern.compile(
-            "\\| *name *= *([\\p{L}\\d .-]*)"
+            "\\| *name *= *([\\p{L}\\d\\]\\[ .-]*)"
     );
     public static final Pattern birthDatePattern = Pattern.compile(
             "\\| *birth_date *= *([\\p{L}\\d .-]*)"

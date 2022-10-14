@@ -3,22 +3,14 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.regex.Matcher;
 
-public class Page {
-
+public abstract class Page {
     long id;
     String title;
-    String content;
-
     private static long pageID = 0;
 
-    private Page(String title) {
-        this(title, "");
-    }
-
-    private Page(String title, String content) {
+    protected Page(String title) {
         this.id = pageID++;
         this.title = title;
-        this.content = content;
     }
 
     public static Player parse(String page) throws IOException {

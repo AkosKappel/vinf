@@ -1,6 +1,7 @@
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 
-public class Player {
+public class Player extends Page {
 
     private String name;
     private ArrayList<ClubHistory> youthClubs;
@@ -8,8 +9,10 @@ public class Player {
     private ArrayList<ClubHistory> clubs;
     private ArrayList<ClubHistory> nationalTeams;
 
-    public Player(String name) {
-        this.name = name;
+    public Player(String title) {
+        super(title);
+        Matcher nameMatcher = Regex.playerNamePattern.matcher(title);
+        this.name = nameMatcher.find() ? nameMatcher.group(1).trim() : title;
         this.youthClubs = new ArrayList<>();
         this.collegeClubs = new ArrayList<>();
         this.clubs = new ArrayList<>();
@@ -17,8 +20,31 @@ public class Player {
     }
 
     public boolean hasPlayedWith(Player player) {
-        // TODO: implement this
+        for (ClubHistory club : clubs) {
+            for (ClubHistory otherClub : player.getClubs()) {
+                if (club.getClubName().equals(otherClub.getClubName()) && yearsOverlap(club, otherClub)) {
+                    return true;
+                }
+            }
+        }
         return false;
+    }
+
+    public String getPlayedAtWith(Player player) {
+        for (ClubHistory club : clubs) {
+            for (ClubHistory otherClub : player.getClubs()) {
+                if (club.getClubName().equals(otherClub.getClubName()) && yearsOverlap(club, otherClub)) {
+                    return club.getClubName();
+                }
+            }
+        }
+        return "";
+    }
+
+    public boolean yearsOverlap(ClubHistory club, ClubHistory otherClub) {
+        if (club.getYearJoined() == 0 || otherClub.getYearJoined() == 0 ||
+                club.getYearLeft() == 0 || otherClub.getYearLeft() == 0) return false;
+        return club.getYearJoined() <= otherClub.getYearLeft() && club.getYearLeft() >= otherClub.getYearJoined();
     }
 
     private ArrayList<ClubHistory> getClubListByType(ClubType type) {
@@ -79,6 +105,7 @@ public class Player {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append("Page ").append(id).append(" - ").append(title).append('\n');
         sb.append(name).append('\n');
         if (!youthClubs.isEmpty()) {
             sb.append("\tYouth Clubs:\n");
