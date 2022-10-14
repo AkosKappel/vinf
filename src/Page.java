@@ -2,7 +2,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Page {
 
@@ -43,25 +42,9 @@ public class Page {
 
                 long stack = Regex.bracketsStartPattern.matcher(line).results().count();
                 while (stack > 0) {
-                    // get club years
-                    findClubYears(line, Regex.youthYearsPattern, player, ClubType.YOUTH);
-                    findClubYears(line, Regex.collegeYearsPattern, player, ClubType.COLLEGE);
-                    findClubYears(line, Regex.yearsPattern, player, ClubType.PROFESSIONAL);
-                    findClubYears(line, Regex.nationalYearsPattern, player, ClubType.NATIONAL);
-
-                    // get club names
-                    findClubNames(line, Regex.youthClubsPattern, player, ClubType.YOUTH);
-                    findClubNames(line, Regex.collegeClubsPattern, player, ClubType.COLLEGE);
-                    findClubNames(line, Regex.clubsPattern, player, ClubType.PROFESSIONAL);
-                    findClubNames(line, Regex.nationalTeamPattern, player, ClubType.NATIONAL);
-
-                    // get national team names
-                    Matcher nationalTeamsMatcher = Regex.nationalTeamPattern.matcher(line);
-                    if (nationalTeamsMatcher.find()) {
-                        int index = Integer.parseInt(nationalTeamsMatcher.group(1)) - 1;
-                        String teamName = nationalTeamsMatcher.group(2);
-                        player.updateClubName(index, teamName, ClubType.NATIONAL);
-                    }
+                    // get club names and years
+                    findClubYears(line, player);
+                    findClubNames(line, player);
 
                     // read next line of infobox
                     line = reader.readLine();
@@ -76,22 +59,28 @@ public class Page {
         return null;
     }
 
-    private static void findClubYears(String line, Pattern pattern, Player player, ClubType clubType) {
-        Matcher yearsMatcher = pattern.matcher(line);
+    private static void findClubYears(String line, Player player) {
+        Matcher yearsMatcher = Regex.clubYearsPattern.matcher(line);
+
         if (yearsMatcher.find()) {
-            int index = Integer.parseInt(yearsMatcher.group(1)) - 1;
-            String yearJoined = yearsMatcher.group(2);
-            String yearsLeft = yearsMatcher.group(3);
+            ClubType clubType = ClubType.getClubType(yearsMatcher.group(1));
+            int index = Integer.parseInt(yearsMatcher.group(2)) - 1;
+            String yearJoined = yearsMatcher.group(3);
+            String yearsLeft = yearsMatcher.group(4);
+
             player.updateYearJoined(index, yearJoined, clubType);
             player.updateYearLeft(index, yearsLeft, clubType);
         }
     }
 
-    private static void findClubNames(String line, Pattern pattern, Player player, ClubType clubType) {
-        Matcher clubsMatcher = pattern.matcher(line);
+    private static void findClubNames(String line, Player player) {
+        Matcher clubsMatcher = Regex.clubNamePattern.matcher(line);
+
         if (clubsMatcher.find()) {
-            int index = Integer.parseInt(clubsMatcher.group(1)) - 1;
-            String clubName = clubsMatcher.group(2);
+            ClubType clubType = ClubType.getClubType(clubsMatcher.group(1));
+            int index = Integer.parseInt(clubsMatcher.group(2)) - 1;
+            String clubName = clubsMatcher.group(3);
+
             player.updateClubName(index, clubName, clubType);
         }
     }

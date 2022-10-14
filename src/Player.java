@@ -16,6 +16,11 @@ public class Player {
         this.nationalTeams = new ArrayList<>();
     }
 
+    public boolean hasPlayedWith(Player player) {
+        // TODO: implement this
+        return false;
+    }
+
     private ArrayList<ClubHistory> getClubListByType(ClubType type) {
         return switch (type) {
             case YOUTH -> youthClubs;
