@@ -43,24 +43,76 @@ public class Page {
 
                 long stack = Regex.bracketsStartPattern.matcher(line).results().count();
                 while (stack > 0) {
-                    // get years from infobox
+                    // get youth club years
+                    Matcher youthYearsMatcher = Regex.youthYearsPattern.matcher(line);
+                    if (youthYearsMatcher.find()) {
+                        int index = Integer.parseInt(youthYearsMatcher.group(1)) - 1;
+                        String yearJoined = youthYearsMatcher.group(2);
+                        String yearLeft = youthYearsMatcher.group(3);
+                        player.updateYearJoined(index, yearJoined, ClubType.YOUTH);
+                        player.updateYearLeft(index, yearLeft, ClubType.YOUTH);
+                    }
+
+                    // get youth club names
+                    Matcher youthClubMatcher = Regex.youthClubsPattern.matcher(line);
+                    if (youthClubMatcher.find()) {
+                        int index = Integer.parseInt(youthClubMatcher.group(1)) - 1;
+                        String clubName = youthClubMatcher.group(2);
+                        player.updateClubName(index, clubName, ClubType.YOUTH);
+                    }
+
+                    // get college club years
+                    Matcher collegeYearsMatcher = Regex.collegeYearsPattern.matcher(line);
+                    if (collegeYearsMatcher.find()) {
+                        int index = Integer.parseInt(collegeYearsMatcher.group(1)) - 1;
+                        String yearJoined = collegeYearsMatcher.group(2);
+                        String yearLeft = collegeYearsMatcher.group(3);
+                        player.updateYearJoined(index, yearJoined, ClubType.COLLEGE);
+                        player.updateYearLeft(index, yearLeft, ClubType.COLLEGE);
+                    }
+
+                    // get college club names
+                    Matcher collegeClubMatcher = Regex.collegeClubsPattern.matcher(line);
+                    if (collegeClubMatcher.find()) {
+                        int index = Integer.parseInt(collegeClubMatcher.group(1)) - 1;
+                        String clubName = collegeClubMatcher.group(2);
+                        player.updateClubName(index, clubName, ClubType.COLLEGE);
+                    }
+
+                    // get default club years
                     Matcher yearsMatcher = Regex.yearsPattern.matcher(line);
                     if (yearsMatcher.find()) {
                         int yearsIndex = Integer.parseInt(yearsMatcher.group(1)) - 1;
-                        String yearsStart = yearsMatcher.group(2);
-                        String yearsEnd = yearsMatcher.group(3);
-                        player.updateYearJoined(yearsIndex, yearsStart);
-                        player.updateYearLeft(yearsIndex, yearsEnd);
-//                        System.out.println("Years " + yearsIndex + ": " + yearsStart + " - " + yearsEnd);
+                        String yearJoined = yearsMatcher.group(2);
+                        String yearsLeft = yearsMatcher.group(3);
+                        player.updateYearJoined(yearsIndex, yearJoined, ClubType.DEFAULT);
+                        player.updateYearLeft(yearsIndex, yearsLeft, ClubType.DEFAULT);
                     }
 
-                    // get clubs from infobox
+                    // get default club names
                     Matcher clubsMatcher = Regex.clubsPattern.matcher(line);
                     if (clubsMatcher.find()) {
-                        int clubsIndex = Integer.parseInt(clubsMatcher.group(1)) - 1;
-                        String clubs = clubsMatcher.group(2);
-                        player.updateClubName(clubsIndex, clubs);
-//                        System.out.println("Clubs " + clubsIndex + ": " + clubs);
+                        int index = Integer.parseInt(clubsMatcher.group(1)) - 1;
+                        String clubName = clubsMatcher.group(2);
+                        player.updateClubName(index, clubName, ClubType.DEFAULT);
+                    }
+
+                    // get national team years
+                    Matcher nationalTeamsYearsMatcher = Regex.nationalYearsPattern.matcher(line);
+                    if (nationalTeamsYearsMatcher.find()) {
+                        int index = Integer.parseInt(nationalTeamsYearsMatcher.group(1)) - 1;
+                        String yearJoined = nationalTeamsYearsMatcher.group(2);
+                        String yearLeft = nationalTeamsYearsMatcher.group(3);
+                        player.updateYearJoined(index, yearJoined, ClubType.NATIONAL);
+                        player.updateYearLeft(index, yearLeft, ClubType.NATIONAL);
+                    }
+
+                    // get national team names
+                    Matcher nationalTeamsMatcher = Regex.nationalTeamPattern.matcher(line);
+                    if (nationalTeamsMatcher.find()) {
+                        int index = Integer.parseInt(nationalTeamsMatcher.group(1)) - 1;
+                        String teamName = nationalTeamsMatcher.group(2);
+                        player.updateClubName(index, teamName, ClubType.NATIONAL);
                     }
 
                     // read next line of infobox

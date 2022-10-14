@@ -11,7 +11,9 @@ public class ClubHistory {
 
     @Override
     public String toString() {
-        return clubName + " (" + yearJoined + " - " + yearLeft + ")";
+        if (clubName == null) return "";
+        else if (yearJoined == 0) return clubName;
+        else return clubName + " | (" + yearJoined + " - " + yearLeft + ")";
     }
 
     public String getClubName() {
