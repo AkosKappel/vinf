@@ -37,7 +37,7 @@ public class Main {
     private static void tests(ArrayList<Player> players) {
         Player p1 = players.get(10);
         Player p2 = players.get(11);
-        Player p3 = players.get(12);
+        Player p3 = players.get(0);
 
         ClubHistory c1 = p1.getClubs().get(0);
         ClubHistory c2 = p2.getClubs().get(0);

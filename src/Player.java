@@ -20,19 +20,46 @@ public class Player extends Page {
     }
 
     public boolean hasPlayedWith(Player player) {
+        return hasPlayedWith(player, ClubType.PROFESSIONAL) ||
+                hasPlayedWith(player, ClubType.NATIONAL) ||
+                hasPlayedWith(player, ClubType.COLLEGE) ||
+                hasPlayedWith(player, ClubType.YOUTH);
+    }
+
+    public boolean hasPlayedWith(Player player, ClubType type) {
+        ArrayList<ClubHistory> clubs = getClubsByType(type);
+        ArrayList<ClubHistory> otherClubs = player.getClubsByType(type);
+
         for (ClubHistory club : clubs) {
-            for (ClubHistory otherClub : player.getClubs()) {
+            for (ClubHistory otherClub : otherClubs) {
                 if (club.getClubName().equals(otherClub.getClubName()) && yearsOverlap(club, otherClub)) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 
+    // TODO: should be a list of clubs, where players played together ?
     public String getPlayedAtWith(Player player) {
+        String playedAt = getPlayedAtWith(player, ClubType.PROFESSIONAL);
+        if (playedAt != null) return playedAt;
+        playedAt = getPlayedAtWith(player, ClubType.NATIONAL);
+        if (playedAt != null) return playedAt;
+        playedAt = getPlayedAtWith(player, ClubType.COLLEGE);
+        if (playedAt != null) return playedAt;
+        playedAt = getPlayedAtWith(player, ClubType.YOUTH);
+        if (playedAt != null) return playedAt;
+        return "";
+    }
+
+    public String getPlayedAtWith(Player player, ClubType type) {
+        ArrayList<ClubHistory> clubs = getClubsByType(type);
+        ArrayList<ClubHistory> otherClubs = player.getClubsByType(type);
+
         for (ClubHistory club : clubs) {
-            for (ClubHistory otherClub : player.getClubs()) {
+            for (ClubHistory otherClub : otherClubs) {
                 if (club.getClubName().equals(otherClub.getClubName()) && yearsOverlap(club, otherClub)) {
                     return club.getClubName();
                 }
@@ -47,7 +74,7 @@ public class Player extends Page {
         return club.getYearJoined() <= otherClub.getYearLeft() && club.getYearLeft() >= otherClub.getYearJoined();
     }
 
-    private ArrayList<ClubHistory> getClubListByType(ClubType type) {
+    private ArrayList<ClubHistory> getClubsByType(ClubType type) {
         return switch (type) {
             case YOUTH -> youthClubs;
             case COLLEGE -> collegeClubs;
@@ -61,7 +88,7 @@ public class Player extends Page {
     }
 
     public void updateClubName(int clubIndex, String clubName, ClubType type) {
-        ArrayList<ClubHistory> clubsToUpdate = getClubListByType(type);
+        ArrayList<ClubHistory> clubsToUpdate = getClubsByType(type);
         if (clubsToUpdate == null) return;
 
         while (clubsToUpdate.size() <= clubIndex) {
@@ -73,7 +100,7 @@ public class Player extends Page {
     public void updateYearJoined(int clubIndex, String yearJoined, ClubType type) {
         if (yearJoined == null || !yearJoined.matches("\\d+")) return;
 
-        ArrayList<ClubHistory> clubListToUpdate = getClubListByType(type);
+        ArrayList<ClubHistory> clubListToUpdate = getClubsByType(type);
         if (clubListToUpdate == null) return;
 
         while (clubListToUpdate.size() <= clubIndex) {
@@ -86,7 +113,7 @@ public class Player extends Page {
     }
 
     public void updateYearLeft(int clubIndex, String yearLeft, ClubType type) {
-        ArrayList<ClubHistory> clubListToUpdate = getClubListByType(type);
+        ArrayList<ClubHistory> clubListToUpdate = getClubsByType(type);
         if (clubListToUpdate == null) return;
 
         while (clubListToUpdate.size() <= clubIndex) {
