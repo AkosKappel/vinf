@@ -1,6 +1,5 @@
 import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class InvertedIndex {
     private final HashMap<String, ArrayList<Integer>> index;
@@ -67,6 +66,44 @@ public class InvertedIndex {
         }
 
         return results;
+    }
+
+    public ArrayList<Integer> intersect(ArrayList<Integer> postingList1, ArrayList<Integer> postingList2) {
+        ArrayList<Integer> intersection = new ArrayList<>();
+
+        int i = 0, j = 0;
+        int size1 = postingList1.size(), size2 = postingList2.size();
+        Integer docId1 = postingList1.get(i), docId2 = postingList2.get(j);
+
+        while (i < size1 && j < size2) {
+            if (docId1.equals(docId2)) {
+                intersection.add(docId1);
+                if (++i < size1) docId1 = postingList1.get(i);
+                if (++j < size2) docId2 = postingList2.get(j);
+            } else if (docId1 < docId2) {
+                if (++i < size1) docId1 = postingList1.get(i);
+            } else {
+                if (++j < size2) docId2 = postingList2.get(j);
+            }
+        }
+
+        return intersection;
+    }
+
+    public ArrayList<Integer> intersect(ArrayList<Integer>... postingLists) {
+        // sort posting lists by size
+        Arrays.sort(postingLists, Comparator.comparingInt(ArrayList::size));
+
+        // intersect the smallest posting list with the rest
+        ArrayList<Integer> intersection = postingLists[0];
+
+        int i = 1;
+        while (i < postingLists.length && !intersection.isEmpty()) {
+            intersection = intersect(intersection, postingLists[i]);
+            i++;
+        }
+
+        return intersection;
     }
 
     public void print() {

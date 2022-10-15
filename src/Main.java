@@ -34,7 +34,7 @@ public class Main {
         }
 
         // print inverted index
-        invertedIndex.print();
+//        invertedIndex.print();
 
         // print players
 //        invertedIndex.printDocuments();
@@ -44,7 +44,7 @@ public class Main {
         System.out.println("Found " + players.size() + " players");
         System.out.println("Time: " + duration / 1_000_000 + "ms");
 
-        runApplication();
+//        runApplication();
     }
 
     private static void tests(ArrayList<Player> players) {
@@ -73,9 +73,26 @@ public class Main {
         } else {
             System.out.println(p1.getName() + " did not play with " + p3.getName());
         }
+
+        ArrayList<Integer> list1 = new ArrayList<>(Arrays.asList(1, 3, 12, 23));
+        ArrayList<Integer> list2 = new ArrayList<>(Arrays.asList(1, 2, 3, 5, 10, 23));
+        ArrayList<Integer> list3 = new ArrayList<>(Arrays.asList(1, 2));
+
+        System.out.println(invertedIndex.intersect(list1, list2));
+        System.out.println(invertedIndex.intersect(list1, list2, list3));
+
     }
 
-    // TODO: implement input for command line
+    private static void showHelp() {
+        System.out.println("Commands:");
+        System.out.println("  help - show this message");
+        System.out.println("  search [names...] - search for players");
+        System.out.println("  show [index|documents] - print inverted index or parsed documents");
+        System.out.println("  player [index] - print player at index");
+        System.out.println("  exit - exit the application");
+    }
+
+    // TODO: update application commands
     private static void runApplication() {
         Scanner scanner = new Scanner(System.in);
 
@@ -85,14 +102,11 @@ public class Main {
             String[] args = scanner.nextLine().split(" ");
 
             switch (args[0]) {
-                case "help" -> {
-                    System.out.println("help - show this message");
-                    System.out.println("search [names...] - search for players");
-                    System.out.println("exit - exit the program");
-                }
+                case "help" -> showHelp();
                 case "search" -> {
                     if (args.length < 2) {
-                        System.out.println("Please enter a search query");
+                        System.out.println("Missing argument");
+                        showHelp();
                         continue;
                     }
 
@@ -106,6 +120,18 @@ public class Main {
                         for (Player player : results) {
                             System.out.println(player);
                         }
+                    }
+                }
+                case "show" -> {
+                    if (args.length < 2) {
+                        System.out.println("Missing argument");
+                        showHelp();
+                        continue;
+                    }
+
+                    switch (args[1]) {
+                        case "index" -> invertedIndex.print();
+                        case "documents" -> invertedIndex.printDocuments();
                     }
                 }
                 case "player" -> {
