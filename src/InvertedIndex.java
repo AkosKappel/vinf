@@ -6,35 +6,67 @@ public class InvertedIndex {
     private final HashMap<String, ArrayList<Integer>> index;
     private final HashMap<Integer, Player> documents;
 
-    private static int documentID = 0;
+    private static int DOCUMENT_ID = 0;
 
     public InvertedIndex() {
         this.index = new HashMap<>();
         this.documents = new HashMap<>();
     }
 
+    private String[] tokenize(String text) {
+        return text
+                .replaceAll(Regex.specialCharacter, "")
+                .split(" ");
+    }
+
+    private String normalize(String text) {
+        return Normalizer
+                .normalize(text, Normalizer.Form.NFD)
+                .replaceAll(Regex.nonAscii, "")
+                .toLowerCase();
+    }
+
     public void addDocument(Player player) {
-        int docID = documentID++;
-        documents.put(docID, player);
+        int docId = DOCUMENT_ID++;
+        documents.put(docId, player);
 
-        String[] words = player.getName().split(" ");
+        String[] words = tokenize(normalize(player.getName()));
         for (String word : words) {
-            String key = Normalizer
-                    .normalize(word, Normalizer.Form.NFD)
-                    .replaceAll(Regex.nonAscii, "")
-                    .toLowerCase();
-
-            if (index.containsKey(key)) {
-                ArrayList<Integer> docIds = index.get(key);
-                if (!docIds.contains(docID)) {
-                    docIds.add(docID);
+            if (index.containsKey(word)) {
+                ArrayList<Integer> docIds = index.get(word);
+                if (!docIds.contains(docId)) {
+                    docIds.add(docId);
                 }
             } else {
                 ArrayList<Integer> docIds = new ArrayList<>();
-                docIds.add(docID);
-                index.put(key, docIds);
+                docIds.add(docId);
+                index.put(word, docIds);
             }
         }
+    }
+
+    // TODO: remake this method
+    public ArrayList<Player> search(String query) {
+        ArrayList<Integer> docIds = new ArrayList<>();
+        String[] words = tokenize(normalize(query));
+
+        for (String word : words) {
+            if (index.containsKey(word)) {
+                ArrayList<Integer> ids = index.get(word);
+                for (Integer id : ids) {
+                    if (!docIds.contains(id)) {
+                        docIds.add(id);
+                    }
+                }
+            }
+        }
+
+        ArrayList<Player> results = new ArrayList<>();
+        for (Integer docId : docIds) {
+            results.add(documents.get(docId));
+        }
+
+        return results;
     }
 
     public void print() {
@@ -48,4 +80,5 @@ public class InvertedIndex {
             System.out.println(id + "\n" + documents.get(id));
         }
     }
+
 }

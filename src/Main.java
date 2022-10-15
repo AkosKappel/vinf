@@ -1,5 +1,7 @@
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 
@@ -35,14 +37,14 @@ public class Main {
         invertedIndex.print();
 
         // print players
-        invertedIndex.printDocuments();
+//        invertedIndex.printDocuments();
 
 //        tests(players);
 
         System.out.println("Found " + players.size() + " players");
         System.out.println("Time: " + duration / 1_000_000 + "ms");
 
-//        runApplication();
+        runApplication();
     }
 
     private static void tests(ArrayList<Player> players) {
@@ -80,29 +82,37 @@ public class Main {
         boolean running = true;
         while (running) {
             System.out.print("Enter a search query: ");
-            String[] query = scanner.nextLine().split(" ");
+            String[] args = scanner.nextLine().split(" ");
 
-            switch (query[0]) {
+            switch (args[0]) {
                 case "help" -> {
                     System.out.println("help - show this message");
                     System.out.println("search [names...] - search for players");
                     System.out.println("exit - exit the program");
                 }
                 case "search" -> {
-                    if (query.length < 2) {
+                    if (args.length < 2) {
                         System.out.println("Please enter a search query");
                         continue;
                     }
 
-                    for (int i = 1; i < query.length; i++) {
-                        System.out.println(query[i]);
+                    String query = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+                    ArrayList<Player> results = invertedIndex.search(query);
+
+                    if (results.size() == 0) {
+                        System.out.println("No results found");
+                    } else {
+                        System.out.println("Found " + results.size() + " results");
+                        for (Player player : results) {
+                            System.out.println(player);
+                        }
                     }
                 }
                 case "player" -> {
                     System.out.println("Enter player name: ");
                 }
                 case "exit" -> running = false;
-                default -> System.out.println("Unknown command: " + query[0]);
+                default -> System.out.println("Unknown command: " + args[0]);
             }
         }
     }

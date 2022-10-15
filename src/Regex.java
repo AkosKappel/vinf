@@ -3,6 +3,8 @@ import java.util.regex.Pattern;
 public class Regex {
     public static final String digits = "\\d+";
     public static final String nonAscii = "[^\\p{ASCII}]";
+    public static final String specialCharacter = "[^\\p{L} 0-9]";
+    public static final String punctuation = "\\p{P}";
     public static final Pattern pageStartPattern = Pattern.compile(
             "<page>"
     );
@@ -28,7 +30,7 @@ public class Regex {
             "}}"
     );
     public static final Pattern categorySoccerPlayerPattern = Pattern.compile(
-            "\\[\\[Category:.*Soccer player.*]]", Pattern.CASE_INSENSITIVE
+            "\\[\\[Category:.*Soccer *player.*]]", Pattern.CASE_INSENSITIVE
     );
     public static final Pattern wikiLinkPattern = Pattern.compile(
             "\\[\\[([^]|]+)\\|?([^]|]*)]]"
