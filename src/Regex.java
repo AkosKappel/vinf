@@ -1,6 +1,8 @@
 import java.util.regex.Pattern;
 
 public class Regex {
+    public static final String digits = "\\d+";
+    public static final String nonAscii = "[^\\p{ASCII}]";
     public static final Pattern pageStartPattern = Pattern.compile(
             "<page>"
     );

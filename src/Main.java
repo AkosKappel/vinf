@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 
 public class Main {
@@ -14,6 +15,7 @@ public class Main {
             "enwiki-latest-pages-articles4.xml",
             "enwiki-latest-pages-articles5.xml",
     };
+    private static final InvertedIndex invertedIndex = new InvertedIndex();
 
     public static void main(String[] args) {
         String filePath = wikipediaFolder + xmlFiles[2];
@@ -24,14 +26,23 @@ public class Main {
         long endTime = System.nanoTime();
         long duration = (endTime - startTime);
 
-        // print results
+        // build inverted index
         for (Player player : players) {
-            System.out.println(player);
+            invertedIndex.addDocument(player);
         }
+
+        // print inverted index
+        invertedIndex.print();
+
+        // print players
+        invertedIndex.printDocuments();
+
+//        tests(players);
+
         System.out.println("Found " + players.size() + " players");
         System.out.println("Time: " + duration / 1_000_000 + "ms");
 
-        tests(players);
+//        runApplication();
     }
 
     private static void tests(ArrayList<Player> players) {
@@ -59,6 +70,40 @@ public class Main {
             System.out.println(p1.getName() + " played with " + p3.getName() + " at " + p1.getPlayedAtWith(p3));
         } else {
             System.out.println(p1.getName() + " did not play with " + p3.getName());
+        }
+    }
+
+    // TODO: implement input for command line
+    private static void runApplication() {
+        Scanner scanner = new Scanner(System.in);
+
+        boolean running = true;
+        while (running) {
+            System.out.print("Enter a search query: ");
+            String[] query = scanner.nextLine().split(" ");
+
+            switch (query[0]) {
+                case "help" -> {
+                    System.out.println("help - show this message");
+                    System.out.println("search [names...] - search for players");
+                    System.out.println("exit - exit the program");
+                }
+                case "search" -> {
+                    if (query.length < 2) {
+                        System.out.println("Please enter a search query");
+                        continue;
+                    }
+
+                    for (int i = 1; i < query.length; i++) {
+                        System.out.println(query[i]);
+                    }
+                }
+                case "player" -> {
+                    System.out.println("Enter player name: ");
+                }
+                case "exit" -> running = false;
+                default -> System.out.println("Unknown command: " + query[0]);
+            }
         }
     }
 

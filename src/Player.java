@@ -98,7 +98,7 @@ public class Player extends Page {
     }
 
     public void updateYearJoined(int clubIndex, String yearJoined, ClubType type) {
-        if (yearJoined == null || !yearJoined.matches("\\d+")) return;
+        if (yearJoined == null || !yearJoined.matches(Regex.digits)) return;
 
         ArrayList<ClubHistory> clubListToUpdate = getClubsByType(type);
         if (clubListToUpdate == null) return;
@@ -121,7 +121,7 @@ public class Player extends Page {
         }
 
         ClubHistory clubToUpdate = clubListToUpdate.get(clubIndex);
-        if (yearLeft == null || !yearLeft.matches("\\d+")) {
+        if (yearLeft == null || !yearLeft.matches(Regex.digits)) {
             clubToUpdate.setYearLeft(clubToUpdate.getYearJoined());
         } else {
             int year = Integer.parseInt(yearLeft);
@@ -132,7 +132,6 @@ public class Player extends Page {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Page ").append(id).append(" - ").append(title).append('\n');
         sb.append(name).append('\n');
         if (!youthClubs.isEmpty()) {
             sb.append("\tYouth Clubs:\n");

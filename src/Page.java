@@ -4,12 +4,9 @@ import java.io.StringReader;
 import java.util.regex.Matcher;
 
 public abstract class Page {
-    long id;
     String title;
-    private static long pageID = 0;
 
     protected Page(String title) {
-        this.id = pageID++;
         this.title = title;
     }
 
@@ -77,4 +74,11 @@ public abstract class Page {
         }
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }
