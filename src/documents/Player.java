@@ -3,23 +3,19 @@ package documents;
 import utils.Regex;
 
 import java.util.ArrayList;
-import java.util.regex.Matcher;
 
-public class Player extends Page {
+public class Player extends Person {
 
-    private String name;
     private ArrayList<ClubHistory> youthClubs;
     private ArrayList<ClubHistory> collegeClubs;
-    private ArrayList<ClubHistory> clubs;
+    private ArrayList<ClubHistory> professionalClubs;
     private ArrayList<ClubHistory> nationalTeams;
 
     public Player(String title) {
         super(title);
-        Matcher nameMatcher = Regex.playerNamePattern.matcher(title);
-        this.name = nameMatcher.find() ? nameMatcher.group(1).trim() : title;
         this.youthClubs = new ArrayList<>();
         this.collegeClubs = new ArrayList<>();
-        this.clubs = new ArrayList<>();
+        this.professionalClubs = new ArrayList<>();
         this.nationalTeams = new ArrayList<>();
     }
 
@@ -82,13 +78,13 @@ public class Player extends Page {
         return switch (type) {
             case YOUTH -> youthClubs;
             case COLLEGE -> collegeClubs;
-            case PROFESSIONAL -> clubs;
+            case PROFESSIONAL -> professionalClubs;
             case NATIONAL -> nationalTeams;
         };
     }
 
     public boolean hasClubHistory() {
-        return !youthClubs.isEmpty() || !collegeClubs.isEmpty() || !clubs.isEmpty() || !nationalTeams.isEmpty();
+        return !youthClubs.isEmpty() || !collegeClubs.isEmpty() || !professionalClubs.isEmpty() || !nationalTeams.isEmpty();
     }
 
     public void updateClubName(int clubIndex, String clubName, ClubType type) {
@@ -136,7 +132,7 @@ public class Player extends Page {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(name).append('\n');
+        sb.append(getName()).append('\n');
         if (!youthClubs.isEmpty()) {
             sb.append("\tYouth Clubs:\n");
             for (ClubHistory club : youthClubs) {
@@ -149,9 +145,9 @@ public class Player extends Page {
                 sb.append("\t\t").append(club).append('\n');
             }
         }
-        if (!clubs.isEmpty()) {
-            sb.append("\tClubs:\n");
-            for (ClubHistory club : clubs) {
+        if (!professionalClubs.isEmpty()) {
+            sb.append("\tProfessional clubs:\n");
+            for (ClubHistory club : professionalClubs) {
                 sb.append("\t\t").append(club).append('\n');
             }
         }
@@ -162,14 +158,6 @@ public class Player extends Page {
             }
         }
         return sb.toString();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public ArrayList<ClubHistory> getYouthClubs() {
@@ -188,12 +176,12 @@ public class Player extends Page {
         this.collegeClubs = collegeClubs;
     }
 
-    public ArrayList<ClubHistory> getClubs() {
-        return clubs;
+    public ArrayList<ClubHistory> getProfessionalClubs() {
+        return professionalClubs;
     }
 
-    public void setClubs(ArrayList<ClubHistory> clubs) {
-        this.clubs = clubs;
+    public void setProfessionalClubs(ArrayList<ClubHistory> professionalClubs) {
+        this.professionalClubs = professionalClubs;
     }
 
     public ArrayList<ClubHistory> getNationalTeams() {

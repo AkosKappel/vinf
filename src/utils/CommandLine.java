@@ -51,7 +51,7 @@ public final class CommandLine {
             return;
         }
 
-        String query = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+        String query = String.join(" ", args);
         ArrayList<Player> results = invertedIndex.search(query);
 
         if (results.size() == 0) {

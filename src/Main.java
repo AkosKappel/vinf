@@ -40,7 +40,7 @@ public class Main {
         // print players
 //        invertedIndex.printDocuments();
 
-//        tests(players);
+        tests(players);
 
         System.out.println("Found " + players.size() + " players");
         System.out.println("Time: " + duration / 1_000_000 + "ms");
@@ -54,9 +54,9 @@ public class Main {
         Player p2 = players.get(11);
         Player p3 = players.get(0);
 
-        ClubHistory c1 = p1.getClubs().get(0);
-        ClubHistory c2 = p2.getClubs().get(0);
-        ClubHistory c3 = p3.getClubs().get(0);
+        ClubHistory c1 = p1.getProfessionalClubs().get(0);
+        ClubHistory c2 = p2.getProfessionalClubs().get(0);
+        ClubHistory c3 = p3.getProfessionalClubs().get(0);
 
         String ans = p1.yearsOverlap(c1, c2) ? "" : " don't";
         System.out.println("Years " + c1.getYearJoined() + "-" + c1.getYearLeft() + ans + " overlap with " + c2.getYearJoined() + "-" + c2.getYearLeft());
