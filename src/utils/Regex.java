@@ -1,10 +1,19 @@
+package utils;
+
 import java.util.regex.Pattern;
 
-public class Regex {
+public final class Regex {
+    private Regex() {
+        throw new UnsupportedOperationException("Cannot instantiate utils.Regex class");
+    }
+
+    // regex strings
     public static final String digits = "\\d+";
     public static final String nonAscii = "[^\\p{ASCII}]";
     public static final String specialCharacter = "[^\\p{L} 0-9]";
     public static final String punctuation = "\\p{P}";
+
+    // regex patterns
     public static final Pattern pageStartPattern = Pattern.compile(
             "<page>"
     );

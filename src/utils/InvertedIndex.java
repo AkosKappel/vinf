@@ -1,3 +1,8 @@
+package utils;
+
+import documents.Player;
+import utils.Regex;
+
 import java.text.Normalizer;
 import java.util.*;
 

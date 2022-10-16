@@ -1,8 +1,9 @@
+import documents.*;
+import utils.*;
+
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 
 public class Main {
@@ -44,7 +45,8 @@ public class Main {
         System.out.println("Found " + players.size() + " players");
         System.out.println("Time: " + duration / 1_000_000 + "ms");
 
-//        runApplication();
+        CommandLine commandLine = new CommandLine(invertedIndex);
+        commandLine.run();
     }
 
     private static void tests(ArrayList<Player> players) {
@@ -80,67 +82,6 @@ public class Main {
 
         System.out.println(invertedIndex.intersect(list1, list2));
         System.out.println(invertedIndex.intersect(list1, list2, list3));
-
-    }
-
-    private static void showHelp() {
-        System.out.println("Commands:");
-        System.out.println("  help - show this message");
-        System.out.println("  search [names...] - search for players");
-        System.out.println("  show [index|documents] - print inverted index or parsed documents");
-        System.out.println("  player [index] - print player at index");
-        System.out.println("  exit - exit the application");
-    }
-
-    // TODO: update application commands
-    private static void runApplication() {
-        Scanner scanner = new Scanner(System.in);
-
-        boolean running = true;
-        while (running) {
-            System.out.print("Enter a search query: ");
-            String[] args = scanner.nextLine().split(" ");
-
-            switch (args[0]) {
-                case "help" -> showHelp();
-                case "search" -> {
-                    if (args.length < 2) {
-                        System.out.println("Missing argument");
-                        showHelp();
-                        continue;
-                    }
-
-                    String query = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-                    ArrayList<Player> results = invertedIndex.search(query);
-
-                    if (results.size() == 0) {
-                        System.out.println("No results found");
-                    } else {
-                        System.out.println("Found " + results.size() + " results");
-                        for (Player player : results) {
-                            System.out.println(player);
-                        }
-                    }
-                }
-                case "show" -> {
-                    if (args.length < 2) {
-                        System.out.println("Missing argument");
-                        showHelp();
-                        continue;
-                    }
-
-                    switch (args[1]) {
-                        case "index" -> invertedIndex.print();
-                        case "documents" -> invertedIndex.printDocuments();
-                    }
-                }
-                case "player" -> {
-                    System.out.println("Enter player name: ");
-                }
-                case "exit" -> running = false;
-                default -> System.out.println("Unknown command: " + args[0]);
-            }
-        }
     }
 
     private static ArrayList<Player> parseFile(String filePath) {

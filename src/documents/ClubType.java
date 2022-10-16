@@ -1,3 +1,5 @@
+package documents;
+
 public enum ClubType {
     YOUTH,
     COLLEGE,

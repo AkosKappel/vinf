@@ -1,3 +1,5 @@
+package documents;
+
 public class ClubHistory {
     private String clubName;
     private int yearJoined;
