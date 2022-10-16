@@ -23,23 +23,17 @@ public final class Regex {
     public static final Pattern titlePattern = Pattern.compile(
             "<title>(.*)</title>"
     );
-    public static final Pattern infoboxPattern = Pattern.compile(
-            "\\{\\{Infobox ?([\\w .-]*)"
-    );
     public static final Pattern infoboxPersonPattern = Pattern.compile(
-            "\\{\\{Infobox ?person"
+            "\\{\\{Infobox person"
     );
     public static final Pattern infoboxFootballBiographyPattern = Pattern.compile(
-            "\\{\\{Infobox ?football biography"
+            "\\{\\{Infobox football biography"
     );
     public static final Pattern bracketsStartPattern = Pattern.compile(
             "\\{\\{"
     );
     public static final Pattern bracketsEndPattern = Pattern.compile(
             "}}"
-    );
-    public static final Pattern categorySoccerPlayerPattern = Pattern.compile(
-            "\\[\\[Category:.*Soccer *player.*]]", Pattern.CASE_INSENSITIVE
     );
     public static final Pattern wikiLinkPattern = Pattern.compile(
             "\\[\\[([^]|]+)\\|?([^]|]*)]]"

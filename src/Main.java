@@ -103,16 +103,21 @@ public class Main {
                     boolean isSoccerPlayer = false;
 
                     do {
-                        Matcher categoryMatcher = Regex.categorySoccerPlayerPattern.matcher(line);
-                        if (!isSoccerPlayer && categoryMatcher.find()) {
+                        if (!isSoccerPlayer && Regex.infoboxFootballBiographyPattern.matcher(line).find()) {
                             isSoccerPlayer = true;
                         }
 
-                        // read next line of page
+                        // add line to page
                         pageBuilder.append(line);
                         pageBuilder.append("\n");
+
+                        // read next line of page
                         line = reader.readLine();
+
+                        // read until </page> is found
                     } while (!Regex.pageEndPattern.matcher(line).find());
+
+                    // add last line of page
                     pageBuilder.append(line);
                     pageBuilder.append("\n");
 
