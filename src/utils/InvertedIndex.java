@@ -1,14 +1,13 @@
 package utils;
 
-import documents.Player;
-import utils.Regex;
+import documents.Person;
 
 import java.text.Normalizer;
 import java.util.*;
 
 public class InvertedIndex {
     private final HashMap<String, ArrayList<Integer>> index;
-    private final HashMap<Integer, Player> documents;
+    private final HashMap<Integer, Person> documents;
 
     private static int DOCUMENT_ID = 0;
 
@@ -30,11 +29,11 @@ public class InvertedIndex {
                 .toLowerCase();
     }
 
-    public void addDocument(Player player) {
+    public void addDocument(Person person) {
         int docId = DOCUMENT_ID++;
-        documents.put(docId, player);
+        documents.put(docId, person);
 
-        String[] words = tokenize(normalize(player.getName()));
+        String[] words = tokenize(normalize(person.getName()));
         for (String word : words) {
             if (index.containsKey(word)) {
                 ArrayList<Integer> docIds = index.get(word);
@@ -50,7 +49,7 @@ public class InvertedIndex {
     }
 
     // TODO: remake this method
-    public ArrayList<Player> search(String query) {
+    public ArrayList<Person> search(String query) {
         ArrayList<Integer> docIds = new ArrayList<>();
         String[] words = tokenize(normalize(query));
 
@@ -65,7 +64,7 @@ public class InvertedIndex {
             }
         }
 
-        ArrayList<Player> results = new ArrayList<>();
+        ArrayList<Person> results = new ArrayList<>();
         for (Integer docId : docIds) {
             results.add(documents.get(docId));
         }

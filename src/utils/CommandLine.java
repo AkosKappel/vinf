@@ -1,6 +1,6 @@
 package utils;
 
-import documents.Player;
+import documents.Person;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,56 +26,78 @@ public final class CommandLine {
             String[] args = Arrays.copyOfRange(input, 1, input.length);
 
             switch (command) {
-                case "help" -> help();
-                case "search" -> search(args);
-                case "show" -> show(args);
-                case "exit" -> running = false;
+                case "-h", "help" -> help();
+                case "-s", "search" -> search(args);
+                case "-d", "display", "show" -> display(args);
+                case "-t", "teammates" -> teammates(args);
+                case "-q", "quit", "exit" -> running = false;
                 default -> System.out.println("Unknown command: " + command);
             }
         }
-
     }
 
     private void help() {
         System.out.println("Commands:");
         System.out.println("  help - show this message");
         System.out.println("  search [names...] - search for players");
-        System.out.println("  show [index|documents] - print inverted index or parsed documents");
+        System.out.println("  display [index|documents] - print inverted index or parsed documents");
+        System.out.println("  teammates [player1], [player2] - print teammates of a player");
         System.out.println("  exit - exit the application");
     }
 
     private void search(String[] args) {
         if (args.length < 1) {
-            System.out.println("Missing argument");
-            help();
+            System.out.println("Missing argument!");
+            System.out.println("  Usage: search [names...]");
             return;
         }
 
         String query = String.join(" ", args);
-        ArrayList<Player> results = invertedIndex.search(query);
+        ArrayList<Person> results = invertedIndex.search(query);
 
         if (results.size() == 0) {
             System.out.println("No results found");
         } else {
             System.out.println("Found " + results.size() + " results");
-            for (Player player : results) {
-                System.out.println(player);
+            for (Person person : results) {
+                System.out.println(person);
             }
         }
     }
 
-    private void show(String[] args) {
+    private void display(String[] args) {
         if (args.length < 1) {
-            System.out.println("Missing argument");
-            help();
+            System.out.println("Missing argument!");
+            System.out.println("  Usage: show [index|documents]");
             return;
         }
 
-        switch (args[0]) {
+        String arg = args[0];
+        switch (arg) {
             case "index" -> invertedIndex.print();
             case "documents" -> invertedIndex.printDocuments();
-            default -> System.out.println("Unknown argument: " + args[0]);
+            default -> System.out.println("Unknown argument: " + arg);
         }
+    }
+
+    private void teammates(String[] args) {
+        if (args.length == 0) {
+            System.out.println("Missing argument!");
+            System.out.println("  Usage: teammates [player1], [player2]");
+            return;
+        }
+
+        String[] players = String.join(" ", args).split(",");
+        if (players.length != 2) {
+            System.out.println("Invalid argument!");
+            System.out.println("  Usage: teammates [player1], [player2]");
+            return;
+        }
+
+        String player1 = players[0].trim();
+        String player2 = players[1].trim();
+
+        // TODO: implement teammates command
     }
 
 }

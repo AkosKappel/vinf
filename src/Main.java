@@ -46,7 +46,7 @@ public class Main {
         System.out.println("Time: " + duration / 1_000_000 + "ms");
 
         CommandLine commandLine = new CommandLine(invertedIndex);
-        commandLine.run();
+//        commandLine.run();
     }
 
     private static void tests(ArrayList<Player> players) {
