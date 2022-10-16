@@ -48,24 +48,21 @@ public class InvertedIndex {
         }
     }
 
-    // TODO: remake this method
     public ArrayList<Person> search(String query) {
-        ArrayList<Integer> docIds = new ArrayList<>();
         String[] words = tokenize(normalize(query));
 
+        ArrayList<ArrayList<Integer>> postingLists = new ArrayList<>();
         for (String word : words) {
             if (index.containsKey(word)) {
-                ArrayList<Integer> ids = index.get(word);
-                for (Integer id : ids) {
-                    if (!docIds.contains(id)) {
-                        docIds.add(id);
-                    }
-                }
+                ArrayList<Integer> postingList = index.get(word);
+                postingLists.add(postingList);
             }
         }
 
+        ArrayList<Integer> intersection = intersect(postingLists);
         ArrayList<Person> results = new ArrayList<>();
-        for (Integer docId : docIds) {
+
+        for (Integer docId : intersection) {
             results.add(documents.get(docId));
         }
 
@@ -94,7 +91,28 @@ public class InvertedIndex {
         return intersection;
     }
 
-    public ArrayList<Integer> intersect(ArrayList<Integer>... postingLists) {
+    public ArrayList<Integer> intersect(ArrayList<ArrayList<Integer>> postingLists) {
+        if (postingLists.size() == 0) {
+            return new ArrayList<>();
+        }
+
+        // sort posting lists by size
+        postingLists.sort(Comparator.comparingInt(ArrayList::size));
+
+        // intersect the smallest posting list with the rest
+        ArrayList<Integer> intersection = postingLists.get(0);
+
+        int i = 1;
+        while (i < postingLists.size() && !intersection.isEmpty()) {
+            intersection = intersect(intersection, postingLists.get(i));
+            i++;
+        }
+
+        return intersection;
+    }
+
+    @SafeVarargs
+    public final ArrayList<Integer> intersect(ArrayList<Integer>... postingLists) {
         // sort posting lists by size
         Arrays.sort(postingLists, Comparator.comparingInt(ArrayList::size));
 

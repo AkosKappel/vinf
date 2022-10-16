@@ -40,7 +40,7 @@ public class Main {
         // print players
 //        invertedIndex.printDocuments();
 
-        tests(players);
+//        tests(players);
 
         System.out.println("Found " + players.size() + " players");
         System.out.println("Time: " + duration / 1_000_000 + "ms");
@@ -80,8 +80,13 @@ public class Main {
         ArrayList<Integer> list2 = new ArrayList<>(Arrays.asList(1, 2, 3, 5, 10, 23));
         ArrayList<Integer> list3 = new ArrayList<>(Arrays.asList(1, 2));
 
+        ArrayList<ArrayList<Integer>> lists1 = new ArrayList<>();
+        lists1.add(list1);
+        lists1.add(list2);
+        lists1.add(list3);
+
         System.out.println(invertedIndex.intersect(list1, list2));
-        System.out.println(invertedIndex.intersect(list1, list2, list3));
+        System.out.println(invertedIndex.intersect(lists1));
     }
 
     private static ArrayList<Player> parseFile(String filePath) {

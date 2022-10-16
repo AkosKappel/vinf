@@ -1,6 +1,7 @@
 package utils;
 
 import documents.Person;
+import documents.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,11 +73,12 @@ public final class CommandLine {
             return;
         }
 
-        String arg = args[0];
-        switch (arg) {
-            case "index" -> invertedIndex.print();
-            case "documents" -> invertedIndex.printDocuments();
-            default -> System.out.println("Unknown argument: " + arg);
+        for (String arg : args) {
+            switch (arg) {
+                case "index" -> invertedIndex.print();
+                case "documents" -> invertedIndex.printDocuments();
+                default -> System.out.println("Unknown argument: " + arg);
+            }
         }
     }
 
@@ -94,10 +96,16 @@ public final class CommandLine {
             return;
         }
 
-        String player1 = players[0].trim();
-        String player2 = players[1].trim();
+        Player player1 = (Player) invertedIndex.search(players[0].trim()).get(0);
+        Player player2 = (Player) invertedIndex.search(players[1].trim()).get(0);
 
-        // TODO: implement teammates command
+        boolean wereTeammates = player1.hasPlayedWith(player2);
+
+        if (wereTeammates) {
+            System.out.println(player1.getName() + " and " + player2.getName() + " were teammates at " + player1.getPlayedAtWith(player2));
+        } else {
+            System.out.println(player1.getName() + " and " + player2.getName() + " were never teammates");
+        }
     }
 
 }
