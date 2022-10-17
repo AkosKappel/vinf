@@ -2,20 +2,26 @@ package documents;
 
 public class ClubHistory {
     private String clubName;
-    private int yearJoined;
-    private int yearLeft;
+    private int yearStart;
+    private int yearEnd;
 
     public ClubHistory() {
         this.clubName = null;
-        this.yearJoined = 0;
-        this.yearLeft = 0;
+        this.yearStart = 0;
+        this.yearEnd = 0;
+    }
+
+    public ClubHistory(String clubName, int yearStart, int yearEnd) {
+        this.clubName = clubName;
+        this.yearStart = yearStart;
+        this.yearEnd = yearEnd;
     }
 
     @Override
     public String toString() {
         if (clubName == null) return "";
-        else if (yearJoined == 0) return clubName;
-        else return clubName + " | (" + yearJoined + " - " + yearLeft + ")";
+        else if (yearStart == 0) return clubName;
+        else return clubName + " | (" + yearStart + " - " + yearEnd + ")";
     }
 
     public String getClubName() {
@@ -26,19 +32,19 @@ public class ClubHistory {
         this.clubName = clubName;
     }
 
-    public int getYearJoined() {
-        return yearJoined;
+    public int getYearStart() {
+        return yearStart;
     }
 
-    public void setYearJoined(int yearJoined) {
-        this.yearJoined = yearJoined;
+    public void setYearStart(int yearStart) {
+        this.yearStart = yearStart;
     }
 
-    public int getYearLeft() {
-        return yearLeft;
+    public int getYearEnd() {
+        return yearEnd;
     }
 
-    public void setYearLeft(int yearLeft) {
-        this.yearLeft = yearLeft;
+    public void setYearEnd(int yearEnd) {
+        this.yearEnd = yearEnd;
     }
 }

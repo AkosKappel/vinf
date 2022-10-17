@@ -16,9 +16,17 @@ public class InvertedIndex {
         this.documents = new HashMap<>();
     }
 
+    public InvertedIndex(ArrayList<Person> documents) {
+        this();
+        for (Person document : documents) {
+            addDocument(document);
+        }
+    }
+
     private String[] tokenize(String text) {
         return text
                 .replaceAll(Regex.specialCharacter, "")
+                .trim()
                 .split(" ");
     }
 
@@ -26,7 +34,8 @@ public class InvertedIndex {
         return Normalizer
                 .normalize(text, Normalizer.Form.NFD)
                 .replaceAll(Regex.nonAscii, "")
-                .toLowerCase();
+                .toLowerCase()
+                .trim();
     }
 
     public void addDocument(Person person) {

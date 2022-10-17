@@ -4,13 +4,10 @@ import utils.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.regex.Matcher;
 
 public class Main {
     private static final String wikipediaFolder = "C:\\Users\\kappe\\Downloads\\wikipedia\\";
     private static final String[] xmlFiles = {
-            "wiki-data-partial.xml",
-            "DavidBeckham.xml",
             "soccer-players.xml",
             "enwiki-latest-pages-articles1.xml",
             "enwiki-latest-pages-articles2.xml",
@@ -19,9 +16,10 @@ public class Main {
             "enwiki-latest-pages-articles5.xml",
     };
     private static final InvertedIndex invertedIndex = new InvertedIndex();
+    private static final CommandLine commandLine = new CommandLine(invertedIndex);
 
     public static void main(String[] args) {
-        String filePath = wikipediaFolder + xmlFiles[2];
+        String filePath = wikipediaFolder + xmlFiles[0];
 
         // measure execution time
         long startTime = System.nanoTime();
@@ -45,8 +43,7 @@ public class Main {
         System.out.println("Found " + players.size() + " players");
         System.out.println("Time: " + duration / 1_000_000 + "ms");
 
-        CommandLine commandLine = new CommandLine(invertedIndex);
-//        commandLine.run();
+        commandLine.run();
     }
 
     private static void tests(ArrayList<Player> players) {
@@ -59,22 +56,13 @@ public class Main {
         ClubHistory c3 = p3.getProfessionalClubs().get(0);
 
         String ans = p1.yearsOverlap(c1, c2) ? "" : " don't";
-        System.out.println("Years " + c1.getYearJoined() + "-" + c1.getYearLeft() + ans + " overlap with " + c2.getYearJoined() + "-" + c2.getYearLeft());
+        System.out.println("Years " + c1.getYearStart() + "-" + c1.getYearEnd() + ans + " overlap with " + c2.getYearStart() + "-" + c2.getYearEnd());
 
         ans = p1.yearsOverlap(c1, c3) ? "" : " don't";
-        System.out.println("Years " + c1.getYearJoined() + "-" + c1.getYearLeft() + ans + " overlap with " + c3.getYearJoined() + "-" + c3.getYearLeft());
+        System.out.println("Years " + c1.getYearStart() + "-" + c1.getYearEnd() + ans + " overlap with " + c3.getYearStart() + "-" + c3.getYearEnd());
 
-        if (p1.hasPlayedWith(p2)) {
-            System.out.println(p1.getName() + " played with " + p2.getName() + " at " + p1.getPlayedAtWith(p2));
-        } else {
-            System.out.println(p1.getName() + " did not play with " + p2.getName());
-        }
-
-        if (p1.hasPlayedWith(p3)) {
-            System.out.println(p1.getName() + " played with " + p3.getName() + " at " + p1.getPlayedAtWith(p3));
-        } else {
-            System.out.println(p1.getName() + " did not play with " + p3.getName());
-        }
+        commandLine.teammates(new String[]{p1.getName(), ",", p2.getName()});
+        commandLine.teammates(new String[]{p1.getName(), ",", p3.getName()});
 
         ArrayList<Integer> list1 = new ArrayList<>(Arrays.asList(1, 3, 12, 23));
         ArrayList<Integer> list2 = new ArrayList<>(Arrays.asList(1, 2, 3, 5, 10, 23));

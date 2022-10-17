@@ -49,7 +49,6 @@ public abstract class Page {
         }
 
         if (player != null && player.hasClubHistory()) return player;
-        System.out.println("HERE: " + page);
         return null;
     }
 

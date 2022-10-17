@@ -1,5 +1,6 @@
 package utils;
 
+import documents.ClubHistory;
 import documents.Person;
 import documents.Player;
 
@@ -37,7 +38,7 @@ public final class CommandLine {
         }
     }
 
-    private void help() {
+    public void help() {
         System.out.println("Commands:");
         System.out.println("  help - show this message");
         System.out.println("  search [names...] - search for players");
@@ -46,7 +47,7 @@ public final class CommandLine {
         System.out.println("  exit - exit the application");
     }
 
-    private void search(String[] args) {
+    public void search(String[] args) {
         if (args.length < 1) {
             System.out.println("Missing argument!");
             System.out.println("  Usage: search [names...]");
@@ -66,7 +67,7 @@ public final class CommandLine {
         }
     }
 
-    private void display(String[] args) {
+    public void display(String[] args) {
         if (args.length < 1) {
             System.out.println("Missing argument!");
             System.out.println("  Usage: show [index|documents]");
@@ -76,13 +77,13 @@ public final class CommandLine {
         for (String arg : args) {
             switch (arg) {
                 case "index" -> invertedIndex.print();
-                case "documents" -> invertedIndex.printDocuments();
+                case "docs", "documents" -> invertedIndex.printDocuments();
                 default -> System.out.println("Unknown argument: " + arg);
             }
         }
     }
 
-    private void teammates(String[] args) {
+    public void teammates(String[] args) {
         if (args.length == 0) {
             System.out.println("Missing argument!");
             System.out.println("  Usage: teammates [player1], [player2]");
@@ -91,21 +92,48 @@ public final class CommandLine {
 
         String[] players = String.join(" ", args).split(",");
         if (players.length != 2) {
-            System.out.println("Invalid argument!");
+            System.out.println("Invalid arguments!");
             System.out.println("  Usage: teammates [player1], [player2]");
             return;
         }
 
-        Player player1 = (Player) invertedIndex.search(players[0].trim()).get(0);
-        Player player2 = (Player) invertedIndex.search(players[1].trim()).get(0);
+        for (int i = 0; i < players.length; i++) {
+            players[i] = players[i].trim();
+        }
+
+        ArrayList<Person> results1 = invertedIndex.search(players[0]);
+        if (results1.size() == 0) {
+            System.out.println("No results found for " + players[0]);
+            return;
+        }
+
+        ArrayList<Person> results2 = invertedIndex.search(players[1]);
+        if (results2.size() == 0) {
+            System.out.println("No results found for " + players[1]);
+            return;
+        }
+
+        Player player1 = (Player) results1.get(0);
+        Player player2 = (Player) results2.get(0);
 
         boolean wereTeammates = player1.hasPlayedWith(player2);
 
+        StringBuilder sb = new StringBuilder();
+        sb.append(player1.getName()).append(" and ").append(player2.getName());
+
         if (wereTeammates) {
-            System.out.println(player1.getName() + " and " + player2.getName() + " were teammates at " + player1.getPlayedAtWith(player2));
+            ArrayList<ClubHistory> teammatesHistory = player1.getPlayedAtWith(player2);
+
+            sb.append(" were teammates at:\n");
+            for (ClubHistory history : teammatesHistory) {
+                sb.append("  ").append(history.getClubName()).append(" (")
+                        .append(history.getYearStart()).append(" - ")
+                        .append(history.getYearEnd()).append(")\n");
+            }
         } else {
-            System.out.println(player1.getName() + " and " + player2.getName() + " were never teammates");
+            sb.append(" were never teammates\n");
         }
+        System.out.println(sb);
     }
 
 }

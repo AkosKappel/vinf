@@ -41,38 +41,41 @@ public class Player extends Person {
         return false;
     }
 
-    // TODO: should be a list of clubs, where players played together ?
-    public String getPlayedAtWith(Player player) {
-        String playedAt = getPlayedAtWith(player, ClubType.PROFESSIONAL);
-        if (playedAt != null) return playedAt;
-        playedAt = getPlayedAtWith(player, ClubType.NATIONAL);
-        if (playedAt != null) return playedAt;
-        playedAt = getPlayedAtWith(player, ClubType.COLLEGE);
-        if (playedAt != null) return playedAt;
-        playedAt = getPlayedAtWith(player, ClubType.YOUTH);
-        if (playedAt != null) return playedAt;
-        return "";
+    public ArrayList<ClubHistory> getPlayedAtWith(Player player) {
+        ArrayList<ClubHistory> playedAt = getPlayedAtWith(player, ClubType.PROFESSIONAL);
+        playedAt.addAll(getPlayedAtWith(player, ClubType.NATIONAL));
+        playedAt.addAll(getPlayedAtWith(player, ClubType.COLLEGE));
+        playedAt.addAll(getPlayedAtWith(player, ClubType.YOUTH));
+        return playedAt;
     }
 
-    public String getPlayedAtWith(Player player, ClubType type) {
+    public ArrayList<ClubHistory> getPlayedAtWith(Player player, ClubType type) {
         ArrayList<ClubHistory> clubs = getClubsByType(type);
         ArrayList<ClubHistory> otherClubs = player.getClubsByType(type);
+        ArrayList<ClubHistory> playedAt = new ArrayList<>();
 
         for (ClubHistory club : clubs) {
             for (ClubHistory otherClub : otherClubs) {
                 if (club.getClubName().equals(otherClub.getClubName()) && yearsOverlap(club, otherClub)) {
-                    return club.getClubName();
+                    playedAt.add(new ClubHistory(
+                            club.getClubName(),
+                            Math.max(club.getYearStart(), otherClub.getYearStart()),
+                            Math.min(club.getYearEnd(), otherClub.getYearEnd()))
+                    );
                 }
             }
         }
-        return "";
+
+        return playedAt;
     }
 
     public boolean yearsOverlap(ClubHistory club, ClubHistory otherClub) {
-        if (club.getYearJoined() == 0 || otherClub.getYearJoined() == 0 ||
-                club.getYearLeft() == 0 || otherClub.getYearLeft() == 0) return false;
-        return club.getYearJoined() <= otherClub.getYearLeft() && club.getYearLeft() >= otherClub.getYearJoined();
+        if (club.getYearStart() == 0 || otherClub.getYearStart() == 0 ||
+                club.getYearEnd() == 0 || otherClub.getYearEnd() == 0) return false;
+        return club.getYearStart() <= otherClub.getYearEnd() && club.getYearEnd() >= otherClub.getYearStart();
     }
+
+    // TODO: get overlapping years
 
     private ArrayList<ClubHistory> getClubsByType(ClubType type) {
         return switch (type) {
@@ -109,7 +112,7 @@ public class Player extends Person {
 
         int year = Integer.parseInt(yearJoined);
         ClubHistory clubToUpdate = clubListToUpdate.get(clubIndex);
-        clubToUpdate.setYearJoined(year);
+        clubToUpdate.setYearStart(year);
     }
 
     public void updateYearLeft(int clubIndex, String yearLeft, ClubType type) {
@@ -122,10 +125,10 @@ public class Player extends Person {
 
         ClubHistory clubToUpdate = clubListToUpdate.get(clubIndex);
         if (yearLeft == null || !yearLeft.matches(Regex.digits)) {
-            clubToUpdate.setYearLeft(clubToUpdate.getYearJoined());
+            clubToUpdate.setYearEnd(clubToUpdate.getYearStart());
         } else {
             int year = Integer.parseInt(yearLeft);
-            clubToUpdate.setYearLeft(year);
+            clubToUpdate.setYearEnd(year);
         }
     }
 
