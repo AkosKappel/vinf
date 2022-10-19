@@ -19,6 +19,16 @@ public class Player extends Person {
         this.nationalTeams = new ArrayList<>();
     }
 
+    public boolean hasPlayedAgainst(Player player) {
+        // TODO: implement method
+        return false;
+    }
+
+    public boolean hasPlayedAgainst(Player player, ClubType type) {
+        // TODO: implement method
+        return false;
+    }
+
     public boolean hasPlayedWith(Player player) {
         return hasPlayedWith(player, ClubType.PROFESSIONAL) ||
                 hasPlayedWith(player, ClubType.NATIONAL) ||
@@ -74,8 +84,6 @@ public class Player extends Person {
                 club.getYearEnd() == 0 || otherClub.getYearEnd() == 0) return false;
         return club.getYearStart() <= otherClub.getYearEnd() && club.getYearEnd() >= otherClub.getYearStart();
     }
-
-    // TODO: get overlapping years
 
     private ArrayList<ClubHistory> getClubsByType(ClubType type) {
         return switch (type) {

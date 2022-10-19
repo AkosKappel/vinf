@@ -44,7 +44,7 @@ public final class CommandLine {
         System.out.println("  search [names...] - search for players");
         System.out.println("  display [index|documents] - print inverted index or parsed documents");
         System.out.println("  teammates [player1], [player2] - print teammates of a player");
-        System.out.println("  exit - exit the application");
+        System.out.println("  quit - exit the application");
     }
 
     public void search(String[] args) {

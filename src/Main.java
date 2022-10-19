@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Main {
-    private static final String wikipediaFolder = "C:\\Users\\kappe\\Downloads\\wikipedia\\";
+    private static final String dataFolder = "./data/";
     private static final String[] xmlFiles = {
             "soccer-players.xml",
             "enwiki-latest-pages-articles1.xml",
@@ -19,7 +19,7 @@ public class Main {
     private static final CommandLine commandLine = new CommandLine(invertedIndex);
 
     public static void main(String[] args) {
-        String filePath = wikipediaFolder + xmlFiles[0];
+        String filePath = dataFolder + xmlFiles[0];
 
         // measure execution time
         long startTime = System.nanoTime();
@@ -32,17 +32,13 @@ public class Main {
             invertedIndex.addDocument(player);
         }
 
-        // print inverted index
 //        invertedIndex.print();
-
-        // print players
 //        invertedIndex.printDocuments();
-
 //        tests(players);
+        System.out.println("Found " + players.size() + " players in " + duration / 1_000_000 + " ms");
+//        System.out.println("Time: " + duration / 1_000_000 + "ms");
 
-        System.out.println("Found " + players.size() + " players");
-        System.out.println("Time: " + duration / 1_000_000 + "ms");
-
+        commandLine.help();
         commandLine.run();
     }
 
@@ -77,11 +73,14 @@ public class Main {
         System.out.println(invertedIndex.intersect(lists1));
     }
 
+    private static void parse() {
+        // TODO: parse clubs
+    }
+
     private static ArrayList<Player> parseFile(String filePath) {
         ArrayList<Player> players = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath));
-        ) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 // check if page starts with <page>
