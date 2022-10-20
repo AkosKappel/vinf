@@ -58,9 +58,9 @@ public final class CommandLine {
         ArrayList<Person> results = invertedIndex.search(query);
 
         if (results.size() == 0) {
-            System.out.println("No results found");
+            System.out.println("No results found.");
         } else {
-            System.out.println("Found " + results.size() + " results");
+            System.out.println("Found " + results.size() + " results:");
             for (Person person : results) {
                 System.out.println(person);
             }
@@ -90,31 +90,70 @@ public final class CommandLine {
             return;
         }
 
-        String[] players = String.join(" ", args).split(",");
-        if (players.length != 2) {
+        String[] playersQuery = String.join(" ", args).split(",");
+        if (playersQuery.length != 2) {
             System.out.println("Invalid arguments!");
             System.out.println("  Usage: teammates [player1], [player2]");
             return;
         }
 
-        for (int i = 0; i < players.length; i++) {
-            players[i] = players[i].trim();
+        ArrayList<Person> selectedPlayers = new ArrayList<>();
+        ArrayList<ArrayList<Person>> allResults = new ArrayList<>();
+
+        for (int i = 0; i < playersQuery.length; i++) {
+            playersQuery[i] = playersQuery[i].trim();
+            ArrayList<Person> results = invertedIndex.search(playersQuery[i]);
+
+            if (results.size() == 0) {
+                System.out.println("No results found for '" + playersQuery[i] + "'.");
+                return;
+            }
+
+            allResults.add(results);
         }
 
-        ArrayList<Person> results1 = invertedIndex.search(players[0]);
-        if (results1.size() == 0) {
-            System.out.println("No results found for " + players[0]);
+        for (int i = 0; i < allResults.size(); i++) {
+            ArrayList<Person> foundPlayers = allResults.get(i);
+
+            if (foundPlayers.size() == 1) {
+                selectedPlayers.add(foundPlayers.get(0));
+            } else {
+                System.out.println("Multiple players found  with name '" + playersQuery[i] + "'.");
+                System.out.println("Please select a player by typing in his number:");
+                for (int j = 0; j < foundPlayers.size(); j++) {
+                    System.out.println(j + 1 + " - " + foundPlayers.get(j).getName());
+                }
+
+                // ask user to select a player from the found (multiple) players
+                Scanner choiceScanner = new Scanner(System.in);
+                int choice;
+                while (true) {
+                    System.out.print("> ");
+                    try {
+                        choice = Integer.parseInt(choiceScanner.nextLine()) - 1;
+                    } catch (NumberFormatException e) {
+                        System.out.println("Unknown choice! Please enter a number.");
+                        continue;
+                    }
+                    if (choice < 0 || choice > foundPlayers.size() - 1) {
+                        System.out.println("Invalid choice! Try again.");
+                        continue;
+                    }
+                    break;
+                }
+
+                selectedPlayers.add(foundPlayers.get(choice));
+            }
+        }
+
+        Player player1 = (Player) selectedPlayers.get(0);
+        Player player2 = (Player) selectedPlayers.get(1);
+
+        if (player1.equals(player2)) {
+            System.out.println("You entered the same player twice! Probably this is a mistake.");
+            System.out.println("Please try again and input two different players.");
             return;
         }
-
-        ArrayList<Person> results2 = invertedIndex.search(players[1]);
-        if (results2.size() == 0) {
-            System.out.println("No results found for " + players[1]);
-            return;
-        }
-
-        Player player1 = (Player) results1.get(0);
-        Player player2 = (Player) results2.get(0);
 
         boolean wereTeammates = player1.hasPlayedWith(player2);
 

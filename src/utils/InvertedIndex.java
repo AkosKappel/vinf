@@ -25,7 +25,7 @@ public class InvertedIndex {
 
     private String[] tokenize(String text) {
         return text
-                .replaceAll(Regex.specialCharacter, "")
+                .replaceAll(Regex.specialCharacters, "")
                 .trim()
                 .split(" ");
     }
