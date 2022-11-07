@@ -1,45 +1,53 @@
 import documents.*;
 import utils.*;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 
 public class Main {
     private static final String dataFolder = "./data/";
     private static final String[] xmlFiles = {
             "soccer-players.xml",
-            "enwiki-latest-pages-articles1.xml",
-            "enwiki-latest-pages-articles2.xml",
-            "enwiki-latest-pages-articles3.xml",
-            "enwiki-latest-pages-articles4.xml",
-            "enwiki-latest-pages-articles5.xml",
+//            "enwiki-latest-pages-articles1.xml",
+//            "enwiki-latest-pages-articles2.xml",
+//            "enwiki-latest-pages-articles3.xml",
+//            "enwiki-latest-pages-articles4.xml",
+//            "enwiki-latest-pages-articles5.xml",
     };
+
     private static final InvertedIndex invertedIndex = new InvertedIndex();
     private static final CommandLine commandLine = new CommandLine(invertedIndex);
 
     public static void main(String[] args) {
-        String filePath = dataFolder + xmlFiles[0];
-
-        // measure execution time
+        // measure execution start time
         long startTime = System.nanoTime();
-        ArrayList<Player> players = parseFile(filePath);
+
+        // read all XML files
+        for (String xmlFile : xmlFiles) {
+            String filePath = dataFolder + xmlFile;
+            System.out.println("Parsing " + filePath + " ...");
+
+            // parse XML file
+            ArrayList<Player> players = Parser.parsePlayers(filePath);
+
+            // build inverted index
+            for (Player player : players) {
+                invertedIndex.addDocument(player);
+            }
+        }
+
+        // measure execution end time
         long endTime = System.nanoTime();
         long duration = (endTime - startTime);
-
-        // build inverted index
-        for (Player player : players) {
-            invertedIndex.addDocument(player);
-        }
 
 //        invertedIndex.print();
 //        invertedIndex.printDocuments();
 //        tests(players);
-        System.out.println("Found " + players.size() + " players in " + duration / 1_000_000 + " ms");
-//        System.out.println("Time: " + duration / 1_000_000 + "ms");
+        System.out.println("Found " + invertedIndex.size() + " documents in " + duration / 1_000_000 + " ms");
 
-        commandLine.help();
-        commandLine.run();
+//        commandLine.help();
+//        commandLine.run();
     }
 
     private static void tests(ArrayList<Player> players) {
@@ -71,55 +79,6 @@ public class Main {
 
         System.out.println(invertedIndex.intersect(list1, list2));
         System.out.println(invertedIndex.intersect(lists1));
-    }
-
-    private static void parse() {
-        // TODO: parse clubs
-    }
-
-    private static ArrayList<Player> parseFile(String filePath) {
-        ArrayList<Player> players = new ArrayList<>();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // check if page starts with <page>
-                if (Regex.pageStartPattern.matcher(line).find()) {
-                    // reset page variables
-                    StringBuilder pageBuilder = new StringBuilder();
-                    boolean isSoccerPlayer = false;
-
-                    do {
-                        if (!isSoccerPlayer && Regex.infoboxFootballBiographyPattern.matcher(line).find()) {
-                            isSoccerPlayer = true;
-                        }
-
-                        // add line to page
-                        pageBuilder.append(line);
-                        pageBuilder.append("\n");
-
-                        // read next line of page
-                        line = reader.readLine();
-
-                        // read until </page> is found
-                    } while (!Regex.pageEndPattern.matcher(line).find());
-
-                    // add last line of page
-                    pageBuilder.append(line);
-                    pageBuilder.append("\n");
-
-                    // filter out soccer players
-                    if (isSoccerPlayer) {
-                        Player p = Page.parse(pageBuilder.toString());
-                        if (p != null) players.add(p);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return players;
     }
 
 }

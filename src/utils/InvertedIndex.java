@@ -16,11 +16,8 @@ public class InvertedIndex {
         this.documents = new HashMap<>();
     }
 
-    public InvertedIndex(ArrayList<Person> documents) {
-        this();
-        for (Person document : documents) {
-            addDocument(document);
-        }
+    public int size() {
+        return documents.size();
     }
 
     private String[] tokenize(String text) {
@@ -38,11 +35,17 @@ public class InvertedIndex {
                 .trim();
     }
 
-    public void addDocument(Person person) {
-        int docId = DOCUMENT_ID++;
-        documents.put(docId, person);
+    public void addDocuments(ArrayList<Person> documents) {
+        for (Person document : documents) {
+            addDocument(document);
+        }
+    }
 
-        String[] words = tokenize(normalize(person.getName()));
+    public void addDocument(Person document) {
+        int docId = DOCUMENT_ID++;
+        documents.put(docId, document);
+
+        String[] words = tokenize(normalize(document.getName()));
         for (String word : words) {
             if (index.containsKey(word)) {
                 ArrayList<Integer> docIds = index.get(word);
