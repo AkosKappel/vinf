@@ -1,6 +1,8 @@
 ### Additionally added files by me ###
 .idea
 data/
+Spark/
+src/SparkPlayground/
 
 ### IntelliJ IDEA ###
 out/
