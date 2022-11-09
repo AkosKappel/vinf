@@ -6,20 +6,28 @@ import java.util.regex.Matcher;
 
 public class Club extends Page {
 
-    private String name;
+    private String league;
 
     public Club(String title) {
         super(title);
         Matcher nameMatcher = Regex.textPattern.matcher(title);
         this.name = nameMatcher.find() ? nameMatcher.group(1).trim() : title;
+        this.league = "";
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public String toString() {
+        return name + " (" + league + ")";
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getLeague() {
+        return league;
+    }
+
+    public void setLeague(String league) {
+        if (!league.isEmpty() && !title.equals(league)) {
+            this.league = league;
+        }
     }
 
 }

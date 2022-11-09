@@ -3,8 +3,9 @@ package documents;
 import utils.Regex;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 
-public class Player extends Person {
+public class Player extends Page {
 
     private ArrayList<ClubHistory> youthClubs;
     private ArrayList<ClubHistory> collegeClubs;
@@ -13,6 +14,10 @@ public class Player extends Person {
 
     public Player(String title) {
         super(title);
+
+        Matcher nameMatcher = Regex.textPattern.matcher(title);
+        this.name = nameMatcher.find() ? nameMatcher.group(1).trim() : title;
+
         this.youthClubs = new ArrayList<>();
         this.collegeClubs = new ArrayList<>();
         this.professionalClubs = new ArrayList<>();

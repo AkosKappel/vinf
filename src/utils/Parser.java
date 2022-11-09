@@ -122,10 +122,15 @@ public class Parser {
                 Matcher infoboxMatcher = Regex.infoboxFootballClubPattern.matcher(line);
                 if (infoboxMatcher.find()) {
                     Club club = new Club(title);
+                    String league = "";
 
                     long stack = Regex.bracketsStartPattern.matcher(line).results().count();
                     while (stack > 0) {
-                        // TODO get attributes from infobox
+                        // extract attributes from infobox
+                        Matcher leagueMatcher = Regex.leaguePattern.matcher(line);
+                        if (league.isEmpty() && leagueMatcher.find()) {
+                            league = leagueMatcher.group(1);
+                        }
 
                         // read next line of infobox
                         line = reader.readLine();
@@ -134,6 +139,20 @@ public class Parser {
                         stack -= Regex.bracketsEndPattern.matcher(line).results().count();
                     }
 
+                    // read text
+                    while (league.isEmpty()) {
+                        line = reader.readLine();
+                        if (line == null) break;
+
+                        // find out from the text, in what league does the club play
+                        Matcher leagueMatcher = Regex.clubPattern.matcher(line);
+                        if (leagueMatcher.find()) {
+                            league = leagueMatcher.group(1);
+                            break;
+                        }
+                    }
+
+                    club.setLeague(league);
                     return club;
                 }
             }

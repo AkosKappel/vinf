@@ -25,7 +25,7 @@ public class Main {
         long startTime = System.nanoTime();
 
         // read all XML files
-//        indexClubs();
+        indexClubs();
         indexPlayers();
 
         // measure execution end time
@@ -34,11 +34,10 @@ public class Main {
 
 //        invertedIndex.print();
 //        invertedIndex.printDocuments();
-//        tests(players);
         System.out.println("Found " + invertedIndex.size() + " documents in " + duration / 1_000_000 + " ms");
 
-//        commandLine.help();
-//        commandLine.run();
+        commandLine.help();
+        commandLine.run();
     }
 
     private static void indexClubs() {
@@ -50,9 +49,9 @@ public class Main {
             ArrayList<Club> clubs = Parser.parseClubs(filePath);
 
             // build inverted index
-            for (Page club : clubs) {
-                System.out.println("  " + club.getTitle());
-//                invertedIndex.addDocument(club);
+            for (Club club : clubs) {
+                System.out.println(club);
+                invertedIndex.addDocument(club);
             }
         }
     }
@@ -64,15 +63,14 @@ public class Main {
 
             // parse XML file
             ArrayList<Player> players = Parser.parsePlayers(filePath);
+//            testPlayers(players);
 
             // build inverted index
-            for (Player player : players) {
-                invertedIndex.addDocument(player);
-            }
+            invertedIndex.addDocuments(players);
         }
     }
 
-    private static void tests(ArrayList<Player> players) {
+    private static void testPlayers(ArrayList<Player> players) {
         Player p1 = players.get(10);
         Player p2 = players.get(11);
         Player p3 = players.get(0);

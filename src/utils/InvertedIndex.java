@@ -1,13 +1,14 @@
 package utils;
 
-import documents.Person;
+import documents.Page;
 
 import java.text.Normalizer;
 import java.util.*;
 
 public class InvertedIndex {
+
     private final HashMap<String, ArrayList<Integer>> index;
-    private final HashMap<Integer, Person> documents;
+    private final HashMap<Integer, Page> documents;
 
     private static int DOCUMENT_ID = 0;
 
@@ -35,13 +36,13 @@ public class InvertedIndex {
                 .trim();
     }
 
-    public void addDocuments(ArrayList<Person> documents) {
-        for (Person document : documents) {
+    public void addDocuments(ArrayList<? extends Page> documents) {
+        for (Page document : documents) {
             addDocument(document);
         }
     }
 
-    public void addDocument(Person document) {
+    public void addDocument(Page document) {
         int docId = DOCUMENT_ID++;
         documents.put(docId, document);
 
@@ -60,7 +61,7 @@ public class InvertedIndex {
         }
     }
 
-    public ArrayList<Person> search(String query) {
+    public ArrayList<Page> search(String query) {
         String[] words = tokenize(normalize(query));
 
         ArrayList<ArrayList<Integer>> postingLists = new ArrayList<>();
@@ -72,7 +73,7 @@ public class InvertedIndex {
         }
 
         ArrayList<Integer> intersection = intersect(postingLists);
-        ArrayList<Person> results = new ArrayList<>();
+        ArrayList<Page> results = new ArrayList<>();
 
         for (Integer docId : intersection) {
             results.add(documents.get(docId));

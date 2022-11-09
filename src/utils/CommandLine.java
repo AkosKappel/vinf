@@ -1,7 +1,7 @@
 package utils;
 
 import documents.ClubHistory;
-import documents.Person;
+import documents.Page;
 import documents.Player;
 
 import java.util.ArrayList;
@@ -55,14 +55,14 @@ public final class CommandLine {
         }
 
         String query = String.join(" ", args);
-        ArrayList<Person> results = invertedIndex.search(query);
+        ArrayList<Page> results = invertedIndex.search(query);
 
         if (results.size() == 0) {
             System.out.println("No results found.");
         } else {
             System.out.println("Found " + results.size() + " results:");
-            for (Person person : results) {
-                System.out.println(person);
+            for (Page page : results) {
+                System.out.println(page);
             }
         }
     }
@@ -97,12 +97,12 @@ public final class CommandLine {
             return;
         }
 
-        ArrayList<Person> selectedPlayers = new ArrayList<>();
-        ArrayList<ArrayList<Person>> allResults = new ArrayList<>();
+        ArrayList<Page> selectedPlayers = new ArrayList<>();
+        ArrayList<ArrayList<Page>> allResults = new ArrayList<>();
 
         for (int i = 0; i < playersQuery.length; i++) {
             playersQuery[i] = playersQuery[i].trim();
-            ArrayList<Person> results = invertedIndex.search(playersQuery[i]);
+            ArrayList<Page> results = invertedIndex.search(playersQuery[i]);
 
             if (results.size() == 0) {
                 System.out.println("No results found for '" + playersQuery[i] + "'.");
@@ -113,7 +113,7 @@ public final class CommandLine {
         }
 
         for (int i = 0; i < allResults.size(); i++) {
-            ArrayList<Person> foundPlayers = allResults.get(i);
+            ArrayList<Page> foundPlayers = allResults.get(i);
 
             if (foundPlayers.size() == 1) {
                 selectedPlayers.add(foundPlayers.get(0));
@@ -121,7 +121,7 @@ public final class CommandLine {
                 System.out.println("Multiple players found  with name '" + playersQuery[i] + "'.");
                 System.out.println("Please select a player by typing in his number:");
                 for (int j = 0; j < foundPlayers.size(); j++) {
-                    System.out.println(j + 1 + " - " + foundPlayers.get(j).getName());
+                    System.out.println(j + 1 + " - " + ((Player) foundPlayers.get(j)).getName());
                 }
 
                 // ask user to select a player from the found (multiple) players

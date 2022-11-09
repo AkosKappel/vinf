@@ -7,14 +7,14 @@ public final class Regex {
         throw new UnsupportedOperationException("Cannot instantiate utils.Regex class");
     }
 
-    // raw regex strings
+    // Raw regex strings
     public static final String digits = "\\d+";
     public static final String nonAscii = "[^\\p{ASCII}]";
     public static final String specialCharacters = "[^\\p{L} 0-9]";
     public static final String punctuation = "\\p{P}";
     public static final String delimiterCharacters = " .,;:?!+-*=~_\"'`()[]{}<>/\\|^&%#@$";
 
-    // compiled regex patterns
+    // Compiled regex patterns
     public static final Pattern pageStartPattern = Pattern.compile("<page>");
     public static final Pattern pageEndPattern = Pattern.compile("</page>");
     public static final Pattern titlePattern = Pattern.compile("<title>(.*)</title>");
@@ -22,6 +22,9 @@ public final class Regex {
     public static final Pattern bracketsEndPattern = Pattern.compile("}}");
     public static final Pattern wikiLinkPattern = Pattern.compile("\\[\\[([^]|]+)\\|?([^]|]*)]]");
     public static final Pattern textPattern = Pattern.compile("([\\p{L}\\d\\]\\[ .-]*).*");
+    public static final Pattern clubPattern = Pattern.compile(
+            "(?:play|compete)s? in (?:the )?\\[\\[([^]|]+)\\|?([^]|]*)]]"
+    );
 
     // Infobox patterns
     public static final Pattern infoboxPersonPattern = Pattern.compile(
@@ -35,6 +38,9 @@ public final class Regex {
     );
 
     // Infobox content patterns
+    public static final Pattern leaguePattern = Pattern.compile(
+            "\\| *league *= *([\\p{L}\\d .-]*)"
+    );
     public static final Pattern namePattern = Pattern.compile(
             "\\| *name *= *([\\p{L}\\d\\]\\[ .-]*)"
     );

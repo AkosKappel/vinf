@@ -1,17 +1,17 @@
 package documents;
 
-import utils.Regex;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.regex.Matcher;
-
 public abstract class Page {
+
     String title;
+    String name;
 
     protected Page(String title) {
+        this(title, "");
+    }
+
+    protected Page(String title, String name) {
         this.title = title;
+        this.name = name;
     }
 
     public String getTitle() {
@@ -21,4 +21,13 @@ public abstract class Page {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
 }
