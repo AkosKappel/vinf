@@ -9,6 +9,7 @@ public class Main {
     private static final String dataFolder = "./data/";
     private static final String[] xmlFiles = {
             "soccer-players.xml",
+            "soccer-clubs.xml",
 //            "enwiki-latest-pages-articles1.xml",
 //            "enwiki-latest-pages-articles2.xml",
 //            "enwiki-latest-pages-articles3.xml",
@@ -24,18 +25,8 @@ public class Main {
         long startTime = System.nanoTime();
 
         // read all XML files
-        for (String xmlFile : xmlFiles) {
-            String filePath = dataFolder + xmlFile;
-            System.out.println("Parsing " + filePath + " ...");
-
-            // parse XML file
-            ArrayList<Player> players = Parser.parsePlayers(filePath);
-
-            // build inverted index
-            for (Player player : players) {
-                invertedIndex.addDocument(player);
-            }
-        }
+//        indexClubs();
+        indexPlayers();
 
         // measure execution end time
         long endTime = System.nanoTime();
@@ -48,6 +39,37 @@ public class Main {
 
 //        commandLine.help();
 //        commandLine.run();
+    }
+
+    private static void indexClubs() {
+        for (String xmlFile : xmlFiles) {
+            String filePath = dataFolder + xmlFile;
+            System.out.println("Parsing " + filePath + " ...");
+
+            // parse XML file
+            ArrayList<Club> clubs = Parser.parseClubs(filePath);
+
+            // build inverted index
+            for (Page club : clubs) {
+                System.out.println("  " + club.getTitle());
+//                invertedIndex.addDocument(club);
+            }
+        }
+    }
+
+    private static void indexPlayers() {
+        for (String xmlFile : xmlFiles) {
+            String filePath = dataFolder + xmlFile;
+            System.out.println("Parsing " + filePath + " ...");
+
+            // parse XML file
+            ArrayList<Player> players = Parser.parsePlayers(filePath);
+
+            // build inverted index
+            for (Player player : players) {
+                invertedIndex.addDocument(player);
+            }
+        }
     }
 
     private static void tests(ArrayList<Player> players) {
