@@ -34,6 +34,8 @@ public class Main {
 
 //        invertedIndex.print();
 //        invertedIndex.printDocuments();
+//        invertedIndex.printPlayers();
+//        invertedIndex.printClubs();
         System.out.println("Found " + invertedIndex.size() + " documents in " + duration / 1_000_000 + " ms");
 
         commandLine.help();
@@ -50,7 +52,7 @@ public class Main {
 
             // build inverted index
             for (Club club : clubs) {
-                invertedIndex.addDocument(club);
+                invertedIndex.addDocument(club, DocumentType.CLUB);
             }
         }
     }
@@ -65,7 +67,7 @@ public class Main {
 //            testPlayers(players);
 
             // build inverted index
-            invertedIndex.addDocuments(players);
+            invertedIndex.addDocuments(players, DocumentType.PLAYER);
         }
     }
 

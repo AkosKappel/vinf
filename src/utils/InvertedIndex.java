@@ -1,5 +1,6 @@
 package utils;
 
+import documents.DocumentType;
 import documents.Page;
 
 import java.text.Normalizer;
@@ -8,17 +9,27 @@ import java.util.*;
 public class InvertedIndex {
 
     private final HashMap<String, ArrayList<Integer>> index;
-    private final HashMap<Integer, Page> documents;
+    private final HashMap<Integer, Page> playerDocuments;
+    private final HashMap<Integer, Page> clubDocuments;
 
     private static int DOCUMENT_ID = 0;
 
     public InvertedIndex() {
         this.index = new HashMap<>();
-        this.documents = new HashMap<>();
+        this.playerDocuments = new HashMap<>();
+        this.clubDocuments = new HashMap<>();
     }
 
     public int size() {
-        return documents.size();
+        return playerDocuments.size() + clubDocuments.size();
+    }
+
+    public int playerSize() {
+        return playerDocuments.size();
+    }
+
+    public int clubSize() {
+        return clubDocuments.size();
     }
 
     private String[] tokenize(String text) {
@@ -36,15 +47,20 @@ public class InvertedIndex {
                 .trim();
     }
 
-    public void addDocuments(ArrayList<? extends Page> documents) {
+    public void addDocuments(ArrayList<? extends Page> documents, DocumentType type) {
         for (Page document : documents) {
-            addDocument(document);
+            addDocument(document, type);
         }
     }
 
-    public void addDocument(Page document) {
+    public void addDocument(Page document, DocumentType type) {
         int docId = DOCUMENT_ID++;
-        documents.put(docId, document);
+
+        switch (type) {
+            case PLAYER -> playerDocuments.put(docId, document);
+            case CLUB -> clubDocuments.put(docId, document);
+            default -> throw new IllegalArgumentException("Invalid document type: " + type);
+        }
 
         String[] words = tokenize(normalize(document.getName()));
         for (String word : words) {
@@ -62,6 +78,34 @@ public class InvertedIndex {
     }
 
     public ArrayList<Page> search(String query) {
+        ArrayList<Page> results = new ArrayList<>();
+
+        ArrayList<Integer> intersection = processQuery(query);
+        for (Integer docId : intersection) {
+            if (playerDocuments.containsKey(docId)) {
+                results.add(playerDocuments.get(docId));
+            } else if (clubDocuments.containsKey(docId)) {
+                results.add(clubDocuments.get(docId));
+            }
+        }
+
+        return results;
+    }
+
+    public ArrayList<Page> searchPlayers(String query) {
+        ArrayList<Page> results = new ArrayList<>();
+
+        ArrayList<Integer> intersection = processQuery(query);
+        for (Integer docId : intersection) {
+            if (playerDocuments.containsKey(docId)) {
+                results.add(playerDocuments.get(docId));
+            }
+        }
+
+        return results;
+    }
+
+    private ArrayList<Integer> processQuery(String query) {
         String[] words = tokenize(normalize(query));
 
         ArrayList<ArrayList<Integer>> postingLists = new ArrayList<>();
@@ -72,14 +116,7 @@ public class InvertedIndex {
             }
         }
 
-        ArrayList<Integer> intersection = intersect(postingLists);
-        ArrayList<Page> results = new ArrayList<>();
-
-        for (Integer docId : intersection) {
-            results.add(documents.get(docId));
-        }
-
-        return results;
+        return intersect(postingLists);
     }
 
     public ArrayList<Integer> intersect(ArrayList<Integer> postingList1, ArrayList<Integer> postingList2) {
@@ -148,8 +185,20 @@ public class InvertedIndex {
     }
 
     public void printDocuments() {
-        for (int id : documents.keySet()) {
-            System.out.println(id + "\n" + documents.get(id));
+        for (int id : playerDocuments.keySet()) {
+            System.out.println(id + "\n" + playerDocuments.get(id));
+        }
+    }
+
+    public void printPlayers() {
+        for (int id : playerDocuments.keySet()) {
+            System.out.println(id + "\n" + playerDocuments.get(id).getName());
+        }
+    }
+
+    public void printClubs() {
+        for (int id : clubDocuments.keySet()) {
+            System.out.println(id + "\n" + clubDocuments.get(id).getName());
         }
     }
 

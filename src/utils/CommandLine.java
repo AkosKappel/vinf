@@ -11,6 +11,7 @@ import java.util.Scanner;
 public final class CommandLine {
 
     private final InvertedIndex invertedIndex;
+    private final String[] exitArgs = {"exit", "quit", "q"};
 
     public CommandLine(InvertedIndex invertedIndex) {
         this.invertedIndex = invertedIndex;
@@ -102,7 +103,7 @@ public final class CommandLine {
 
         for (int i = 0; i < playersQuery.length; i++) {
             playersQuery[i] = playersQuery[i].trim();
-            ArrayList<Page> results = invertedIndex.search(playersQuery[i]);
+            ArrayList<Page> results = invertedIndex.searchPlayers(playersQuery[i]);
 
             if (results.size() == 0) {
                 System.out.println("No results found for '" + playersQuery[i] + "'.");
@@ -121,7 +122,7 @@ public final class CommandLine {
                 System.out.println("Multiple players found  with name '" + playersQuery[i] + "'.");
                 System.out.println("Please select a player by typing in his number:");
                 for (int j = 0; j < foundPlayers.size(); j++) {
-                    System.out.println(j + 1 + " - " + ((Player) foundPlayers.get(j)).getName());
+                    System.out.println(j + 1 + " - " + foundPlayers.get(j).getName());
                 }
 
                 // ask user to select a player from the found (multiple) players
@@ -130,7 +131,13 @@ public final class CommandLine {
                 while (true) {
                     System.out.print("> ");
                     try {
-                        choice = Integer.parseInt(choiceScanner.nextLine()) - 1;
+                        String line = choiceScanner.nextLine();
+                        for (String exitArg : exitArgs) {
+                            if (line.toLowerCase().equals(exitArg)) {
+                                return;
+                            }
+                        }
+                        choice = Integer.parseInt(line) - 1;
                     } catch (NumberFormatException e) {
                         System.out.println("Unknown choice! Please enter a number.");
                         continue;
