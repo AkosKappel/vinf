@@ -8,8 +8,8 @@ import java.util.Arrays;
 public class Main {
     private static final String dataFolder = "./data/";
     private static final String[] xmlFiles = {
-            "soccer-players.xml",
             "soccer-clubs.xml",
+            "soccer-players.xml",
 //            "enwiki-latest-pages-articles1.xml",
 //            "enwiki-latest-pages-articles2.xml",
 //            "enwiki-latest-pages-articles3.xml",
@@ -43,14 +43,13 @@ public class Main {
     private static void indexClubs() {
         for (String xmlFile : xmlFiles) {
             String filePath = dataFolder + xmlFile;
-            System.out.println("Parsing " + filePath + " ...");
+            System.out.println("Parsing " + filePath + " for football clubs...");
 
             // parse XML file
             ArrayList<Club> clubs = Parser.parseClubs(filePath);
 
             // build inverted index
             for (Club club : clubs) {
-                System.out.println(club);
                 invertedIndex.addDocument(club);
             }
         }
@@ -59,7 +58,7 @@ public class Main {
     private static void indexPlayers() {
         for (String xmlFile : xmlFiles) {
             String filePath = dataFolder + xmlFile;
-            System.out.println("Parsing " + filePath + " ...");
+            System.out.println("Parsing " + filePath + " for football players...");
 
             // parse XML file
             ArrayList<Player> players = Parser.parsePlayers(filePath);

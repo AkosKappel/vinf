@@ -14,6 +14,8 @@ public abstract class Page {
         this.name = name;
     }
 
+    public abstract boolean isValid();
+
     public String getTitle() {
         return title;
     }

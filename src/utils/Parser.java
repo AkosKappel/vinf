@@ -17,51 +17,6 @@ public class Parser {
         throw new UnsupportedOperationException("Cannot instantiate utils.Parser class");
     }
 
-    public static ArrayList<Player> parsePlayers(String filePath) {
-        ArrayList<Player> players = new ArrayList<>();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // check if page starts with <page>
-                if (Regex.pageStartPattern.matcher(line).find()) {
-                    // reset page variables
-                    StringBuilder pageBuilder = new StringBuilder();
-                    boolean isSoccerPlayer = false;
-
-                    do {
-                        if (!isSoccerPlayer && Regex.infoboxFootballBiographyPattern.matcher(line).find()) {
-                            isSoccerPlayer = true;
-                        }
-
-                        // add line to page
-                        pageBuilder.append(line);
-                        pageBuilder.append("\n");
-
-                        // read next line of page
-                        line = reader.readLine();
-
-                        // read until </page> is found
-                    } while (!Regex.pageEndPattern.matcher(line).find());
-
-                    // add last line of page
-                    pageBuilder.append(line);
-                    pageBuilder.append("\n");
-
-                    // filter out soccer players
-                    if (isSoccerPlayer) {
-                        Player p = parsePlayer(pageBuilder.toString());
-                        if (p != null) players.add(p);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return players;
-    }
-
     public static ArrayList<Club> parseClubs(String filePath) {
         ArrayList<Club> clubs = new ArrayList<>();
 
@@ -105,6 +60,51 @@ public class Parser {
         }
 
         return clubs;
+    }
+
+    public static ArrayList<Player> parsePlayers(String filePath) {
+        ArrayList<Player> players = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // check if page starts with <page>
+                if (Regex.pageStartPattern.matcher(line).find()) {
+                    // reset page variables
+                    StringBuilder pageBuilder = new StringBuilder();
+                    boolean isSoccerPlayer = false;
+
+                    do {
+                        if (!isSoccerPlayer && Regex.infoboxFootballBiographyPattern.matcher(line).find()) {
+                            isSoccerPlayer = true;
+                        }
+
+                        // add line to page
+                        pageBuilder.append(line);
+                        pageBuilder.append("\n");
+
+                        // read next line of page
+                        line = reader.readLine();
+
+                        // read until </page> is found
+                    } while (!Regex.pageEndPattern.matcher(line).find());
+
+                    // add last line of page
+                    pageBuilder.append(line);
+                    pageBuilder.append("\n");
+
+                    // filter out soccer players
+                    if (isSoccerPlayer) {
+                        Player p = parsePlayer(pageBuilder.toString());
+                        if (p != null) players.add(p);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return players;
     }
 
     private static Club parseClub(String page) throws IOException {
@@ -153,7 +153,7 @@ public class Parser {
                     }
 
                     club.setLeague(league);
-                    return club;
+                    if (club.isValid()) return club;
                 }
             }
         }
@@ -193,7 +193,7 @@ public class Parser {
                     }
 
                     // return player if he has played for at least one club
-                    if (player.hasClubHistory()) return player;
+                    if (player.isValid()) return player;
                 }
             }
         }

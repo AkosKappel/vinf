@@ -16,8 +16,13 @@ public class Club extends Page {
     }
 
     @Override
+    public boolean isValid() {
+        return !name.isEmpty() && !name.matches(Regex.digits);
+    }
+
+    @Override
     public String toString() {
-        return name + " (" + league + ")";
+        return name + (league.isEmpty() ? "" : " (" + league + ")");
     }
 
     public String getLeague() {

@@ -24,6 +24,11 @@ public class Player extends Page {
         this.nationalTeams = new ArrayList<>();
     }
 
+    @Override
+    public boolean isValid() {
+        return !name.isEmpty() && hasClubHistory();
+    }
+
     public boolean hasPlayedAgainst(Player player) {
         // TODO: implement method
         return false;
