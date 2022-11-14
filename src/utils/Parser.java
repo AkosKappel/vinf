@@ -139,13 +139,10 @@ public class Parser {
                         stack -= Regex.bracketsEndPattern.matcher(line).results().count();
                     }
 
-                    // read text
-                    while (league.isEmpty()) {
-                        line = reader.readLine();
-                        if (line == null) break;
-
+                    // read text inside page
+                    while ((line = reader.readLine()) != null) {
                         // find out from the text, in what league does the club play
-                        Matcher leagueMatcher = Regex.clubPattern.matcher(line);
+                        Matcher leagueMatcher = Regex.playsInPattern.matcher(line);
                         if (leagueMatcher.find()) {
                             league = leagueMatcher.group(1);
                             break;

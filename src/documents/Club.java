@@ -30,6 +30,7 @@ public class Club extends Page {
     }
 
     public void setLeague(String league) {
+        league = league.trim();
         if (!league.isEmpty() && !title.equals(league)) {
             this.league = league;
         }

@@ -35,11 +35,11 @@ public class Main {
 //        invertedIndex.print();
 //        invertedIndex.printDocuments();
 //        invertedIndex.printPlayers();
-//        invertedIndex.printClubs();
+        invertedIndex.printClubs();
         System.out.println("Found " + invertedIndex.size() + " documents in " + duration / 1_000_000 + " ms");
 
-        commandLine.help();
-        commandLine.run();
+//        commandLine.help();
+//        commandLine.run();
     }
 
     private static void indexClubs() {

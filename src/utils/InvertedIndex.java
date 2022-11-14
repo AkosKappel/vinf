@@ -192,13 +192,13 @@ public class InvertedIndex {
 
     public void printPlayers() {
         for (int id : playerDocuments.keySet()) {
-            System.out.println(id + "\n" + playerDocuments.get(id).getName());
+            System.out.println(id + "\n" + playerDocuments.get(id));
         }
     }
 
     public void printClubs() {
         for (int id : clubDocuments.keySet()) {
-            System.out.println(id + "\n" + clubDocuments.get(id).getName());
+            System.out.println(id + "\n" + clubDocuments.get(id));
         }
     }
 

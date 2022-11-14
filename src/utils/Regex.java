@@ -22,7 +22,7 @@ public final class Regex {
     public static final Pattern bracketsEndPattern = Pattern.compile("}}");
     public static final Pattern wikiLinkPattern = Pattern.compile("\\[\\[([^]|]+)\\|?([^]|]*)]]");
     public static final Pattern textPattern = Pattern.compile("([\\p{L}\\d\\]\\[ .-]*).*");
-    public static final Pattern clubPattern = Pattern.compile(
+    public static final Pattern playsInPattern = Pattern.compile(
             "(?:play|compete)s? in (?:the )?\\[\\[([^]|]+)\\|?([^]|]*)]]"
     );
 
