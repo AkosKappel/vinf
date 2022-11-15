@@ -8,7 +8,6 @@ import documents.Player;
 import java.text.Normalizer;
 import java.util.*;
 
-@SuppressWarnings("DuplicatedCode")
 public class InvertedIndex {
 
     private final HashMap<String, ArrayList<Integer>> index;

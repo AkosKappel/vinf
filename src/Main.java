@@ -41,12 +41,12 @@ public class Main {
         ArrayList<Club> clubs = invertedIndex.getClubs();
         ArrayList<Player> players = invertedIndex.getPlayers();
 
-        tests();
-        testClubs(clubs);
-        testPlayers(players);
+//        tests();
+//        testClubs(clubs);
+//        testPlayers(players);
 
-//        commandLine.help();
-//        commandLine.run();
+        commandLine.help();
+        commandLine.run();
     }
 
     private static void indexClubs() {
@@ -100,14 +100,33 @@ public class Main {
         ClubHistory c2 = p2.getProfessionalClubs().get(0);
         ClubHistory c3 = p3.getProfessionalClubs().get(0);
 
-        String ans = p1.yearsOverlap(c1, c2) ? "" : " don't";
+        String ans = Player.yearsOverlap(c1, c2) ? "" : " don't";
         System.out.println("Years " + c1.getYearStart() + "-" + c1.getYearEnd() + ans + " overlap with " + c2.getYearStart() + "-" + c2.getYearEnd());
 
-        ans = p1.yearsOverlap(c1, c3) ? "" : " don't";
+        ans = Player.yearsOverlap(c1, c3) ? "" : " don't";
         System.out.println("Years " + c1.getYearStart() + "-" + c1.getYearEnd() + ans + " overlap with " + c3.getYearStart() + "-" + c3.getYearEnd());
 
         commandLine.teammates(new String[]{p1.getName(), ",", p2.getName()});
         commandLine.teammates(new String[]{p1.getName(), ",", p3.getName()});
+
+//        for (int i = 0; i < players.size(); i++) {
+//            System.out.println(players.get(i).getName() + " - " + i);
+//        }
+
+        Player p4 = players.get(67); // Brad Friedel
+        Player p5 = players.get(90); // Bruce Grobbelaar
+
+        commandLine.opponents(new String[]{p4.getName(), ",", p5.getName()});
+
+        Player p6 = players.get(68); // DaMarcus Beasley
+        Player p7 = players.get(91); // Colin Bell
+
+        commandLine.opponents(new String[]{p6.getName(), ",", p7.getName()});
+
+        Player p8 = players.get(2); // David Beckham
+        Player p9 = players.get(27); // Thierry Henry
+
+        commandLine.opponents(new String[]{p8.getName(), ",", p9.getName()});
     }
 
     private static void testClubs(ArrayList<Club> clubs) {
@@ -118,11 +137,11 @@ public class Main {
         Club c5 = clubs.get(56); // Rosenborg BK (Eliteserien (football))
         Club c6 = clubs.get(57); // Tromsø IL (Eliteserien)
 
-        System.out.println(c1.hasPlayedAgainst(c2)); // false
-        System.out.println(c2.hasPlayedAgainst(c3)); // true
-        System.out.println(c3.hasPlayedAgainst(c4)); // false
-        System.out.println(c4.hasPlayedAgainst(c1)); // true
-        System.out.println(c5.hasPlayedAgainst(c6)); // true
+        System.out.println(c1.playedInSameLeague(c2)); // false
+        System.out.println(c2.playedInSameLeague(c3)); // true
+        System.out.println(c3.playedInSameLeague(c4)); // false
+        System.out.println(c4.playedInSameLeague(c1)); // true
+        System.out.println(c5.playedInSameLeague(c6)); // true
     }
 
 }

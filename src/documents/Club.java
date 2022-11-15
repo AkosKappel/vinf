@@ -20,7 +20,7 @@ public class Club extends Page {
         return !name.isEmpty() && !name.matches(Regex.digits);
     }
 
-    public boolean hasPlayedAgainst(Club club) {
+    public boolean playedInSameLeague(Club club) {
         return !league.isEmpty() && !club.getLeague().isEmpty() && league.equals(club.getLeague());
     }
 
