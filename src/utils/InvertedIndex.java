@@ -1,11 +1,14 @@
 package utils;
 
+import documents.Club;
 import documents.DocumentType;
 import documents.Page;
+import documents.Player;
 
 import java.text.Normalizer;
 import java.util.*;
 
+@SuppressWarnings("DuplicatedCode")
 public class InvertedIndex {
 
     private final HashMap<String, ArrayList<Integer>> index;
@@ -24,11 +27,11 @@ public class InvertedIndex {
         return playerDocuments.size() + clubDocuments.size();
     }
 
-    public int playerSize() {
+    public int playersSize() {
         return playerDocuments.size();
     }
 
-    public int clubSize() {
+    public int clubsSize() {
         return clubDocuments.size();
     }
 
@@ -79,8 +82,8 @@ public class InvertedIndex {
 
     public ArrayList<Page> search(String query) {
         ArrayList<Page> results = new ArrayList<>();
-
         ArrayList<Integer> intersection = processQuery(query);
+
         for (Integer docId : intersection) {
             if (playerDocuments.containsKey(docId)) {
                 results.add(playerDocuments.get(docId));
@@ -94,8 +97,8 @@ public class InvertedIndex {
 
     public ArrayList<Page> searchPlayers(String query) {
         ArrayList<Page> results = new ArrayList<>();
-
         ArrayList<Integer> intersection = processQuery(query);
+
         for (Integer docId : intersection) {
             if (playerDocuments.containsKey(docId)) {
                 results.add(playerDocuments.get(docId));
@@ -105,6 +108,26 @@ public class InvertedIndex {
         return results;
     }
 
+    public ArrayList<Page> searchClubs(String query) {
+        ArrayList<Page> results = new ArrayList<>();
+        ArrayList<Integer> intersection = processQuery(query);
+
+        for (Integer docId : intersection) {
+            if (clubDocuments.containsKey(docId)) {
+                results.add(clubDocuments.get(docId));
+            }
+        }
+
+        return results;
+    }
+
+    /**
+     * Creates a posting list for all the words in the query
+     * and finds their intersection.
+     *
+     * @param query The query to process.
+     * @return The intersection of all the posting lists.
+     */
     private ArrayList<Integer> processQuery(String query) {
         String[] words = tokenize(normalize(query));
 
@@ -119,6 +142,13 @@ public class InvertedIndex {
         return intersect(postingLists);
     }
 
+    /**
+     * Finds the intersection of exactly two posting lists.
+     *
+     * @param postingList1 The first posting list.
+     * @param postingList2 The second posting list.
+     * @return The intersection of the two posting lists.
+     */
     public ArrayList<Integer> intersect(ArrayList<Integer> postingList1, ArrayList<Integer> postingList2) {
         ArrayList<Integer> intersection = new ArrayList<>();
 
@@ -141,6 +171,12 @@ public class InvertedIndex {
         return intersection;
     }
 
+    /**
+     * Finds the intersection of all the posting lists.
+     *
+     * @param postingLists List of the posting lists to intersect.
+     * @return The intersection of all the posting lists.
+     */
     public ArrayList<Integer> intersect(ArrayList<ArrayList<Integer>> postingLists) {
         if (postingLists.size() == 0) {
             return new ArrayList<>();
@@ -185,6 +221,9 @@ public class InvertedIndex {
     }
 
     public void printDocuments() {
+        for (int id : clubDocuments.keySet()) {
+            System.out.println(id + "\n" + clubDocuments.get(id));
+        }
         for (int id : playerDocuments.keySet()) {
             System.out.println(id + "\n" + playerDocuments.get(id));
         }
@@ -200,6 +239,22 @@ public class InvertedIndex {
         for (int id : clubDocuments.keySet()) {
             System.out.println(id + "\n" + clubDocuments.get(id));
         }
+    }
+
+    public ArrayList<Club> getClubs() {
+        ArrayList<Club> clubs = new ArrayList<>();
+        for (int id : clubDocuments.keySet()) {
+            clubs.add((Club) clubDocuments.get(id));
+        }
+        return clubs;
+    }
+
+    public ArrayList<Player> getPlayers() {
+        ArrayList<Player> players = new ArrayList<>();
+        for (int id : playerDocuments.keySet()) {
+            players.add((Player) playerDocuments.get(id));
+        }
+        return players;
     }
 
 }

@@ -11,6 +11,7 @@ public final class Regex {
     public static final String digits = "\\d+";
     public static final String nonAscii = "[^\\p{ASCII}]";
     public static final String specialCharacters = "[^\\p{L} 0-9]";
+    public static final String bracketedText = "\\(.*\\)";
     public static final String punctuation = "\\p{P}";
     public static final String delimiterCharacters = " .,;:?!+-*=~_\"'`()[]{}<>/\\|^&%#@$";
 

@@ -35,8 +35,15 @@ public class Main {
 //        invertedIndex.print();
 //        invertedIndex.printDocuments();
 //        invertedIndex.printPlayers();
-        invertedIndex.printClubs();
+//        invertedIndex.printClubs();
         System.out.println("Found " + invertedIndex.size() + " documents in " + duration / 1_000_000 + " ms");
+
+        ArrayList<Club> clubs = invertedIndex.getClubs();
+        ArrayList<Player> players = invertedIndex.getPlayers();
+
+        tests();
+        testClubs(clubs);
+        testPlayers(players);
 
 //        commandLine.help();
 //        commandLine.run();
@@ -64,17 +71,30 @@ public class Main {
 
             // parse XML file
             ArrayList<Player> players = Parser.parsePlayers(filePath);
-//            testPlayers(players);
 
             // build inverted index
             invertedIndex.addDocuments(players, DocumentType.PLAYER);
         }
     }
 
+    private static void tests() {
+        ArrayList<Integer> list1 = new ArrayList<>(Arrays.asList(1, 3, 12, 23));
+        ArrayList<Integer> list2 = new ArrayList<>(Arrays.asList(1, 2, 3, 5, 10, 23));
+        ArrayList<Integer> list3 = new ArrayList<>(Arrays.asList(1, 2));
+
+        ArrayList<ArrayList<Integer>> lists1 = new ArrayList<>();
+        lists1.add(list1);
+        lists1.add(list2);
+        lists1.add(list3);
+
+        System.out.println(invertedIndex.intersect(list1, list2));
+        System.out.println(invertedIndex.intersect(lists1));
+    }
+
     private static void testPlayers(ArrayList<Player> players) {
-        Player p1 = players.get(10);
-        Player p2 = players.get(11);
-        Player p3 = players.get(0);
+        Player p1 = players.get(10); // Míchel
+        Player p2 = players.get(11); // Emilio Butragueño
+        Player p3 = players.get(0); // Bobby Charlton
 
         ClubHistory c1 = p1.getProfessionalClubs().get(0);
         ClubHistory c2 = p2.getProfessionalClubs().get(0);
@@ -88,18 +108,21 @@ public class Main {
 
         commandLine.teammates(new String[]{p1.getName(), ",", p2.getName()});
         commandLine.teammates(new String[]{p1.getName(), ",", p3.getName()});
+    }
 
-        ArrayList<Integer> list1 = new ArrayList<>(Arrays.asList(1, 3, 12, 23));
-        ArrayList<Integer> list2 = new ArrayList<>(Arrays.asList(1, 2, 3, 5, 10, 23));
-        ArrayList<Integer> list3 = new ArrayList<>(Arrays.asList(1, 2));
+    private static void testClubs(ArrayList<Club> clubs) {
+        Club c1 = clubs.get(0); // Arsenal F.C. (Premier League)
+        Club c2 = clubs.get(1); // AFC Ajax (Eredivisie)
+        Club c3 = clubs.get(2); // AZ Alkmaar (Eredivisie)
+        Club c4 = clubs.get(8); // Chelsea F.C. (Premier League)
+        Club c5 = clubs.get(56); // Rosenborg BK (Eliteserien (football))
+        Club c6 = clubs.get(57); // Tromsø IL (Eliteserien)
 
-        ArrayList<ArrayList<Integer>> lists1 = new ArrayList<>();
-        lists1.add(list1);
-        lists1.add(list2);
-        lists1.add(list3);
-
-        System.out.println(invertedIndex.intersect(list1, list2));
-        System.out.println(invertedIndex.intersect(lists1));
+        System.out.println(c1.hasPlayedAgainst(c2)); // false
+        System.out.println(c2.hasPlayedAgainst(c3)); // true
+        System.out.println(c3.hasPlayedAgainst(c4)); // false
+        System.out.println(c4.hasPlayedAgainst(c1)); // true
+        System.out.println(c5.hasPlayedAgainst(c6)); // true
     }
 
 }
