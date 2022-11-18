@@ -3,6 +3,7 @@ import utils.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 
 
 public class Main {
@@ -25,8 +26,7 @@ public class Main {
         long startTime = System.nanoTime();
 
         // read all XML files
-        indexClubs();
-        indexPlayers();
+        indexDocuments();
 
         // measure execution end time
         long endTime = System.nanoTime();
@@ -49,31 +49,19 @@ public class Main {
         commandLine.run();
     }
 
-    private static void indexClubs() {
+    private static void indexDocuments() {
         for (String xmlFile : xmlFiles) {
             String filePath = dataFolder + xmlFile;
-            System.out.println("Parsing " + filePath + " for football clubs...");
+            System.out.println("Parsing " + filePath + " ...");
 
             // parse XML file
-            ArrayList<Club> clubs = Parser.parseClubs(filePath);
-
-            // build inverted index
-            for (Club club : clubs) {
-                invertedIndex.addDocument(club, DocumentType.CLUB);
-            }
-        }
-    }
-
-    private static void indexPlayers() {
-        for (String xmlFile : xmlFiles) {
-            String filePath = dataFolder + xmlFile;
-            System.out.println("Parsing " + filePath + " for football players...");
-
-            // parse XML file
-            ArrayList<Player> players = Parser.parsePlayers(filePath);
+            Map<String, ArrayList<Page>> docs = Parser.parseXML(filePath);
+            ArrayList<Page> players = docs.get("players");
+            ArrayList<Page> clubs = docs.get("clubs");
 
             // build inverted index
             invertedIndex.addDocuments(players, DocumentType.PLAYER);
+            invertedIndex.addDocuments(clubs, DocumentType.CLUB);
         }
     }
 

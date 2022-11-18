@@ -2,6 +2,7 @@ package utils;
 
 import documents.Club;
 import documents.ClubType;
+import documents.Page;
 import documents.Player;
 
 import java.io.BufferedReader;
@@ -9,12 +10,66 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 public class Parser {
 
     private Parser() {
         throw new UnsupportedOperationException("Cannot instantiate utils.Parser class");
+    }
+
+    public static Map<String, ArrayList<Page>> parseXML(String filePath) {
+        ArrayList<Page> clubs = new ArrayList<>();
+        ArrayList<Page> players = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // check if page starts with <page>
+                if (Regex.pageStartPattern.matcher(line).find()) {
+                    // reset page variables
+                    StringBuilder pageBuilder = new StringBuilder();
+                    boolean isSoccerPlayer = false;
+                    boolean isSoccerClub = false;
+
+                    do {
+                        if (!isSoccerPlayer && Regex.infoboxFootballBiographyPattern.matcher(line).find()) {
+                            isSoccerPlayer = true;
+                        } else if (!isSoccerClub && Regex.infoboxFootballClubPattern.matcher(line).find()) {
+                            isSoccerClub = true;
+                        }
+
+                        // add line to page
+                        pageBuilder.append(line);
+                        pageBuilder.append("\n");
+
+                        // read next line of page
+                        line = reader.readLine();
+
+                        // read until </page> is found
+                    } while (!Regex.pageEndPattern.matcher(line).find());
+
+                    // add last line of page
+                    pageBuilder.append(line);
+                    pageBuilder.append("\n");
+
+                    // filter out soccer players and clubs
+                    if (isSoccerPlayer) {
+                        Page player = parsePlayer(pageBuilder.toString());
+                        if (player != null) players.add(player);
+                    } else if (isSoccerClub) {
+                        Page club = parseClub(pageBuilder.toString());
+                        if (club != null) clubs.add(club);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // return players and clubs
+        return Map.of("clubs", clubs, "players", players);
     }
 
     public static ArrayList<Club> parseClubs(String filePath) {

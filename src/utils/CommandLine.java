@@ -29,6 +29,7 @@ public final class CommandLine {
             switch (command) {
                 case "-h", "help" -> help();
                 case "-s", "search" -> search(args);
+                case "-l", "list" -> list(args);
                 case "-d", "display", "show" -> display(args);
                 case "-t", "teammates" -> teammates(args);
                 case "-o", "opponents" -> opponents(args);
@@ -43,6 +44,7 @@ public final class CommandLine {
         System.out.println("Commands:");
         System.out.println("  help - show this message");
         System.out.println("  search [query...] - search between all the documents");
+        System.out.println("  list [players | clubs] - list all the documents containing the given type");
         System.out.println("  display [index | documents] - print inverted index or parsed documents");
         System.out.println("  teammates [player1], [player2] - print whether two players played together");
         System.out.println("  opponents [player1], [player2] - print whether two players played against each other");
@@ -70,10 +72,33 @@ public final class CommandLine {
         }
     }
 
+    public void list(String[] args) {
+        if (args.length < 1) {
+            System.out.println("Missing argument!");
+            System.out.println("  Usage: list [players | clubs]");
+            return;
+        }
+
+        String type = args[0];
+        switch (type) {
+            case "p", "players" -> {
+                invertedIndex.printPlayers();
+                ArrayList<Player> players = invertedIndex.getPlayers();
+                System.out.println("Found " + players.size() + " players.");
+            }
+            case "c", "clubs" -> {
+                invertedIndex.printClubs();
+                ArrayList<Club> clubs = invertedIndex.getClubs();
+                System.out.println("Found " + clubs.size() + " clubs.");
+            }
+            default -> System.out.println("Unknown type: " + type);
+        }
+    }
+
     public void display(String[] args) {
         if (args.length < 1) {
             System.out.println("Missing argument!");
-            System.out.println("  Usage: show [index|documents]");
+            System.out.println("  Usage: show [index | documents]");
             return;
         }
 
