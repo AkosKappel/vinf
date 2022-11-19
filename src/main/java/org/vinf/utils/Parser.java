@@ -1,6 +1,8 @@
 package org.vinf.utils;
 
-import org.vinf.documents.*;
+import org.vinf.documents.Club;
+import org.vinf.documents.Page;
+import org.vinf.documents.Player;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,6 +17,62 @@ public class Parser {
 
     private Parser() {
         throw new UnsupportedOperationException("Cannot instantiate utils.Parser class");
+    }
+
+    public static Page parsePage(String wikiTitle, String wikiText) {
+        boolean isSoccerPlayer = false;
+        boolean isSoccerClub = false;
+
+        // read wiki text line by line and check whether the page is relevant
+        try (BufferedReader reader = new BufferedReader(new StringReader(wikiText))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (Regex.infoboxPattern.matcher(line).find()) { // start of outmost infobox
+
+                    // count in stack, how many opening and closing brackets are there
+                    Matcher stackMatcher = Regex.bracketsStartPattern.matcher(line);
+                    long stack = 0;
+                    while (stackMatcher.find()) stack++;
+
+                    while (stack > 0) {
+                        // check whether the page is about a soccer player or a soccer club
+                        if (Regex.infoboxFootballBiographyPattern.matcher(line).find()) {
+                            isSoccerPlayer = true;
+                        } else if (Regex.infoboxFootballClubPattern.matcher(line).find()) {
+                            isSoccerClub = true;
+                        }
+
+                        // read next line of infobox
+                        line = reader.readLine();
+                        if (line == null || isSoccerPlayer || isSoccerClub) {
+                            break; // no more lines or already found out if the page is relevant
+                        }
+
+                        // count opening brackets
+                        stackMatcher = Regex.bracketsStartPattern.matcher(line);
+                        while (stackMatcher.find()) stack++;
+
+                        // count closing brackets
+                        stackMatcher = Regex.bracketsEndPattern.matcher(line);
+                        while (stackMatcher.find()) stack--;
+                    }
+
+                    break; // stop reading wiki text
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Page page = null;
+        // filter out relevant pages
+        if (isSoccerPlayer) {
+            page = new Player(wikiTitle, wikiText);
+        } else if (isSoccerClub) {
+            page = new Club(wikiTitle, wikiText);
+        }
+
+        return page != null && page.isValid() ? page : null;
     }
 
     public static Map<String, ArrayList<Page>> parseXML(String filePath) {

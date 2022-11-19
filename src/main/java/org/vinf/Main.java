@@ -11,9 +11,9 @@ import java.util.Map;
 public class Main {
     private static final String dataFolder = "./data/";
     private static final String[] xmlFiles = {
-            "soccer-clubs.xml",
-            "soccer-players.xml",
-//            "enwiki-latest-pages-articles1.xml",
+//            "soccer-clubs.xml",
+//            "soccer-players.xml",
+            "enwiki-latest-pages-articles1.xml",
 //            "enwiki-latest-pages-articles2.xml",
 //            "enwiki-latest-pages-articles3.xml",
 //            "enwiki-latest-pages-articles4.xml",
@@ -34,6 +34,10 @@ public class Main {
         long endTime = System.nanoTime();
         long duration = (endTime - startTime);
 
+//        for (Page p : invertedIndex.getDocuments()) {
+//            System.out.println(p.getTitle());
+//        }
+
 //        invertedIndex.print();
 //        invertedIndex.printDocuments();
 //        invertedIndex.printPlayers();
@@ -47,8 +51,8 @@ public class Main {
 //        testClubs(clubs);
 //        testPlayers(players);
 
-        commandLine.help();
-        commandLine.run();
+//        commandLine.help();
+//        commandLine.run();
     }
 
     private static void indexDocuments() {

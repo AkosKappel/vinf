@@ -11,7 +11,7 @@ public abstract class Page {
 
     protected Page(String title) {
         this.title = title;
-        Matcher nameMatcher = Regex.textPattern.matcher(title);
+        Matcher nameMatcher = Regex.nonDigitTextPattern.matcher(title);
         this.name = nameMatcher.find() ? nameMatcher.group(1).trim() : title;
     }
 

@@ -13,9 +13,9 @@ public final class Regex {
     public static final String specialCharacters = "[^\\p{L} 0-9]";
     public static final String bracketedText = "\\(.*\\)";
     public static final String punctuation = "\\p{P}";
-    public static final String delimiterCharacters = " .,;:?!+-*=~_\"'`()[]{}<>/\\|^&%#@$";
+    public static final String delimiterCharacters = " .,;:?!+-–*=~_\"'`()[]{}<>/\\|^&%#@$";
 
-    // Compiled regex patterns
+    // Wiki dump regex patterns
     public static final Pattern pageStartPattern = Pattern.compile("<page>");
     public static final Pattern pageEndPattern = Pattern.compile("</page>");
     public static final Pattern textStartPattern = Pattern.compile("<text.*>");
@@ -23,10 +23,22 @@ public final class Regex {
     public static final Pattern titlePattern = Pattern.compile("<title>(.*)</title>");
     public static final Pattern bracketsStartPattern = Pattern.compile("\\{\\{");
     public static final Pattern bracketsEndPattern = Pattern.compile("}}");
-    public static final Pattern wikiLinkPattern = Pattern.compile("\\[\\[([^]|]+)\\|?([^]|]*)]]");
-    public static final Pattern textPattern = Pattern.compile("([\\p{L}\\d\\]\\[ .-]*).*");
+
+    // Misc regex patterns
+    public static final Pattern wikiLinkPattern = Pattern.compile(
+            "\\[\\[([^]|]+)\\|?([^]|]*)]]"
+    );
+    public static final Pattern nonDigitTextPattern = Pattern.compile(
+            "([\\p{L}\\]\\[ .–-]*).*"
+    );
     public static final Pattern playsInPattern = Pattern.compile(
             "(?:play|compete)s? in (?:the )?\\[\\[([^]|]+)\\|?([^]|]*)]]"
+    );
+    public static final Pattern bracketsPattern = Pattern.compile(
+            "[({\\[].*[]})]"
+    );
+    public static final Pattern intervalPattern = Pattern.compile(
+            "[\\d–-]+"
     );
 
     // Infobox patterns
@@ -45,19 +57,19 @@ public final class Regex {
 
     // Infobox content patterns
     public static final Pattern leaguePattern = Pattern.compile(
-            "\\| *league *= *([\\p{L}\\d .-]*)"
+            "\\| *league *= *([\\p{L}\\d .–-]*)"
     );
     public static final Pattern namePattern = Pattern.compile(
-            "\\| *name *= *([\\p{L}\\d\\]\\[ .-]*)"
+            "\\| *name *= *([\\p{L}\\d\\]\\[ .–-]*)"
     );
     public static final Pattern birthDatePattern = Pattern.compile(
-            "\\| *birth_date *= *([\\p{L}\\d .-]*)"
+            "\\| *birth_date *= *([\\p{L}\\d .–-]*)"
     );
     public static final Pattern birthPlacePattern = Pattern.compile(
-            "\\| *birth_place *= *([\\p{L}\\d .-]*)"
+            "\\| *birth_place *= *([\\p{L}\\d .–-]*)"
     );
     public static final Pattern positionPattern = Pattern.compile(
-            "\\| *position *= *([\\p{L}\\d .-]*)"
+            "\\| *position *= *([\\p{L}\\d .–-]*)"
     );
 
     // Football Biography patterns
