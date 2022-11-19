@@ -30,6 +30,9 @@ public final class Regex {
     );
 
     // Infobox patterns
+    public static final Pattern infoboxPattern = Pattern.compile(
+            "\\{\\{Infobox"
+    );
     public static final Pattern infoboxPersonPattern = Pattern.compile(
             "\\{\\{Infobox person"
     );

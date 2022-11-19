@@ -144,7 +144,7 @@ public class Player extends Page {
         return !youthClubs.isEmpty() || !collegeClubs.isEmpty() || !professionalClubs.isEmpty() || !nationalTeams.isEmpty();
     }
 
-    private void findClubYears(String line) {
+    public void findClubYears(String line) {
         Matcher yearsMatcher = Regex.clubYearsPattern.matcher(line);
 
         if (yearsMatcher.find()) {
@@ -158,7 +158,7 @@ public class Player extends Page {
         }
     }
 
-    private void findClubNames(String line) {
+    public void findClubNames(String line) {
         Matcher clubsMatcher = Regex.clubNamePattern.matcher(line);
 
         if (clubsMatcher.find()) {

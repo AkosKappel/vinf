@@ -54,10 +54,10 @@ public class Parser {
 
                     // filter out soccer players and clubs
                     if (isSoccerPlayer) {
-                        Page player = parsePlayer(pageBuilder.toString());
+                        Page player = parsePlayer(pageBuilder);
                         if (player != null) players.add(player);
                     } else if (isSoccerClub) {
-                        Page club = parseClub(pageBuilder.toString());
+                        Page club = parseClub(pageBuilder);
                         if (club != null) clubs.add(club);
                     }
                 }
@@ -73,8 +73,8 @@ public class Parser {
         return pages;
     }
 
-    private static Club parseClub(String page) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new StringReader(page))) {
+    private static Club parseClub(StringBuilder page) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new StringReader(page.toString()))) {
             String title = "";
 
             String line;
@@ -133,8 +133,8 @@ public class Parser {
         return null;
     }
 
-    private static Player parsePlayer(String page) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new StringReader(page))) {
+    private static Player parsePlayer(StringBuilder page) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new StringReader(page.toString()))) {
             String title = "";
 
             String line;
@@ -155,8 +155,8 @@ public class Parser {
                     while (stackMatcher.find()) stack++;
                     while (stack > 0) {
                         // get club names and years
-                        findClubYears(line, player);
-                        findClubNames(line, player);
+                        player.findClubYears(line);
+                        player.findClubNames(line);
 
                         // read next line of infobox
                         line = reader.readLine();
@@ -179,32 +179,6 @@ public class Parser {
 
         // no player was found
         return null;
-    }
-
-    private static void findClubYears(String line, Player player) {
-        Matcher yearsMatcher = Regex.clubYearsPattern.matcher(line);
-
-        if (yearsMatcher.find()) {
-            ClubType clubType = ClubType.getClubType(yearsMatcher.group(1));
-            int index = Integer.parseInt(yearsMatcher.group(2)) - 1;
-            String yearJoined = yearsMatcher.group(3);
-            String yearsLeft = yearsMatcher.group(4);
-
-            player.updateYearJoined(index, yearJoined, clubType);
-            player.updateYearLeft(index, yearsLeft, clubType);
-        }
-    }
-
-    private static void findClubNames(String line, Player player) {
-        Matcher clubsMatcher = Regex.clubNamePattern.matcher(line);
-
-        if (clubsMatcher.find()) {
-            ClubType clubType = ClubType.getClubType(clubsMatcher.group(1));
-            int index = Integer.parseInt(clubsMatcher.group(2)) - 1;
-            String clubName = clubsMatcher.group(3);
-
-            player.updateClubName(index, clubName, clubType);
-        }
     }
 
 }
