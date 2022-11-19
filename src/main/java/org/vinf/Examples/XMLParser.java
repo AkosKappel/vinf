@@ -5,7 +5,6 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
-import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
@@ -14,12 +13,54 @@ public class XMLParser {
 
     public static void main(String[] args) {
         String fileName = "./data/soccer-players.xml";
-//        System.setProperty("spark.home.dir", "C:\\Program Files\\spark-3.3.1-bin-hadoop3");
 
-        SparkConf conf = new SparkConf().setMaster("local").setAppName("XML Parser");
+        SparkConf conf = new SparkConf()
+                .setMaster("local[*]")
+                .setAppName("XML Parser");
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         SQLContext sqlContext = new SQLContext(sc);
+
+        StructType schema = getSchema();
+
+        Dataset<Row> df = sqlContext.read()
+                .format("com.databricks.spark.xml")
+                .option("rowTag", "page")
+                .schema(schema)
+                .load(fileName);
+
+        // Print schema
+//        df.printSchema();
+
+        // parallelize the data
+//        df = df.repartition(4);
+
+        // Print first 10 rows
+        df.show(10);
+
+        // Print number of rows
+        System.out.println("Number of rows: " + df.count());
+
+        // Print number of columns
+        System.out.println("Number of columns: " + df.columns().length);
+
+        // Print names of players with wiki text
+//        df.select("title", "revision.text._VALUE").show(10);
+
+        // Iterate over rows
+//        int i = 0;
+//        for (Row row : df.collectAsList()) {
+//            System.out.println("#################### " + i + " ####################");
+//            System.out.println(row);
+//            if (++i == 3) break;
+//        }
+
+        // Exit Spark
+        sc.stop();
+    }
+
+    private static StructType getSchema() {
+        // Creates schema for the wikipedia dump XML file
 
         // root
         //   |-- id: long (nullable = true)
@@ -46,8 +87,7 @@ public class XMLParser {
         //   |    |-- timestamp: timestamp (nullable = true)
         //   |-- title: string (nullable = true)
 
-        // Create a schema for the XML file
-        StructType schema = DataTypes.createStructType(new StructField[]{
+        return DataTypes.createStructType(new StructField[]{
                 DataTypes.createStructField("id", DataTypes.LongType, true),
                 DataTypes.createStructField("ns", DataTypes.LongType, true),
                 DataTypes.createStructField("redirect", DataTypes.createStructType(new StructField[]{
@@ -76,40 +116,5 @@ public class XMLParser {
                 }), true),
                 DataTypes.createStructField("title", DataTypes.StringType, true)
         });
-
-        Dataset<Row> df = sqlContext.read()
-                .format("com.databricks.spark.xml")
-                .option("rowTag", "page")
-                .schema(schema)
-                .load(fileName);
-
-        // Print schema
-        df.printSchema();
-
-        // Print first 10 rows
-        df.show(10);
-
-        // Print number of rows
-        System.out.println("Number of rows: " + df.count());
-
-        // Print number of columns
-        System.out.println("Number of columns: " + df.columns().length);
-
-        // Print names of players
-        df.select("title").show(10);
-
-        // Print text of players
-        df.select("revision.text._VALUE").show(10);
-
-        // Iterate over rows
-        int i = 0;
-        for (Row row : df.collectAsList()) {
-            System.out.println("#################### " + i + " ####################");
-            System.out.println(row);
-            if (++i == 3) break;
-        }
-
-        // Exit Spark
-        sc.stop();
     }
 }
