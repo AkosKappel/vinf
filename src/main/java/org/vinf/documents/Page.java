@@ -1,17 +1,18 @@
 package org.vinf.documents;
 
+import org.vinf.utils.Regex;
+
+import java.util.regex.Matcher;
+
 public abstract class Page {
 
     String title;
     String name;
 
     protected Page(String title) {
-        this(title, "");
-    }
-
-    protected Page(String title, String name) {
         this.title = title;
-        this.name = name;
+        Matcher nameMatcher = Regex.textPattern.matcher(title);
+        this.name = nameMatcher.find() ? nameMatcher.group(1).trim() : title;
     }
 
     public abstract boolean isValid();

@@ -18,6 +18,8 @@ public final class Regex {
     // Compiled regex patterns
     public static final Pattern pageStartPattern = Pattern.compile("<page>");
     public static final Pattern pageEndPattern = Pattern.compile("</page>");
+    public static final Pattern textStartPattern = Pattern.compile("<text.*>");
+    public static final Pattern textEndPattern = Pattern.compile("</text>");
     public static final Pattern titlePattern = Pattern.compile("<title>(.*)</title>");
     public static final Pattern bracketsStartPattern = Pattern.compile("\\{\\{");
     public static final Pattern bracketsEndPattern = Pattern.compile("}}");

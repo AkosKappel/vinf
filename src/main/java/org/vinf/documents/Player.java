@@ -2,26 +2,66 @@ package org.vinf.documents;
 
 import org.vinf.utils.Regex;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 
 public class Player extends Page {
 
-    private ArrayList<ClubHistory> youthClubs;
-    private ArrayList<ClubHistory> collegeClubs;
-    private ArrayList<ClubHistory> professionalClubs;
-    private ArrayList<ClubHistory> nationalTeams;
+    private final ArrayList<ClubHistory> youthClubs;
+    private final ArrayList<ClubHistory> collegeClubs;
+    private final ArrayList<ClubHistory> professionalClubs;
+    private final ArrayList<ClubHistory> nationalTeams;
 
     public Player(String title) {
         super(title);
 
-        Matcher nameMatcher = Regex.textPattern.matcher(title);
-        this.name = nameMatcher.find() ? nameMatcher.group(1).trim() : title;
-
+        // initialize club lists
         this.youthClubs = new ArrayList<>();
         this.collegeClubs = new ArrayList<>();
         this.professionalClubs = new ArrayList<>();
         this.nationalTeams = new ArrayList<>();
+    }
+
+    public Player(String title, String text) {
+        this(title);
+
+        // parse wiki text
+        try (BufferedReader reader = new BufferedReader(new StringReader(text))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // find start of infobox
+                Matcher infoboxMatcher = Regex.infoboxFootballBiographyPattern.matcher(line);
+                if (infoboxMatcher.find()) {
+                    // get club names and years, where the player played
+                    Matcher stackMatcher = Regex.bracketsStartPattern.matcher(line);
+                    long stack = 0;
+                    while (stackMatcher.find()) stack++;
+                    while (stack > 0) {
+                        // get club names and years
+                        findClubYears(line);
+                        findClubNames(line);
+
+                        // read next line of infobox
+                        line = reader.readLine();
+                        if (line == null) break;
+
+                        // count opening brackets
+                        stackMatcher = Regex.bracketsStartPattern.matcher(line);
+                        while (stackMatcher.find()) stack++;
+
+                        // count closing brackets
+                        stackMatcher = Regex.bracketsEndPattern.matcher(line);
+                        while (stackMatcher.find()) stack--;
+                    }
+                    break; // end of infobox
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -104,6 +144,32 @@ public class Player extends Page {
         return !youthClubs.isEmpty() || !collegeClubs.isEmpty() || !professionalClubs.isEmpty() || !nationalTeams.isEmpty();
     }
 
+    private void findClubYears(String line) {
+        Matcher yearsMatcher = Regex.clubYearsPattern.matcher(line);
+
+        if (yearsMatcher.find()) {
+            ClubType clubType = ClubType.getClubType(yearsMatcher.group(1));
+            int index = Integer.parseInt(yearsMatcher.group(2)) - 1;
+            String yearJoined = yearsMatcher.group(3);
+            String yearsLeft = yearsMatcher.group(4);
+
+            updateYearJoined(index, yearJoined, clubType);
+            updateYearLeft(index, yearsLeft, clubType);
+        }
+    }
+
+    private void findClubNames(String line) {
+        Matcher clubsMatcher = Regex.clubNamePattern.matcher(line);
+
+        if (clubsMatcher.find()) {
+            ClubType clubType = ClubType.getClubType(clubsMatcher.group(1));
+            int index = Integer.parseInt(clubsMatcher.group(2)) - 1;
+            String clubName = clubsMatcher.group(3);
+
+            updateClubName(index, clubName, clubType);
+        }
+    }
+
     public void updateClubName(int clubIndex, String clubName, ClubType type) {
         ArrayList<ClubHistory> clubsToUpdate = getClubsByType(type);
         if (clubsToUpdate == null) return;
@@ -181,31 +247,15 @@ public class Player extends Page {
         return youthClubs;
     }
 
-    public void setYouthClubs(ArrayList<ClubHistory> youthClubs) {
-        this.youthClubs = youthClubs;
-    }
-
     public ArrayList<ClubHistory> getCollegeClubs() {
         return collegeClubs;
-    }
-
-    public void setCollegeClubs(ArrayList<ClubHistory> collegeClubs) {
-        this.collegeClubs = collegeClubs;
     }
 
     public ArrayList<ClubHistory> getProfessionalClubs() {
         return professionalClubs;
     }
 
-    public void setProfessionalClubs(ArrayList<ClubHistory> professionalClubs) {
-        this.professionalClubs = professionalClubs;
-    }
-
     public ArrayList<ClubHistory> getNationalTeams() {
         return nationalTeams;
-    }
-
-    public void setNationalTeams(ArrayList<ClubHistory> nationalTeams) {
-        this.nationalTeams = nationalTeams;
     }
 }
