@@ -112,14 +112,12 @@ public final class CommandLine {
             case "p":
             case "players":
                 invertedIndex.printPlayers();
-                ArrayList<Player> players = invertedIndex.getPlayers();
-                System.out.println("Found " + players.size() + " players.");
+                System.out.println("Found " + invertedIndex.playersSize() + " players.");
                 break;
             case "c":
             case "clubs":
                 invertedIndex.printClubs();
-                ArrayList<Club> clubs = invertedIndex.getClubs();
-                System.out.println("Found " + clubs.size() + " clubs.");
+                System.out.println("Found " + invertedIndex.clubsSize() + " clubs.");
                 break;
             default:
                 System.out.println("Unknown type: " + type);

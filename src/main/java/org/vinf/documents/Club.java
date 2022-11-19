@@ -26,8 +26,6 @@ public class Club extends Page {
                 // find start of infobox
                 Matcher infoboxMatcher = Regex.infoboxFootballClubPattern.matcher(line);
                 if (infoboxMatcher.find()) {
-                    String league = "";
-
                     Matcher stackMatcher = Regex.bracketsStartPattern.matcher(line);
                     long stack = 0;
                     while (stackMatcher.find()) stack++;
@@ -61,7 +59,6 @@ public class Club extends Page {
                         }
                     }
 
-                    this.league = league;
                     break;
                 }
             }

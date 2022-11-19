@@ -73,6 +73,54 @@ public class Parser {
         return pages;
     }
 
+    private static Player parsePlayer(StringBuilder page) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new StringReader(page.toString()))) {
+            String title = "";
+
+            String line;
+            // read until end of infobox
+            while ((line = reader.readLine()) != null) {
+                // get title from page
+                Matcher titleMatcher = Regex.titlePattern.matcher(line);
+                if (title.isEmpty() && titleMatcher.find()) {
+                    title = titleMatcher.group(1);
+                }
+
+                Matcher infoboxMatcher = Regex.infoboxFootballBiographyPattern.matcher(line);
+                if (infoboxMatcher.find()) {
+                    Player player = new Player(title);
+
+                    Matcher stackMatcher = Regex.bracketsStartPattern.matcher(line);
+                    long stack = 0;
+                    while (stackMatcher.find()) stack++;
+                    while (stack > 0) {
+                        // get club names and years
+                        player.findClubYears(line);
+                        player.findClubNames(line);
+
+                        // read next line of infobox
+                        line = reader.readLine();
+                        if (line == null) break;
+
+                        // count opening brackets
+                        stackMatcher = Regex.bracketsStartPattern.matcher(line);
+                        while (stackMatcher.find()) stack++;
+
+                        // count closing brackets
+                        stackMatcher = Regex.bracketsEndPattern.matcher(line);
+                        while (stackMatcher.find()) stack--;
+                    }
+
+                    // return player if he has played for at least one club
+                    return player.isValid() ? player : null;
+                }
+            }
+        }
+
+        // no player was found
+        return null;
+    }
+
     private static Club parseClub(StringBuilder page) throws IOException {
         try (BufferedReader reader = new BufferedReader(new StringReader(page.toString()))) {
             String title = "";
@@ -124,60 +172,12 @@ public class Parser {
                     }
 
                     club.setLeague(league);
-                    if (club.isValid()) return club;
+                    return club.isValid() ? club : null;
                 }
             }
         }
 
         // no club was found
-        return null;
-    }
-
-    private static Player parsePlayer(StringBuilder page) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new StringReader(page.toString()))) {
-            String title = "";
-
-            String line;
-            // read until end of infobox
-            while ((line = reader.readLine()) != null) {
-                // get title from page
-                Matcher titleMatcher = Regex.titlePattern.matcher(line);
-                if (title.isEmpty() && titleMatcher.find()) {
-                    title = titleMatcher.group(1);
-                }
-
-                Matcher infoboxMatcher = Regex.infoboxFootballBiographyPattern.matcher(line);
-                if (infoboxMatcher.find()) {
-                    Player player = new Player(title);
-
-                    Matcher stackMatcher = Regex.bracketsStartPattern.matcher(line);
-                    long stack = 0;
-                    while (stackMatcher.find()) stack++;
-                    while (stack > 0) {
-                        // get club names and years
-                        player.findClubYears(line);
-                        player.findClubNames(line);
-
-                        // read next line of infobox
-                        line = reader.readLine();
-                        if (line == null) break;
-
-                        // count opening brackets
-                        stackMatcher = Regex.bracketsStartPattern.matcher(line);
-                        while (stackMatcher.find()) stack++;
-
-                        // count closing brackets
-                        stackMatcher = Regex.bracketsEndPattern.matcher(line);
-                        while (stackMatcher.find()) stack--;
-                    }
-
-                    // return player if he has played for at least one club
-                    if (player.isValid()) return player;
-                }
-            }
-        }
-
-        // no player was found
         return null;
     }
 

@@ -242,6 +242,13 @@ public class InvertedIndex {
         }
     }
 
+    public ArrayList<Page> getDocuments() {
+        ArrayList<Page> documents = new ArrayList<>();
+        documents.addAll(clubDocuments.values());
+        documents.addAll(playerDocuments.values());
+        return documents;
+    }
+
     public ArrayList<Club> getClubs() {
         ArrayList<Club> clubs = new ArrayList<>();
         for (int id : clubDocuments.keySet()) {

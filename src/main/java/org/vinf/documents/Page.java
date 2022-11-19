@@ -17,6 +17,11 @@ public abstract class Page {
 
     public abstract boolean isValid();
 
+    @Override
+    public String toString() {
+        return "Page(" + title + ')';
+    }
+
     public String getTitle() {
         return title;
     }
