@@ -1,4 +1,4 @@
-package documents;
+package org.vinf.documents;
 
 public abstract class Page {
 

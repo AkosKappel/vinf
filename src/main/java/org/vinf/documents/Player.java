@@ -1,6 +1,6 @@
-package documents;
+package org.vinf.documents;
 
-import utils.Regex;
+import org.vinf.utils.Regex;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -86,12 +86,18 @@ public class Player extends Page {
     }
 
     public ArrayList<ClubHistory> getClubsByType(ClubType type) {
-        return switch (type) {
-            case YOUTH -> youthClubs;
-            case COLLEGE -> collegeClubs;
-            case PROFESSIONAL -> professionalClubs;
-            case NATIONAL -> nationalTeams;
-        };
+        switch (type) {
+            case YOUTH:
+                return youthClubs;
+            case COLLEGE:
+                return collegeClubs;
+            case PROFESSIONAL:
+                return professionalClubs;
+            case NATIONAL:
+                return nationalTeams;
+            default:
+                return null;
+        }
     }
 
     public boolean hasClubHistory() {

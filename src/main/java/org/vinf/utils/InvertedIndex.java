@@ -1,9 +1,6 @@
-package utils;
+package org.vinf.utils;
 
-import documents.Club;
-import documents.DocumentType;
-import documents.Page;
-import documents.Player;
+import org.vinf.documents.*;
 
 import java.text.Normalizer;
 import java.util.*;
@@ -59,9 +56,14 @@ public class InvertedIndex {
         int docId = DOCUMENT_ID++;
 
         switch (type) {
-            case PLAYER -> playerDocuments.put(docId, document);
-            case CLUB -> clubDocuments.put(docId, document);
-            default -> throw new IllegalArgumentException("Invalid document type: " + type);
+            case PLAYER:
+                playerDocuments.put(docId, document);
+                break;
+            case CLUB:
+                clubDocuments.put(docId, document);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid document type: " + type);
         }
 
         String[] words = tokenize(normalize(document.getName()));

@@ -1,6 +1,6 @@
-package documents;
+package org.vinf.documents;
 
-import utils.Regex;
+import org.vinf.utils.Regex;
 
 import java.util.regex.Matcher;
 

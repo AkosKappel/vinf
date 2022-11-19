@@ -1,4 +1,4 @@
-package utils;
+package org.vinf.utils;
 
 import java.util.regex.Pattern;
 

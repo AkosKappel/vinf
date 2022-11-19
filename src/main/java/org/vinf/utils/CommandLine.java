@@ -1,6 +1,6 @@
-package utils;
+package org.vinf.utils;
 
-import documents.*;
+import org.vinf.documents.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,15 +27,43 @@ public final class CommandLine {
             String[] args = Arrays.copyOfRange(input, 1, input.length);
 
             switch (command) {
-                case "-h", "help" -> help();
-                case "-s", "search" -> search(args);
-                case "-l", "list" -> list(args);
-                case "-d", "display", "show" -> display(args);
-                case "-t", "teammates" -> teammates(args);
-                case "-o", "opponents" -> opponents(args);
-                case "-c", "clubs" -> clubs(args);
-                case "-q", "quit", "exit" -> running = false;
-                default -> System.out.println("Unknown command: " + command);
+                case "-h":
+                case "help":
+                    help();
+                    break;
+                case "-s":
+                case "search":
+                    search(args);
+                    break;
+                case "-l":
+                case "list":
+                    list(args);
+                    break;
+                case "-d":
+                case "display":
+                case "show":
+                    display(args);
+                    break;
+                case "-t":
+                case "teammates":
+                    teammates(args);
+                    break;
+                case "-o":
+                case "opponents":
+                    opponents(args);
+                    break;
+                case "-c":
+                case "clubs":
+                    clubs(args);
+                    break;
+                case "-q":
+                case "quit":
+                case "exit":
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Unknown command: " + command);
+                    break;
             }
         }
     }
@@ -81,17 +109,21 @@ public final class CommandLine {
 
         String type = args[0];
         switch (type) {
-            case "p", "players" -> {
+            case "p":
+            case "players":
                 invertedIndex.printPlayers();
                 ArrayList<Player> players = invertedIndex.getPlayers();
                 System.out.println("Found " + players.size() + " players.");
-            }
-            case "c", "clubs" -> {
+                break;
+            case "c":
+            case "clubs":
                 invertedIndex.printClubs();
                 ArrayList<Club> clubs = invertedIndex.getClubs();
                 System.out.println("Found " + clubs.size() + " clubs.");
-            }
-            default -> System.out.println("Unknown type: " + type);
+                break;
+            default:
+                System.out.println("Unknown type: " + type);
+                break;
         }
     }
 
@@ -104,9 +136,16 @@ public final class CommandLine {
 
         for (String arg : args) {
             switch (arg) {
-                case "index" -> invertedIndex.print();
-                case "docs", "documents" -> invertedIndex.printDocuments();
-                default -> System.out.println("Unknown argument: " + arg);
+                case "index":
+                    invertedIndex.print();
+                    break;
+                case "docs":
+                case "documents":
+                    invertedIndex.printDocuments();
+                    break;
+                default:
+                    System.out.println("Unknown argument: " + arg);
+                    break;
             }
         }
     }

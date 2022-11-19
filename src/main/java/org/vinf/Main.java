@@ -1,5 +1,7 @@
-import documents.*;
-import utils.*;
+package org.vinf;
+
+import org.vinf.documents.*;
+import org.vinf.utils.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;

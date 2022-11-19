@@ -1,4 +1,4 @@
-package documents;
+package org.vinf.documents;
 
 public class ClubHistory {
     private String clubName;

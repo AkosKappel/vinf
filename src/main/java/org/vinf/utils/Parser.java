@@ -1,15 +1,13 @@
-package utils;
+package org.vinf.utils;
 
-import documents.Club;
-import documents.ClubType;
-import documents.Page;
-import documents.Player;
+import org.vinf.documents.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -69,7 +67,10 @@ public class Parser {
         }
 
         // return players and clubs
-        return Map.of("clubs", clubs, "players", players);
+        Map<String, ArrayList<Page>> pages = new HashMap<>();
+        pages.put("players", players);
+        pages.put("clubs", clubs);
+        return pages;
     }
 
     private static Club parseClub(String page) throws IOException {
@@ -89,7 +90,9 @@ public class Parser {
                     Club club = new Club(title);
                     String league = "";
 
-                    long stack = Regex.bracketsStartPattern.matcher(line).results().count();
+                    Matcher stackMatcher = Regex.bracketsStartPattern.matcher(line);
+                    long stack = 0;
+                    while (stackMatcher.find()) stack++;
                     while (stack > 0) {
                         // extract attributes from infobox
                         Matcher leagueMatcher = Regex.leaguePattern.matcher(line);
@@ -100,8 +103,14 @@ public class Parser {
                         // read next line of infobox
                         line = reader.readLine();
                         if (line == null) break;
-                        stack += Regex.bracketsStartPattern.matcher(line).results().count();
-                        stack -= Regex.bracketsEndPattern.matcher(line).results().count();
+
+                        // count opening brackets
+                        stackMatcher = Regex.bracketsStartPattern.matcher(line);
+                        while (stackMatcher.find()) stack++;
+
+                        // count closing brackets
+                        stackMatcher = Regex.bracketsEndPattern.matcher(line);
+                        while (stackMatcher.find()) stack--;
                     }
 
                     // read text inside page
@@ -141,7 +150,9 @@ public class Parser {
                 if (infoboxMatcher.find()) {
                     Player player = new Player(title);
 
-                    long stack = Regex.bracketsStartPattern.matcher(line).results().count();
+                    Matcher stackMatcher = Regex.bracketsStartPattern.matcher(line);
+                    long stack = 0;
+                    while (stackMatcher.find()) stack++;
                     while (stack > 0) {
                         // get club names and years
                         findClubYears(line, player);
@@ -150,8 +161,14 @@ public class Parser {
                         // read next line of infobox
                         line = reader.readLine();
                         if (line == null) break;
-                        stack += Regex.bracketsStartPattern.matcher(line).results().count();
-                        stack -= Regex.bracketsEndPattern.matcher(line).results().count();
+
+                        // count opening brackets
+                        stackMatcher = Regex.bracketsStartPattern.matcher(line);
+                        while (stackMatcher.find()) stack++;
+
+                        // count closing brackets
+                        stackMatcher = Regex.bracketsEndPattern.matcher(line);
+                        while (stackMatcher.find()) stack--;
                     }
 
                     // return player if he has played for at least one club
