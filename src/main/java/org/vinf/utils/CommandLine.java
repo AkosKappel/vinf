@@ -2,6 +2,7 @@ package org.vinf.utils;
 
 import org.vinf.documents.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -56,6 +57,18 @@ public final class CommandLine {
                 case "clubs":
                     clubs(args);
                     break;
+                case "save":
+                    save(args);
+                    break;
+                case "load":
+                    load(args);
+                    break;
+                case "-i":
+                case "index":
+                    index(args);
+                case "clear":
+                    clear();
+                    break;
                 case "-q":
                 case "quit":
                 case "exit":
@@ -77,6 +90,10 @@ public final class CommandLine {
         System.out.println("  teammates [player1], [player2] - print whether two players played together");
         System.out.println("  opponents [player1], [player2] - print whether two players played against each other");
         System.out.println("  clubs [club1] [club2] - print whether two clubs played against each other");
+        System.out.println("  save [filename] - save the inverted index to a file");
+        System.out.println("  load [filename] - load the inverted index from a file");
+        System.out.println("  index [filename...] - index XML files");
+        System.out.println("  clear - clear the inverted index");
         System.out.println("  quit - exit the application");
     }
 
@@ -107,21 +124,22 @@ public final class CommandLine {
             return;
         }
 
-        String type = args[0];
-        switch (type) {
-            case "p":
-            case "players":
-                invertedIndex.printPlayers();
-                System.out.println("Found " + invertedIndex.playersSize() + " players.");
-                break;
-            case "c":
-            case "clubs":
-                invertedIndex.printClubs();
-                System.out.println("Found " + invertedIndex.clubsSize() + " clubs.");
-                break;
-            default:
-                System.out.println("Unknown type: " + type);
-                break;
+        for (String type : args) {
+            switch (type) {
+                case "p":
+                case "players":
+                    invertedIndex.printPlayers();
+                    System.out.println("Found " + invertedIndex.playersSize() + " players.");
+                    break;
+                case "c":
+                case "clubs":
+                    invertedIndex.printClubs();
+                    System.out.println("Found " + invertedIndex.clubsSize() + " clubs.");
+                    break;
+                default:
+                    System.out.println("Unknown type: " + type);
+                    break;
+            }
         }
     }
 
@@ -214,6 +232,64 @@ public final class CommandLine {
                     .append(club2.getLeague()).append(".");
         }
         System.out.println(sb);
+    }
+
+    public void save(String[] args) {
+        if (args.length < 1) {
+            System.out.println("Missing argument!");
+            System.out.println("  Usage: save [filename]");
+            return;
+        }
+
+        String filename = args[0];
+        try {
+            invertedIndex.save(filename);
+            System.out.println("Saved " + invertedIndex.size() + " documents (" + invertedIndex.playersSize() +
+                    " players, " + invertedIndex.clubsSize() + " clubs) into " + filename + ".");
+        } catch (IOException e) {
+            System.out.println("Error saving to file: " + e.getMessage());
+        }
+    }
+
+    public void load(String[] args) {
+        if (args.length < 1) {
+            System.out.println("Missing argument!");
+            System.out.println("  Usage: load [filename]");
+            return;
+        }
+
+        String filename = args[0];
+        try {
+            invertedIndex.load(filename);
+            System.out.println("Loaded " + invertedIndex.size() + " documents (" + invertedIndex.playersSize() +
+                    " players, " + invertedIndex.clubsSize() + " clubs) from " + filename + ".");
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error loading from file: " + e.getMessage());
+        }
+    }
+
+    public void index(String[] args) {
+        if (args.length < 1) {
+            System.out.println("Missing argument!");
+            System.out.println("  Usage: index [filename...]");
+            return;
+        }
+
+        // TODO: implement
+//        for (String filename : args) {
+//            try {
+//                invertedIndex.index(filename);
+//                System.out.println("Indexed " + invertedIndex.size() + " documents (" + invertedIndex.playersSize() +
+//                        " players, " + invertedIndex.clubsSize() + " clubs) from " + filename + ".");
+//            } catch (IOException e) {
+//                System.out.println("Error indexing file: " + e.getMessage());
+//            }
+//        }
+    }
+
+    public void clear() {
+        invertedIndex.clear();
+        System.out.println("Cleared index.");
     }
 
     private ArrayList<Page> getSelectedPlayers(String[] args, String command) {

@@ -2,14 +2,21 @@ package org.vinf.utils;
 
 import org.vinf.documents.*;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.Normalizer;
 import java.util.*;
 
-public class InvertedIndex {
+public class InvertedIndex implements Serializable {
 
-    private final HashMap<String, ArrayList<Integer>> index;
-    private final HashMap<Integer, Page> playerDocuments;
-    private final HashMap<Integer, Page> clubDocuments;
+
+    private static final long serialVersionUID = 1L;
+    private static final String INDEX_FOLDER = "./index/";
+
+    private HashMap<String, ArrayList<Integer>> index;
+    private HashMap<Integer, Page> playerDocuments;
+    private HashMap<Integer, Page> clubDocuments;
 
     private static int DOCUMENT_ID = 0;
 
@@ -265,4 +272,35 @@ public class InvertedIndex {
         return players;
     }
 
+    public void save(String filename) throws IOException {
+        // create index folder if it doesn't exist
+        File indexFolder = new File(INDEX_FOLDER);
+        if (!indexFolder.exists()) {
+            boolean success = indexFolder.mkdir();
+            if (!success) {
+                throw new IOException("Failed to create folder: " + INDEX_FOLDER);
+            }
+        }
+
+        // serialize index
+        try (ObjectOutputStream out = new ObjectOutputStream(Files.newOutputStream(Paths.get(INDEX_FOLDER + filename)))) {
+            out.writeObject(this);
+        }
+    }
+
+    public void load(String filename) throws IOException, ClassNotFoundException {
+        // deserialize index
+        try (ObjectInputStream in = new ObjectInputStream(Files.newInputStream(Paths.get(INDEX_FOLDER + filename)))) {
+            InvertedIndex obj = (InvertedIndex) in.readObject();
+            this.index = obj.index;
+            this.clubDocuments = obj.clubDocuments;
+            this.playerDocuments = obj.playerDocuments;
+        }
+    }
+
+    public void clear() {
+        index.clear();
+        clubDocuments.clear();
+        playerDocuments.clear();
+    }
 }

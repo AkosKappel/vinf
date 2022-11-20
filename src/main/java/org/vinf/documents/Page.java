@@ -2,9 +2,12 @@ package org.vinf.documents;
 
 import org.vinf.utils.Regex;
 
+import java.io.Serializable;
 import java.util.regex.Matcher;
 
-public abstract class Page {
+public abstract class Page implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     String title;
     String name;

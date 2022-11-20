@@ -1,6 +1,11 @@
 package org.vinf.documents;
 
-public class ClubHistory {
+import java.io.Serializable;
+
+public class ClubHistory implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private String clubName;
     private int yearStart;
     private int yearEnd;

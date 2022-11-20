@@ -51,8 +51,8 @@ public class Main {
 //        testClubs(clubs);
 //        testPlayers(players);
 
-//        commandLine.help();
-//        commandLine.run();
+        commandLine.help();
+        commandLine.run();
     }
 
     private static void indexDocuments() {
