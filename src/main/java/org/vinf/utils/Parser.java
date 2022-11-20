@@ -4,10 +4,7 @@ import org.vinf.documents.Club;
 import org.vinf.documents.Page;
 import org.vinf.documents.Player;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,6 +77,8 @@ public class Parser {
         ArrayList<Page> players = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            System.out.println("Parsing " + filePath + " ...");
+
             String line;
             while ((line = reader.readLine()) != null) {
                 // check if page starts with <page>
@@ -120,6 +119,9 @@ public class Parser {
                     }
                 }
             }
+        } catch (FileNotFoundException e) {
+            System.out.println("File " + filePath + " not found!");
+            return null;
         } catch (IOException e) {
             e.printStackTrace();
         }

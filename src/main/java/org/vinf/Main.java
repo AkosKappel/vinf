@@ -12,8 +12,8 @@ public class Main {
     private static final String dataFolder = "./data/";
     private static final String[] xmlFiles = {
 //            "soccer-clubs.xml",
-//            "soccer-players.xml",
-            "enwiki-latest-pages-articles1.xml",
+            "soccer-players.xml",
+//            "enwiki-latest-pages-articles1.xml",
 //            "enwiki-latest-pages-articles2.xml",
 //            "enwiki-latest-pages-articles3.xml",
 //            "enwiki-latest-pages-articles4.xml",
@@ -58,10 +58,10 @@ public class Main {
     private static void indexDocuments() {
         for (String xmlFile : xmlFiles) {
             String filePath = dataFolder + xmlFile;
-            System.out.println("Parsing " + filePath + " ...");
 
             // parse XML file
             Map<String, ArrayList<Page>> docs = Parser.parseXML(filePath);
+            if (docs == null) continue;
             ArrayList<Page> players = docs.get("players");
             ArrayList<Page> clubs = docs.get("clubs");
 
