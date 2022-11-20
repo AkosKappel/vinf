@@ -12,6 +12,7 @@ public class InvertedIndex implements Serializable {
 
 
     private static final long serialVersionUID = 1L;
+    private static final String DATA_FOLDER = "./data/";
     private static final String INDEX_FOLDER = "./index/";
 
     private HashMap<String, ArrayList<Integer>> index;
@@ -295,6 +296,26 @@ public class InvertedIndex implements Serializable {
             this.index = obj.index;
             this.clubDocuments = obj.clubDocuments;
             this.playerDocuments = obj.playerDocuments;
+        }
+    }
+
+    public void index(String xmlFile) {
+        String filePath = DATA_FOLDER + xmlFile;
+
+        // parse XML file
+        Map<String, ArrayList<Page>> docs = Parser.parseXML(filePath);
+        if (docs == null) return;
+        ArrayList<Page> players = docs.get("players");
+        ArrayList<Page> clubs = docs.get("clubs");
+
+        // build inverted index
+        addDocuments(players, DocumentType.PLAYER);
+        addDocuments(clubs, DocumentType.CLUB);
+    }
+
+    public void index(String[] xmlFiles) {
+        for (String xmlFile : xmlFiles) {
+            index(xmlFile);
         }
     }
 

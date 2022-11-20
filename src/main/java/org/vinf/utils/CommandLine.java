@@ -45,6 +45,9 @@ public final class CommandLine {
                 case "show":
                     display(args);
                     break;
+                case "count":
+                    showCounts();
+                    break;
                 case "-t":
                 case "teammates":
                     teammates(args);
@@ -66,6 +69,7 @@ public final class CommandLine {
                 case "-i":
                 case "index":
                     index(args);
+                    break;
                 case "clear":
                     clear();
                     break;
@@ -87,6 +91,7 @@ public final class CommandLine {
         System.out.println("  search [query...] - search between all the documents");
         System.out.println("  list [players | clubs] - list all the documents containing the given type");
         System.out.println("  display [index | documents] - print inverted index or parsed documents");
+        System.out.println("  count - show the number of documents");
         System.out.println("  teammates [player1], [player2] - print whether two players played together");
         System.out.println("  opponents [player1], [player2] - print whether two players played against each other");
         System.out.println("  clubs [club1] [club2] - print whether two clubs played against each other");
@@ -146,7 +151,7 @@ public final class CommandLine {
     public void display(String[] args) {
         if (args.length < 1) {
             System.out.println("Missing argument!");
-            System.out.println("  Usage: show [index | documents]");
+            System.out.println("  Usage: display [index | documents]");
             return;
         }
 
@@ -166,6 +171,11 @@ public final class CommandLine {
         }
     }
 
+    public void showCounts() {
+        System.out.println("Currently indexed " + invertedIndex.size() + " documents (" +
+                invertedIndex.playersSize() + " players, " + invertedIndex.clubsSize() + " clubs).");
+    }
+
     public void teammates(String[] args) {
         ArrayList<Page> selectedPlayers = getSelectedPlayers(args, "teammates");
         if (selectedPlayers == null) return;
@@ -173,6 +183,7 @@ public final class CommandLine {
         Player player1 = (Player) selectedPlayers.get(0);
         Player player2 = (Player) selectedPlayers.get(1);
 
+        // TODO: check if not the same player (with equals method)
         boolean wereTeammates = player1.hasPlayedWith(player2);
 
         // display final result to user
@@ -275,16 +286,11 @@ public final class CommandLine {
             return;
         }
 
-        // TODO: implement
-//        for (String filename : args) {
-//            try {
-//                invertedIndex.index(filename);
-//                System.out.println("Indexed " + invertedIndex.size() + " documents (" + invertedIndex.playersSize() +
-//                        " players, " + invertedIndex.clubsSize() + " clubs) from " + filename + ".");
-//            } catch (IOException e) {
-//                System.out.println("Error indexing file: " + e.getMessage());
-//            }
-//        }
+        for (String filename : args) {
+            invertedIndex.index(filename);
+            System.out.println("Indexed documents: " + invertedIndex.size() + " (" + invertedIndex.playersSize() +
+                    " players, " + invertedIndex.clubsSize() + " clubs)");
+        }
     }
 
     public void clear() {
