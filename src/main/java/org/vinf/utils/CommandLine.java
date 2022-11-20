@@ -183,7 +183,6 @@ public final class CommandLine {
         Player player1 = (Player) selectedPlayers.get(0);
         Player player2 = (Player) selectedPlayers.get(1);
 
-        // TODO: check if not the same player (with equals method)
         boolean wereTeammates = player1.hasPlayedWith(player2);
 
         // display final result to user

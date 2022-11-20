@@ -5,11 +5,10 @@ import org.vinf.utils.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 
 
 public class Main {
-    private static final String dataFolder = "./data/";
+
     private static final String[] xmlFiles = {
             "soccer-clubs.xml",
             "soccer-players.xml",
