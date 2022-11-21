@@ -89,6 +89,16 @@ public class InvertedIndex implements Serializable {
         }
     }
 
+    public void addDocument(Page document) {
+        if (document instanceof Player) {
+            addDocument(document, DocumentType.PLAYER);
+        } else if (document instanceof Club) {
+            addDocument(document, DocumentType.CLUB);
+        } else {
+            throw new IllegalArgumentException("Invalid document type: " + document.getClass());
+        }
+    }
+
     public ArrayList<Page> search(String query) {
         ArrayList<Page> results = new ArrayList<>();
         ArrayList<Integer> intersection = processQuery(query);
@@ -230,11 +240,11 @@ public class InvertedIndex implements Serializable {
     }
 
     public void printDocuments() {
-        for (int id : clubDocuments.keySet()) {
-            System.out.println(id + "\n" + clubDocuments.get(id));
-        }
         for (int id : playerDocuments.keySet()) {
             System.out.println(id + "\n" + playerDocuments.get(id));
+        }
+        for (int id : clubDocuments.keySet()) {
+            System.out.println(id + "\n" + clubDocuments.get(id));
         }
     }
 

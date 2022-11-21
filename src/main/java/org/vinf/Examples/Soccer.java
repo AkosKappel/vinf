@@ -4,81 +4,83 @@ import org.vinf.documents.*;
 import org.vinf.utils.*;
 
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.function.MapFunction;
-import org.apache.spark.api.java.function.PairFunction;
-import org.apache.spark.sql.catalyst.encoders.RowEncoder;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.catalyst.expressions.GenericRowWithSchema;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
-import scala.Function1;
 import scala.Tuple2;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Soccer {
 
-    private static final SparkConf conf = new SparkConf()
+    private static final SparkConf config = new SparkConf()
             .setMaster("local[*]")
-            .setAppName("XML Parser");
+            .setAppName("SoccerParser");
+
+    private static final InvertedIndex invertedIndex = new InvertedIndex();
+    private static final CommandLine cli = new CommandLine(invertedIndex);
+    private static final JavaSparkContext sc = new JavaSparkContext(config);
+    private static final SQLContext sqlContext = new SQLContext(sc);
+    private static final StructType wikipediaXMLSchema = getSchema();
+
+    private static final String dataFolder = "data/";
+    private static final String[] xmlFiles = {
+//            "soccer-clubs.xml",
+//            "soccer-players.xml",
+            "enwiki-latest-pages-articles1.xml",
+//            "enwiki-latest-pages-articles2.xml",
+//            "enwiki-latest-pages-articles3.xml",
+//            "enwiki-latest-pages-articles4.xml",
+//            "enwiki-latest-pages-articles5.xml",
+    };
 
     public static void main(String[] args) {
-//        String fileName = "./data/soccer-players.xml";
-//        String fileName = "./data/soccer-clubs.xml";
-        String fileName = "./data/enwiki-latest-pages-articles1.xml";
 
-        try (JavaSparkContext sc = new JavaSparkContext(conf)) {
-            SQLContext sqlContext = new SQLContext(sc);
-            StructType schema = getSchema();
+        long startTime = System.nanoTime();
 
-            System.out.println("### START ###");
-            long startTime = System.nanoTime();
-
-            JavaRDD<Row> df = sqlContext.read()
-                    .format("com.databricks.spark.xml")
-                    .option("rowTag", "page")
-                    .schema(schema)
-                    .load(fileName)
-                    .javaRDD();
-
-            // parallelize the data TODO: try if it's faster
-//            df = df.repartition(4);
-
-            JavaRDD<Page> pages = df.map(row -> {
-                // get page title
-                String title = row.getAs("title");
-
-                // get wiki text
-                GenericRowWithSchema revision = row.getAs("revision");
-                GenericRowWithSchema text = revision.getAs("text");
-                String wikiText = text.getAs("_VALUE");
-
-                // count lines in wiki text
-//                int lines = wikiText.split("\n").length;
-//                int length = wikiText.length();
-//                System.out.println(title + ", length = " + length + ", lines = " + lines);
-//                System.out.println(row.schema());
-
-                return Parser.parsePage(title, wikiText);
-            }).filter(Objects::nonNull);
-
-            long endTime = System.nanoTime();
-            long duration = (endTime - startTime);
-
-//            pages.foreach(page -> {
-//                System.out.print("# Page: ");
-//                System.out.println(page);
-//            });
-
-            long count = pages.count();
-            System.out.println("Found " + count + " documents in " + duration / 1_000_000 + " ms");
+        for (String fileName : xmlFiles) {
+            runSpark(dataFolder + fileName);
         }
 
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);
+
+        long count = invertedIndex.size();
+        System.out.println("Found " + count + " documents in " + duration / 1_000_000 + " ms");
+
+        sc.close();
+
+//        cli.run();
+    }
+
+    private static void runSpark(String fileName) {
+        JavaRDD<Row> df = sqlContext.read()
+                .format("com.databricks.spark.xml")
+                .option("rowTag", "page")
+                .schema(wikipediaXMLSchema)
+                .load(fileName)
+                .javaRDD();
+
+        JavaRDD<Tuple2<Page, DocumentType>> pages = df.map(row -> {
+            // get page title
+            String title = row.getAs("title");
+
+            // get wiki text
+            GenericRowWithSchema revision = row.getAs("revision");
+            GenericRowWithSchema text = revision.getAs("text");
+            String wikiText = text.getAs("_VALUE");
+
+            // parse wikipedia page
+            return Parser.parsePage(title, wikiText);
+        }).filter(Objects::nonNull);
+
+        pages.foreach(tuple -> invertedIndex.addDocument(tuple._1, tuple._2));
     }
 
     private static StructType getSchema() {

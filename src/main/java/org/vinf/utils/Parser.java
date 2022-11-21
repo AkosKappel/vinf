@@ -1,8 +1,10 @@
 package org.vinf.utils;
 
 import org.vinf.documents.Club;
+import org.vinf.documents.DocumentType;
 import org.vinf.documents.Page;
 import org.vinf.documents.Player;
+import scala.Tuple2;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -16,9 +18,11 @@ public class Parser {
         throw new UnsupportedOperationException("Cannot instantiate utils.Parser class");
     }
 
-    public static Page parsePage(String wikiTitle, String wikiText) {
+    public static Tuple2<Page, DocumentType> parsePage(String wikiTitle, String wikiText) {
         boolean isSoccerPlayer = false;
         boolean isSoccerClub = false;
+
+        if (wikiTitle == null || wikiText == null) return null;
 
         // read wiki text line by line and check whether the page is relevant
         try (BufferedReader reader = new BufferedReader(new StringReader(wikiText))) {
@@ -62,14 +66,17 @@ public class Parser {
         }
 
         Page page = null;
+        DocumentType type = null;
         // filter out relevant pages
         if (isSoccerPlayer) {
             page = new Player(wikiTitle, wikiText);
+            type = DocumentType.PLAYER;
         } else if (isSoccerClub) {
             page = new Club(wikiTitle, wikiText);
+            type = DocumentType.CLUB;
         }
 
-        return page != null && page.isValid() ? page : null;
+        return page != null && page.isValid() ? new Tuple2<>(page, type) : null;
     }
 
     public static Map<String, ArrayList<Page>> parseXML(String filePath) {

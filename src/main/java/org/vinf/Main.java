@@ -21,7 +21,7 @@ public class Main {
     };
 
     private static final InvertedIndex invertedIndex = new InvertedIndex();
-    private static final CommandLine commandLine = new CommandLine(invertedIndex);
+    private static final CommandLine cli = new CommandLine(invertedIndex);
 
     public static void main(String[] args) {
         // measure execution start time
@@ -40,12 +40,14 @@ public class Main {
 //        invertedIndex.printClubs();
         System.out.println("Found " + invertedIndex.size() + " documents in " + duration / 1_000_000 + " ms");
 
+        // for testing purposes
 //        tests();
 //        testClubs();
 //        testPlayers();
 
-        commandLine.help();
-        commandLine.run();
+        // start command line interface
+//        cli.help();
+//        cli.run();
     }
 
     private static void tests() {
@@ -79,8 +81,8 @@ public class Main {
         ans = Player.yearsOverlap(c1, c3) ? "" : " don't";
         System.out.println("Years " + c1.getYearStart() + "-" + c1.getYearEnd() + ans + " overlap with " + c3.getYearStart() + "-" + c3.getYearEnd());
 
-        commandLine.teammates(new String[]{p1.getName(), ",", p2.getName()});
-        commandLine.teammates(new String[]{p1.getName(), ",", p3.getName()});
+        cli.teammates(new String[]{p1.getName(), ",", p2.getName()});
+        cli.teammates(new String[]{p1.getName(), ",", p3.getName()});
 
 //        for (int i = 0; i < players.size(); i++) {
 //            System.out.println(players.get(i).getName() + " - " + i);
@@ -89,17 +91,17 @@ public class Main {
         Player p4 = players.get(67); // Brad Friedel
         Player p5 = players.get(90); // Bruce Grobbelaar
 
-        commandLine.opponents(new String[]{p4.getName(), ",", p5.getName()});
+        cli.opponents(new String[]{p4.getName(), ",", p5.getName()});
 
         Player p6 = players.get(68); // DaMarcus Beasley
         Player p7 = players.get(91); // Colin Bell
 
-        commandLine.opponents(new String[]{p6.getName(), ",", p7.getName()});
+        cli.opponents(new String[]{p6.getName(), ",", p7.getName()});
 
         Player p8 = players.get(2); // David Beckham
         Player p9 = players.get(27); // Thierry Henry
 
-        commandLine.opponents(new String[]{p8.getName(), ",", p9.getName()});
+        cli.opponents(new String[]{p8.getName(), ",", p9.getName()});
     }
 
     private static void testClubs() {
