@@ -10,13 +10,14 @@ import java.util.Arrays;
 public class Main {
 
     private static final String[] xmlFiles = {
-            "soccer-clubs.xml",
-            "soccer-players.xml",
-//            "enwiki-latest-pages-articles1.xml",
+            "soccer-clubs.xml", // small dataset with clubs
+            "soccer-players.xml", // small dataset with players
+//            "enwiki-latest-pages-articles1.xml", // first 1 GB part of the dataset
 //            "enwiki-latest-pages-articles2.xml",
 //            "enwiki-latest-pages-articles3.xml",
 //            "enwiki-latest-pages-articles4.xml",
 //            "enwiki-latest-pages-articles5.xml",
+//            "enwiki-latest-pages-articles.xml", // entire dataset (more than 80 GB)
     };
 
     private static final InvertedIndex invertedIndex = new InvertedIndex();
@@ -33,22 +34,15 @@ public class Main {
         long endTime = System.nanoTime();
         long duration = (endTime - startTime);
 
-//        for (Page p : invertedIndex.getDocuments()) {
-//            System.out.println(p.getTitle());
-//        }
-
 //        invertedIndex.print();
 //        invertedIndex.printDocuments();
 //        invertedIndex.printPlayers();
 //        invertedIndex.printClubs();
         System.out.println("Found " + invertedIndex.size() + " documents in " + duration / 1_000_000 + " ms");
 
-        ArrayList<Club> clubs = invertedIndex.getClubs();
-        ArrayList<Player> players = invertedIndex.getPlayers();
-
 //        tests();
-//        testClubs(clubs);
-//        testPlayers(players);
+//        testClubs();
+//        testPlayers();
 
         commandLine.help();
         commandLine.run();
@@ -68,7 +62,9 @@ public class Main {
         System.out.println(invertedIndex.intersect(lists1));
     }
 
-    private static void testPlayers(ArrayList<Player> players) {
+    private static void testPlayers() {
+        ArrayList<Player> players = invertedIndex.getPlayers();
+
         Player p1 = players.get(10); // Míchel
         Player p2 = players.get(11); // Emilio Butragueño
         Player p3 = players.get(0); // Bobby Charlton
@@ -106,7 +102,9 @@ public class Main {
         commandLine.opponents(new String[]{p8.getName(), ",", p9.getName()});
     }
 
-    private static void testClubs(ArrayList<Club> clubs) {
+    private static void testClubs() {
+        ArrayList<Club> clubs = invertedIndex.getClubs();
+
         Club c1 = clubs.get(0); // Arsenal F.C. (Premier League)
         Club c2 = clubs.get(1); // AFC Ajax (Eredivisie)
         Club c3 = clubs.get(2); // AZ Alkmaar (Eredivisie)

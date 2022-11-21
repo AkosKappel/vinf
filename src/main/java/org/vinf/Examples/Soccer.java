@@ -29,12 +29,15 @@ public class Soccer {
 
     public static void main(String[] args) {
 //        String fileName = "./data/soccer-players.xml";
-        String fileName = "./data/soccer-clubs.xml";
-//        String fileName = "./data/enwiki-latest-pages-articles1.xml";
+//        String fileName = "./data/soccer-clubs.xml";
+        String fileName = "./data/enwiki-latest-pages-articles1.xml";
 
         try (JavaSparkContext sc = new JavaSparkContext(conf)) {
             SQLContext sqlContext = new SQLContext(sc);
             StructType schema = getSchema();
+
+            System.out.println("### START ###");
+            long startTime = System.nanoTime();
 
             JavaRDD<Row> df = sqlContext.read()
                     .format("com.databricks.spark.xml")
@@ -56,15 +59,16 @@ public class Soccer {
                 String wikiText = text.getAs("_VALUE");
 
                 // count lines in wiki text
-                int lines = wikiText.split("\n").length;
-                int length = wikiText.length();
-
+//                int lines = wikiText.split("\n").length;
+//                int length = wikiText.length();
 //                System.out.println(title + ", length = " + length + ", lines = " + lines);
 //                System.out.println(row.schema());
 
-                Page page = Parser.parsePage(title, wikiText);
-                return page;
+                return Parser.parsePage(title, wikiText);
             }).filter(Objects::nonNull);
+
+            long endTime = System.nanoTime();
+            long duration = (endTime - startTime);
 
 //            pages.foreach(page -> {
 //                System.out.print("# Page: ");
@@ -72,7 +76,7 @@ public class Soccer {
 //            });
 
             long count = pages.count();
-            System.out.println("Found " + count + " documents");
+            System.out.println("Found " + count + " documents in " + duration / 1_000_000 + " ms");
         }
 
     }

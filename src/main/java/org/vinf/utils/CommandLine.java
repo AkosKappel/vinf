@@ -94,7 +94,7 @@ public final class CommandLine {
         System.out.println("  count - show the number of documents");
         System.out.println("  teammates [player1], [player2] - print whether two players played together");
         System.out.println("  opponents [player1], [player2] - print whether two players played against each other");
-        System.out.println("  clubs [club1] [club2] - print whether two clubs played against each other");
+        System.out.println("  clubs [club1], [club2] - print whether two clubs played against each other");
         System.out.println("  save [filename] - save the inverted index to a file");
         System.out.println("  load [filename] - load the inverted index from a file");
         System.out.println("  index [filename...] - index XML files");
