@@ -97,7 +97,7 @@ public final class CommandLine {
         System.out.println("  clubs [club1], [club2] - print whether two clubs played against each other");
         System.out.println("  save [filename] - save the inverted index to a file");
         System.out.println("  load [filename] - load the inverted index from a file");
-        System.out.println("  index [filename...] - index XML files");
+//        System.out.println("  index [filename...] - index XML files");
         System.out.println("  clear - clear the inverted index");
         System.out.println("  quit - exit the application");
     }

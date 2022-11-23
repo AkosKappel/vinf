@@ -1,5 +1,6 @@
 package org.vinf.utils;
 
+import org.vinf.Main;
 import org.vinf.documents.*;
 
 import java.io.*;
@@ -10,10 +11,7 @@ import java.util.*;
 
 public class InvertedIndex implements Serializable {
 
-
     private static final long serialVersionUID = 1L;
-    private static final String DATA_FOLDER = "./data/";
-    private static final String INDEX_FOLDER = "./index/";
 
     private HashMap<String, ArrayList<Integer>> index;
     private HashMap<Integer, Page> playerDocuments;
@@ -285,23 +283,23 @@ public class InvertedIndex implements Serializable {
 
     public void save(String filename) throws IOException {
         // create index folder if it doesn't exist
-        File indexFolder = new File(INDEX_FOLDER);
+        File indexFolder = new File(Settings.INDEX_FOLDER);
         if (!indexFolder.exists()) {
             boolean success = indexFolder.mkdir();
             if (!success) {
-                throw new IOException("Failed to create folder: " + INDEX_FOLDER);
+                throw new IOException("Failed to create folder: " + Settings.INDEX_FOLDER);
             }
         }
 
         // serialize index
-        try (ObjectOutputStream out = new ObjectOutputStream(Files.newOutputStream(Paths.get(INDEX_FOLDER + filename)))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(Files.newOutputStream(Paths.get(Settings.INDEX_FOLDER + filename)))) {
             out.writeObject(this);
         }
     }
 
     public void load(String filename) throws IOException, ClassNotFoundException {
         // deserialize index
-        try (ObjectInputStream in = new ObjectInputStream(Files.newInputStream(Paths.get(INDEX_FOLDER + filename)))) {
+        try (ObjectInputStream in = new ObjectInputStream(Files.newInputStream(Paths.get(Settings.INDEX_FOLDER + filename)))) {
             InvertedIndex obj = (InvertedIndex) in.readObject();
             this.index = obj.index;
             this.clubDocuments = obj.clubDocuments;
@@ -310,7 +308,7 @@ public class InvertedIndex implements Serializable {
     }
 
     public void index(String xmlFile) {
-        String filePath = DATA_FOLDER + xmlFile;
+        String filePath = Settings.DATA_FOLDER + xmlFile;
 
         // parse XML file
         Map<String, ArrayList<Page>> docs = Parser.parseXML(filePath);
