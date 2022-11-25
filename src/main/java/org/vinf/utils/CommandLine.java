@@ -270,6 +270,7 @@ public final class CommandLine {
 
         String filename = args[0];
         try {
+            invertedIndex.clear();
             invertedIndex.load(filename);
             System.out.println("Loaded " + invertedIndex.size() + " documents (" + invertedIndex.playersSize() +
                     " players, " + invertedIndex.clubsSize() + " clubs) from " + filename + ".");

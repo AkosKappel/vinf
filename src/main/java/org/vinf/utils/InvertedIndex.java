@@ -308,17 +308,19 @@ public class InvertedIndex implements Serializable {
     }
 
     public void index(String xmlFile) {
-        String filePath = Settings.DATA_FOLDER + xmlFile;
-
         // parse XML file
-        Map<String, ArrayList<Page>> docs = Parser.parseXML(filePath);
-        if (docs == null) return;
-        ArrayList<Page> players = docs.get("players");
-        ArrayList<Page> clubs = docs.get("clubs");
+        if (Settings.USE_DISTRIBUTED) {
+            Main.runSpark(xmlFile);
+        } else {
+            Map<String, ArrayList<Page>> docs = Parser.parseXML(xmlFile);
+            if (docs == null) return;
+            ArrayList<Page> players = docs.get("players");
+            ArrayList<Page> clubs = docs.get("clubs");
 
-        // build inverted index
-        addDocuments(players, DocumentType.PLAYER);
-        addDocuments(clubs, DocumentType.CLUB);
+            // build inverted index
+            addDocuments(players, DocumentType.PLAYER);
+            addDocuments(clubs, DocumentType.CLUB);
+        }
     }
 
     public void index(String[] xmlFiles) {

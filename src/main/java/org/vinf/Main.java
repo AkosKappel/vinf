@@ -13,6 +13,7 @@ import org.vinf.documents.*;
 import org.vinf.utils.*;
 import scala.Tuple2;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -47,21 +48,30 @@ public class Main {
         System.out.println("Found " + invertedIndex.size() + " documents in " + duration / 1_000_000 + " ms");
 
         // start command line interface
-//        cli.help();
-//        cli.run();
+        cli.help();
+        cli.run();
 
         // stop Spark
         sc.close();
     }
 
     public static void runSpark(String fileName) {
+        // check if file exists
+        File file = new File(fileName);
+        if (!file.exists() || !file.isFile()) {
+            System.err.println("File " + fileName + " does not exist");
+            return;
+        }
+
+        // read XML file
         JavaRDD<Row> df = sqlContext.read()
                 .format("com.databricks.spark.xml")
                 .option("rowTag", "page")
                 .schema(wikipediaXMLSchema)
-                .load(Settings.DATA_FOLDER + fileName)
+                .load(fileName)
                 .javaRDD();
 
+        // iterate over all pages and filter out relevant articles
         JavaRDD<Tuple2<Page, DocumentType>> pages = df.map(row -> {
             // get page title
             String title = row.getAs("title");
@@ -75,6 +85,7 @@ public class Main {
             return Parser.parsePage(title, wikiText);
         }).filter(Objects::nonNull);
 
+        // index all pages
         pages.foreach(tuple -> invertedIndex.addDocument(tuple._1, tuple._2));
     }
 
