@@ -86,15 +86,23 @@ public class Main {
 
             // get wiki text
             GenericRowWithSchema revision = row.getAs("revision");
+            if (revision == null) return null;
             GenericRowWithSchema text = revision.getAs("text");
+            if (text == null) return null;
             String wikiText = text.getAs("_VALUE");
 
             // parse wikipedia page
             return Parser.parsePage(title, wikiText);
         }).filter(Objects::nonNull);
 
+        if (pages == null || pages.isEmpty()) {
+            System.out.println("No pages found in file " + fileName);
+            return;
+        }
+
         // index all pages
         pages.foreach(tuple -> invertedIndex.addDocument(tuple._1, tuple._2));
+//        pages.collect().forEach(tuple -> invertedIndex.addDocument(tuple._1, tuple._2));
     }
 
     public static void runSpark(String[] fileNames) {
