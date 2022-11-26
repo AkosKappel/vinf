@@ -21,13 +21,10 @@ import java.util.Objects;
 
 public class Main {
 
-    // Spark configuration
-    private static final SparkConf config = new SparkConf()
-            .setMaster("local[*]")
-            .setAppName("SoccerParser");
-    private static final JavaSparkContext sc = new JavaSparkContext(config);
-    private static final SQLContext sqlContext = new SQLContext(sc);
-    private static final StructType wikipediaXMLSchema = getSchema();
+    // Spark variables
+    private static JavaSparkContext sc;
+    private static SQLContext sqlContext;
+    private static StructType wikipediaXMLSchema;
 
     // Index and UI
     private static final InvertedIndex invertedIndex = new InvertedIndex();
@@ -38,8 +35,12 @@ public class Main {
         long startTime = System.nanoTime();
 
         // read all XML files
-//        invertedIndex.index(Settings.XML_FILES);
-        runSpark(Settings.XML_FILES);
+        if (Settings.USE_DISTRIBUTED) {
+            initSpark();
+            runSpark(Settings.XML_FILES);
+        } else {
+            invertedIndex.index(Settings.XML_FILES);
+        }
 
         // measure execution end time
         long endTime = System.nanoTime();
@@ -52,7 +53,14 @@ public class Main {
         cli.run();
 
         // stop Spark
-        sc.close();
+        if (Settings.USE_DISTRIBUTED) sc.close();
+    }
+
+    private static void initSpark() {
+        SparkConf config = new SparkConf().setMaster(Settings.SPARK_MASTER).setAppName(Settings.APP_NAME);
+        sc = new JavaSparkContext(config);
+        sqlContext = new SQLContext(sc);
+        wikipediaXMLSchema = getSchema();
     }
 
     public static void runSpark(String fileName) {

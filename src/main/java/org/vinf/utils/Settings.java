@@ -2,10 +2,15 @@ package org.vinf.utils;
 
 public final class Settings {
 
+    public static final String APP_NAME = "SoccerParser";
+    public static final String SPARK_MASTER = "local[*]";
+    public static final boolean USE_DISTRIBUTED = true;
+
     public static final String DATA_FOLDER = "./data/";
     public static final String INDEX_FOLDER = "./index/";
 
     public static final String[] XML_FILES = {
+//            DATA_FOLDER + "soccer-player-exception.xml",
             DATA_FOLDER + "soccer-clubs.xml", // small dataset with clubs
             DATA_FOLDER + "soccer-players.xml", // small dataset with players
 //            DATA_FOLDER + "enwiki-latest-pages-articles1.xml", // first 1 GB part of the dataset
@@ -15,8 +20,6 @@ public final class Settings {
 //            DATA_FOLDER + "enwiki-latest-pages-articles5.xml",
 //            DATA_FOLDER + "enwiki-latest-pages-articles.xml", // entire dataset (more than 80 GB)
     };
-
-    public static final boolean USE_DISTRIBUTED = true;
 
     private Settings() {
         throw new UnsupportedOperationException("Cannot instantiate utils.Settings class");

@@ -171,6 +171,9 @@ public class Player extends Page {
     }
 
     public void updateClubName(int clubIndex, String clubName, ClubType type) {
+        if (clubName != null) clubName = clubName.trim();
+        if (clubIndex < 0 || clubName == null || clubName.isEmpty()) return;
+
         ArrayList<ClubHistory> clubsToUpdate = getClubsByType(type);
         if (clubsToUpdate == null) return;
 
@@ -181,7 +184,8 @@ public class Player extends Page {
     }
 
     public void updateYearJoined(int clubIndex, String yearJoined, ClubType type) {
-        if (yearJoined == null || !yearJoined.matches(Regex.digits)) return;
+        if (yearJoined != null) yearJoined = yearJoined.trim();
+        if (clubIndex < 0 || yearJoined == null || !yearJoined.matches(Regex.digits)) return;
 
         ArrayList<ClubHistory> clubListToUpdate = getClubsByType(type);
         if (clubListToUpdate == null) return;
@@ -196,6 +200,9 @@ public class Player extends Page {
     }
 
     public void updateYearLeft(int clubIndex, String yearLeft, ClubType type) {
+        if (yearLeft != null) yearLeft = yearLeft.trim();
+        if (clubIndex < 0) return;
+
         ArrayList<ClubHistory> clubListToUpdate = getClubsByType(type);
         if (clubListToUpdate == null) return;
 

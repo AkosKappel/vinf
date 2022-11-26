@@ -24,7 +24,7 @@ public final class CommandLine {
             System.out.print("> ");
             String[] input = scanner.nextLine().split(" ");
 
-            String command = input[0];
+            String command = input[0].trim();
             String[] args = Arrays.copyOfRange(input, 1, input.length);
 
             switch (command) {
@@ -77,6 +77,8 @@ public final class CommandLine {
                 case "quit":
                 case "exit":
                     running = false;
+                    break;
+                case "":
                     break;
                 default:
                     System.out.println("Unknown command: " + command);
