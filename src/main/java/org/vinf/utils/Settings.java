@@ -8,6 +8,7 @@ public final class Settings {
 
     public static final String DATA_FOLDER = "./data/";
     public static final String INDEX_FOLDER = "./index/";
+    public static final String OUTPUT_FOLDER = "./output/output.txt";
 
     public static final String[] XML_FILES = {
 //            DATA_FOLDER + "soccer-player-exception.xml",
@@ -18,7 +19,7 @@ public final class Settings {
 //            DATA_FOLDER + "enwiki-latest-pages-articles3.xml",
 //            DATA_FOLDER + "enwiki-latest-pages-articles4.xml",
 //            DATA_FOLDER + "enwiki-latest-pages-articles5.xml",
-//            DATA_FOLDER + "enwiki-latest-pages-articles.xml", // entire dataset (more than 80 GB)
+//            DATA_FOLDER + "enwiki-latest-pages-articles.xml", // entire dataset (more than 90 GB)
     };
 
     private Settings() {

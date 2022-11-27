@@ -1,5 +1,6 @@
 package org.vinf;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -9,11 +10,13 @@ import org.apache.spark.sql.catalyst.expressions.GenericRowWithSchema;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
-import org.vinf.documents.*;
-import org.vinf.utils.*;
 import scala.Tuple2;
 
+import org.vinf.documents.*;
+import org.vinf.utils.*;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -96,13 +99,43 @@ public class Main {
         }).filter(Objects::nonNull);
 
         if (pages == null || pages.isEmpty()) {
-            System.out.println("No pages found in file " + fileName);
+            System.out.println("No relevant pages found in file " + fileName);
             return;
         }
 
         // index all pages
         pages.foreach(tuple -> invertedIndex.addDocument(tuple._1, tuple._2));
 //        pages.collect().forEach(tuple -> invertedIndex.addDocument(tuple._1, tuple._2));
+
+//        saveSpark(pages);
+//        loadSpark();
+    }
+
+    public static void saveSpark(JavaRDD<Tuple2<Page, DocumentType>> pages) {
+        // delete output folder if exists
+        File outputFolder = new File(Settings.OUTPUT_FOLDER);
+        if (outputFolder.exists()) {
+            try {
+                FileUtils.deleteDirectory(outputFolder);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // save spark output
+        pages.saveAsTextFile(Settings.OUTPUT_FOLDER);
+    }
+
+    public static void loadSpark() {
+        // load spark output
+        JavaRDD<String> output = sc.textFile(Settings.OUTPUT_FOLDER);
+        System.out.println("### Found " + output.count() + " documents");
+        output.foreach(str -> {
+            String[] parts = str.split(",");
+            if (parts.length < 1) return;
+            String title = parts[0];
+            System.out.println("### " + title);
+        });
     }
 
     public static void runSpark(String[] fileNames) {
