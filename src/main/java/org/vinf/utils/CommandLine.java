@@ -10,7 +10,7 @@ import java.util.Scanner;
 public final class CommandLine {
 
     private final InvertedIndex invertedIndex;
-    private final String[] exitArgs = {"exit", "quit", "q"};
+    private final String[] exitArgs = {"abort", "exit", "quit"};
 
     public CommandLine(InvertedIndex invertedIndex) {
         this.invertedIndex = invertedIndex;
@@ -67,8 +67,8 @@ public final class CommandLine {
                     load(args);
                     break;
                 case "-i":
-                case "index":
-                    index(args);
+                case "parse":
+                    parse(args);
                     break;
                 case "clear":
                     clear();
@@ -99,7 +99,7 @@ public final class CommandLine {
         System.out.println("  clubs [club1], [club2] - print whether two clubs played against each other");
         System.out.println("  save [filename] - save the inverted index to a file");
         System.out.println("  load [filename] - load the inverted index from a file");
-//        System.out.println("  index [filename...] - index XML files");
+        System.out.println("  parse [filename...] - parse & index XML files");
         System.out.println("  clear - clear the inverted index");
         System.out.println("  quit - exit the application");
     }
@@ -259,7 +259,7 @@ public final class CommandLine {
             System.out.println("Saved " + invertedIndex.size() + " documents (" + invertedIndex.playersSize() +
                     " players, " + invertedIndex.clubsSize() + " clubs) into " + filename + ".");
         } catch (IOException e) {
-            System.out.println("Error saving to file: " + e.getMessage());
+            System.err.println("Error saving to file: " + e.getMessage());
         }
     }
 
@@ -277,14 +277,14 @@ public final class CommandLine {
             System.out.println("Loaded " + invertedIndex.size() + " documents (" + invertedIndex.playersSize() +
                     " players, " + invertedIndex.clubsSize() + " clubs) from " + filename + ".");
         } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Error loading from file: " + e.getMessage());
+            System.err.println("Error loading from file: " + e.getMessage());
         }
     }
 
-    public void index(String[] args) {
+    public void parse(String[] args) {
         if (args.length < 1) {
             System.out.println("Missing argument!");
-            System.out.println("  Usage: index [filename...]");
+            System.out.println("  Usage: parse [filename...]");
             return;
         }
 
@@ -339,34 +339,8 @@ public final class CommandLine {
                 // if multiple players are found, ask the user to select one
                 System.out.println("Multiple players found with name '" + playersQuery[i] + "'.");
                 System.out.println("Please select a player by typing in his number:");
-                for (int j = 0; j < foundPlayers.size(); j++) {
-                    System.out.println(j + 1 + " - " + foundPlayers.get(j).getName());
-                }
-
-                // ask user for input until a valid number is entered
-                Scanner choiceScanner = new Scanner(System.in);
-                int choice;
-                while (true) {
-                    System.out.print("> ");
-                    try {
-                        String line = choiceScanner.nextLine();
-                        for (String exitArg : exitArgs) {
-                            if (line.toLowerCase().equals(exitArg)) {
-                                return null;
-                            }
-                        }
-                        choice = Integer.parseInt(line) - 1;
-                    } catch (NumberFormatException e) {
-                        System.out.println("Unknown choice! Please enter a number between 1 and " + foundPlayers.size() + ".");
-                        continue;
-                    }
-                    if (choice < 0 || choice > foundPlayers.size() - 1) {
-                        System.out.println("Invalid choice! Try again.");
-                        continue;
-                    }
-                    break;
-                }
-
+                int choice = getChoiceFromList(foundPlayers);
+                if (choice == -1) return null;
                 selectedPlayers.add(foundPlayers.get(choice));
             }
         }
@@ -422,34 +396,8 @@ public final class CommandLine {
                 // if multiple clubs are found, ask the user to select one
                 System.out.println("Multiple clubs found with name '" + clubsQuery[i] + "'.");
                 System.out.println("Please select a club by typing in its number:");
-                for (int j = 0; j < foundClubs.size(); j++) {
-                    System.out.println(j + 1 + " - " + foundClubs.get(j).getName());
-                }
-
-                // ask user for input until a valid number is entered
-                Scanner choiceScanner = new Scanner(System.in);
-                int choice;
-                while (true) {
-                    System.out.print("> ");
-                    try {
-                        String line = choiceScanner.nextLine();
-                        for (String exitArg : exitArgs) {
-                            if (line.toLowerCase().equals(exitArg)) {
-                                return null;
-                            }
-                        }
-                        choice = Integer.parseInt(line) - 1;
-                    } catch (NumberFormatException e) {
-                        System.out.println("Unknown choice! Please enter a number between 1 and " + foundClubs.size() + ".");
-                        continue;
-                    }
-                    if (choice < 0 || choice > foundClubs.size() - 1) {
-                        System.out.println("Invalid choice! Try again.");
-                        continue;
-                    }
-                    break;
-                }
-
+                int choice = getChoiceFromList(foundClubs);
+                if (choice == -1) return null;
                 selectedClubs.add(foundClubs.get(choice));
             }
         }
@@ -464,6 +412,37 @@ public final class CommandLine {
         }
 
         return selectedClubs;
+    }
+
+    private int getChoiceFromList(ArrayList<Page> options) {
+        for (int j = 0; j < options.size(); j++) {
+            System.out.println(j + 1 + " - " + options.get(j).getTitle());
+        }
+
+        // ask user for input until a valid number is entered
+        Scanner choiceScanner = new Scanner(System.in);
+        while (true) {
+            int choice;
+            System.out.print("> ");
+            try {
+                String line = choiceScanner.nextLine();
+                for (String exitArg : exitArgs) {
+                    if (line.toLowerCase().equals(exitArg)) {
+                        System.out.println("Aborted.");
+                        return -1;
+                    }
+                }
+                choice = Integer.parseInt(line) - 1;
+            } catch (NumberFormatException e) {
+                System.out.println("Unknown choice! Please enter a number between 1 and " + options.size() + ".");
+                continue;
+            }
+            if (choice < 0 || choice > options.size() - 1) {
+                System.out.println("Invalid choice! Try again.");
+                continue;
+            }
+            return choice;
+        }
     }
 
     private boolean hasPlayedAgainst(Player player1, Player player2) {

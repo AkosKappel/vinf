@@ -39,7 +39,6 @@ public class Main {
 
         // read all XML files
         if (Settings.USE_DISTRIBUTED) {
-            initSpark();
             runSpark(Settings.XML_FILES);
         } else {
             invertedIndex.index(Settings.XML_FILES);
@@ -56,22 +55,49 @@ public class Main {
         cli.run();
 
         // stop Spark
-        if (Settings.USE_DISTRIBUTED) sc.close();
+        if (Settings.USE_DISTRIBUTED) exitSpark();
     }
 
-    private static void initSpark() {
-        SparkConf config = new SparkConf().setMaster(Settings.SPARK_MASTER).setAppName(Settings.APP_NAME);
-        sc = new JavaSparkContext(config);
-        sqlContext = new SQLContext(sc);
-        wikipediaXMLSchema = getSchema();
+    public static void saveSpark(JavaRDD<Tuple2<Page, DocumentType>> pages) {
+        // delete output folder if exists
+        File outputFolder = new File(Settings.OUTPUT_FOLDER);
+        if (outputFolder.exists()) {
+            try {
+                FileUtils.deleteDirectory(outputFolder);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // save spark output
+        pages.saveAsTextFile(Settings.OUTPUT_FOLDER);
+    }
+
+    public static void loadSpark() {
+        // load spark output
+        JavaRDD<String> output = sc.textFile(Settings.OUTPUT_FOLDER);
+        System.out.println("### Found " + output.count() + " documents");
+        output.foreach(str -> {
+            String[] parts = str.split(",");
+            if (parts.length < 1) return;
+            String title = parts[0];
+            System.out.println("### " + title);
+        });
     }
 
     public static void runSpark(String fileName) {
+        if (fileName == null) return;
+
         // check if file exists
         File file = new File(fileName);
         if (!file.exists() || !file.isFile()) {
             System.err.println("File " + fileName + " does not exist");
             return;
+        }
+
+        if (sc == null || sqlContext == null) {
+            System.out.println("Initializing spark...");
+            initSpark();
         }
 
         // read XML file
@@ -111,35 +137,22 @@ public class Main {
 //        loadSpark();
     }
 
-    public static void saveSpark(JavaRDD<Tuple2<Page, DocumentType>> pages) {
-        // delete output folder if exists
-        File outputFolder = new File(Settings.OUTPUT_FOLDER);
-        if (outputFolder.exists()) {
-            try {
-                FileUtils.deleteDirectory(outputFolder);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        // save spark output
-        pages.saveAsTextFile(Settings.OUTPUT_FOLDER);
-    }
-
-    public static void loadSpark() {
-        // load spark output
-        JavaRDD<String> output = sc.textFile(Settings.OUTPUT_FOLDER);
-        System.out.println("### Found " + output.count() + " documents");
-        output.foreach(str -> {
-            String[] parts = str.split(",");
-            if (parts.length < 1) return;
-            String title = parts[0];
-            System.out.println("### " + title);
-        });
-    }
-
     public static void runSpark(String[] fileNames) {
         Arrays.stream(fileNames).forEach(Main::runSpark);
+    }
+
+    private static void initSpark() {
+        SparkConf config = new SparkConf().setMaster(Settings.SPARK_MASTER).setAppName(Settings.APP_NAME);
+        sc = new JavaSparkContext(config);
+        sqlContext = new SQLContext(sc);
+        wikipediaXMLSchema = getSchema();
+    }
+
+    private static void exitSpark() {
+        if (sc != null) sc.close();
+        sc = null;
+        sqlContext = null;
+        wikipediaXMLSchema = null;
     }
 
     private static StructType getSchema() {

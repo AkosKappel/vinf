@@ -14,7 +14,7 @@ public final class Settings {
 //            DATA_FOLDER + "soccer-player-exception.xml",
 //            DATA_FOLDER + "soccer-clubs.xml", // small dataset with clubs
 //            DATA_FOLDER + "soccer-players.xml", // small dataset with players
-            DATA_FOLDER + "enwiki-latest-pages-articles1.xml", // first 1 GB part of the dataset
+//            DATA_FOLDER + "enwiki-latest-pages-articles1.xml", // first 1 GB part of the dataset
 //            DATA_FOLDER + "enwiki-latest-pages-articles2.xml",
 //            DATA_FOLDER + "enwiki-latest-pages-articles3.xml",
 //            DATA_FOLDER + "enwiki-latest-pages-articles4.xml",

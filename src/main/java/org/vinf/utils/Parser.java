@@ -127,7 +127,7 @@ public class Parser {
                 }
             }
         } catch (FileNotFoundException e) {
-            System.out.println("File " + filePath + " not found!");
+            System.err.println("File " + filePath + " not found!");
             return null;
         } catch (IOException e) {
             e.printStackTrace();
