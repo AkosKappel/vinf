@@ -34,28 +34,17 @@ public class Main {
     private static final CommandLine cli = new CommandLine(invertedIndex);
 
     public static void main(String[] args) {
-        // measure execution start time
-        long startTime = System.nanoTime();
-
         // read all XML files
-        if (Settings.USE_DISTRIBUTED) {
-            runSpark(Settings.XML_FILES);
-        } else {
-            invertedIndex.index(Settings.XML_FILES);
-        }
-
-        // measure execution end time
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime);
-
-        System.out.println("Found " + invertedIndex.size() + " documents in " + duration / 1_000_000 + " ms");
+        invertedIndex.index(Settings.XML_FILES);
+        // stop Spark before starting the UI
+        exitSpark();
 
         // start command line interface
         cli.help();
         cli.run();
 
-        // stop Spark
-        if (Settings.USE_DISTRIBUTED) exitSpark();
+        // stop Spark if it was used in the UI
+        exitSpark();
     }
 
     public static void saveSpark(JavaRDD<Tuple2<Page, DocumentType>> pages) {
@@ -95,10 +84,10 @@ public class Main {
             return;
         }
 
-        if (sc == null || sqlContext == null) {
-            System.out.println("Initializing spark...");
-            initSpark();
-        }
+        if (sc == null || sqlContext == null) initSpark();
+
+        // measure execution start time
+        long startTime = System.nanoTime();
 
         // read XML file
         JavaRDD<Row> df = sqlContext.read()
@@ -131,7 +120,12 @@ public class Main {
 
         // index all pages
         pages.foreach(tuple -> invertedIndex.addDocument(tuple._1, tuple._2));
-//        pages.collect().forEach(tuple -> invertedIndex.addDocument(tuple._1, tuple._2));
+
+        // measure execution end time
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);
+
+        System.out.println("Found " + invertedIndex.size() + " documents in " + duration / 1_000_000 + " ms");
 
 //        saveSpark(pages);
 //        loadSpark();
@@ -142,17 +136,23 @@ public class Main {
     }
 
     private static void initSpark() {
-        SparkConf config = new SparkConf().setMaster(Settings.SPARK_MASTER).setAppName(Settings.APP_NAME);
-        sc = new JavaSparkContext(config);
-        sqlContext = new SQLContext(sc);
-        wikipediaXMLSchema = getSchema();
+        if (sc == null) {
+            System.out.println("Initializing spark...");
+            SparkConf config = new SparkConf().setMaster(Settings.SPARK_MASTER).setAppName(Settings.APP_NAME);
+            sc = new JavaSparkContext(config);
+            sqlContext = new SQLContext(sc);
+            wikipediaXMLSchema = getSchema();
+        }
     }
 
     private static void exitSpark() {
-        if (sc != null) sc.close();
-        sc = null;
-        sqlContext = null;
-        wikipediaXMLSchema = null;
+        if (sc != null) {
+            System.out.println("Stopping spark...");
+            sc.close();
+            sc = null;
+            sqlContext = null;
+            wikipediaXMLSchema = null;
+        }
     }
 
     private static StructType getSchema() {

@@ -308,6 +308,8 @@ public class InvertedIndex implements Serializable {
     }
 
     public void index(String xmlFile) {
+        if (!xmlFile.endsWith(".xml")) xmlFile += ".xml";
+
         // parse XML file
         if (Settings.USE_DISTRIBUTED) {
             Main.runSpark(xmlFile);
