@@ -1,5 +1,6 @@
 package org.vinf.documents;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.vinf.utils.Regex;
 import org.vinf.utils.Settings;
 
@@ -187,6 +188,7 @@ public class Player extends Page {
     }
 
     public void findClubNames(String line) {
+        line = StringEscapeUtils.unescapeHtml4(line); // unescape html entities
         Matcher clubsMatcher = Regex.clubNamePattern.matcher(line);
 
         if (clubsMatcher.find()) {

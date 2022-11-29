@@ -74,7 +74,7 @@ public final class Regex {
 
     // Football Biography patterns
     public static final Pattern clubNamePattern = Pattern.compile(
-            "\\| *(youthclubs|college|clubs|nationalteam)(\\d+) *= *→? *\\[?\\[?([^]|]+)\\|?([^]|]*)]?]?"
+            "\\| *(youthclubs|college|clubs|nationalteam)(\\d+) *= *→? *\\[?\\[?([^]|<{&]+)\\|?([^]|<{&]*)]?]?"
     );
     public static final Pattern clubYearsPattern = Pattern.compile(
             "\\| *(youthyears|collegeyears|years|nationalyears)(\\d+) *= *(\\d+)([–-]?)(\\d+)?"
