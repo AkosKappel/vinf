@@ -39,9 +39,11 @@ public class Main {
         // stop Spark before starting the UI
         exitSpark();
 
+        cli.list(new String[]{"players"});
+
         // start command line interface
-        cli.help();
-        cli.run();
+//        cli.help();
+//        cli.run();
 
         // stop Spark if it was used in the UI
         exitSpark();
