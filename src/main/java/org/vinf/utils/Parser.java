@@ -179,6 +179,7 @@ public class Parser {
                     }
 
                     // return player if he has played for at least one club
+                    player.cleanUpClubHistories();
                     return player.isValid() ? player : null;
                 }
             }

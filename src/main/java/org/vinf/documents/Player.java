@@ -1,6 +1,7 @@
 package org.vinf.documents;
 
 import org.vinf.utils.Regex;
+import org.vinf.utils.Settings;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -62,11 +63,28 @@ public class Player extends Page {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        cleanUpClubHistories();
     }
 
     @Override
     public boolean isValid() {
         return !name.isEmpty() && hasClubHistory();
+    }
+
+    public ArrayList<ClubHistory> getClubsByType(ClubType type) {
+        switch (type) {
+            case YOUTH:
+                return youthClubs;
+            case COLLEGE:
+                return collegeClubs;
+            case PROFESSIONAL:
+                return professionalClubs;
+            case NATIONAL:
+                return nationalTeams;
+            default:
+                return null;
+        }
     }
 
     public boolean hasPlayedWith(Player player) {
@@ -125,23 +143,26 @@ public class Player extends Page {
         return club.getYearStart() <= otherClub.getYearEnd() && club.getYearEnd() >= otherClub.getYearStart();
     }
 
-    public ArrayList<ClubHistory> getClubsByType(ClubType type) {
-        switch (type) {
-            case YOUTH:
-                return youthClubs;
-            case COLLEGE:
-                return collegeClubs;
-            case PROFESSIONAL:
-                return professionalClubs;
-            case NATIONAL:
-                return nationalTeams;
-            default:
-                return null;
-        }
-    }
-
     public boolean hasClubHistory() {
         return !youthClubs.isEmpty() || !collegeClubs.isEmpty() || !professionalClubs.isEmpty() || !nationalTeams.isEmpty();
+    }
+
+    public void cleanUpClubHistories() {
+        cleanUpClubHistories(youthClubs);
+        cleanUpClubHistories(collegeClubs);
+        cleanUpClubHistories(professionalClubs);
+        cleanUpClubHistories(nationalTeams);
+    }
+
+    public void cleanUpClubHistories(ArrayList<ClubHistory> clubHistories) {
+        for (int i = 0; i < clubHistories.size() - 1; i++) {
+            ClubHistory ch1 = clubHistories.get(i);
+            ClubHistory ch2 = clubHistories.get(i + 1);
+
+            if (ch1.getYearEnd() > ch2.getYearStart()) {
+                ch1.setYearEnd(ch2.getYearStart());
+            }
+        }
     }
 
     public void findClubYears(String line) {
@@ -151,7 +172,14 @@ public class Player extends Page {
             ClubType clubType = ClubType.getClubType(yearsMatcher.group(1));
             int index = Integer.parseInt(yearsMatcher.group(2)) - 1;
             String yearJoined = yearsMatcher.group(3);
-            String yearsLeft = yearsMatcher.group(4);
+            String rangeSign = yearsMatcher.group(4);
+            String yearsLeft = yearsMatcher.group(5);
+
+            if (rangeSign != null && !rangeSign.isEmpty() && yearsLeft == null) { // '2018-current' or '2018-'
+                yearsLeft = Settings.CURRENT_YEAR;
+            } else if (rangeSign == null) { // '2018' (only one year)
+                yearsLeft = yearJoined;
+            }
 
             updateYearJoined(index, yearJoined, clubType);
             updateYearLeft(index, yearsLeft, clubType);

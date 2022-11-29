@@ -39,6 +39,8 @@ public class Main {
         // stop Spark before starting the UI
         exitSpark();
 
+//        cli.list(new String[]{"players"});
+
         // start command line interface
         cli.help();
         cli.run();

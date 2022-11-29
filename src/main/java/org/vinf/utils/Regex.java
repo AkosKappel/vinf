@@ -77,7 +77,7 @@ public final class Regex {
             "\\| *(youthclubs|college|clubs|nationalteam)(\\d+) *= *→? *\\[?\\[?([^]|]+)\\|?([^]|]*)]?]?"
     );
     public static final Pattern clubYearsPattern = Pattern.compile(
-            "\\| *(youthyears|collegeyears|years|nationalyears)(\\d+) *= *(\\d+)[–-]?(\\d+)?"
+            "\\| *(youthyears|collegeyears|years|nationalyears)(\\d+) *= *(\\d+)([–-]?)(\\d+)?"
     );
     public static final Pattern clubCapsPattern = Pattern.compile(
             "\\| *(youthcaps|collegecaps|caps|nationalcaps)(\\d+) *= *(\\d+)"
