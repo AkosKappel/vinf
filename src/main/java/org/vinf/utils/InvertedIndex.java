@@ -282,6 +282,8 @@ public class InvertedIndex implements Serializable {
     }
 
     public void save(String filename) throws IOException {
+        if (!filename.endsWith(".dat")) filename += ".dat";
+
         // create index folder if it doesn't exist
         File indexFolder = new File(Settings.INDEX_FOLDER);
         if (!indexFolder.exists()) {
@@ -298,6 +300,7 @@ public class InvertedIndex implements Serializable {
     }
 
     public void load(String filename) throws IOException, ClassNotFoundException {
+        if (!filename.endsWith(".dat")) filename += ".dat";
         // deserialize index
         try (ObjectInputStream in = new ObjectInputStream(Files.newInputStream(Paths.get(Settings.INDEX_FOLDER + filename)))) {
             InvertedIndex obj = (InvertedIndex) in.readObject();
