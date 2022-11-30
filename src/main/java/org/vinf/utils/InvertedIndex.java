@@ -310,11 +310,11 @@ public class InvertedIndex implements Serializable {
         }
     }
 
-    public void index(String xmlFile) {
+    public void index(String xmlFile, boolean useSpark) {
         if (!xmlFile.endsWith(".xml")) xmlFile += ".xml";
 
         // parse XML file
-        if (Settings.USE_DISTRIBUTED) {
+        if (useSpark) {
             Main.runSpark(xmlFile);
         } else {
             Map<String, ArrayList<Page>> docs = Parser.parseXML(xmlFile);
@@ -326,6 +326,10 @@ public class InvertedIndex implements Serializable {
             addDocuments(players, DocumentType.PLAYER);
             addDocuments(clubs, DocumentType.CLUB);
         }
+    }
+
+    public void index(String xmlFile) {
+        index(xmlFile, Settings.USE_DISTRIBUTED);
     }
 
     public void index(String[] xmlFiles) {

@@ -184,9 +184,9 @@ public final class CommandLine {
                 invertedIndex.playersSize() + " players, " + invertedIndex.clubsSize() + " clubs).");
     }
 
-    public void teammates(String[] args) {
+    public boolean teammates(String[] args) {
         ArrayList<Page> selectedPlayers = getSelectedPlayers(args, "teammates");
-        if (selectedPlayers == null) return;
+        if (selectedPlayers == null) return false;
 
         Player player1 = (Player) selectedPlayers.get(0);
         Player player2 = (Player) selectedPlayers.get(1);
@@ -210,11 +210,13 @@ public final class CommandLine {
             sb.append(" were never teammates.\n");
         }
         System.out.println(sb);
+
+        return wereTeammates;
     }
 
-    public void opponents(String[] args) {
+    public boolean opponents(String[] args) {
         ArrayList<Page> selectedPlayers = getSelectedPlayers(args, "opponents");
-        if (selectedPlayers == null) return;
+        if (selectedPlayers == null) return false;
 
         Player player1 = (Player) selectedPlayers.get(0);
         Player player2 = (Player) selectedPlayers.get(1);
@@ -226,6 +228,8 @@ public final class CommandLine {
                 (playedAgainst ?
                         " played against each other in " + getPlayedAtAgainst(player1, player2) :
                         " never played against each other") + ".\n");
+
+        return playedAgainst;
     }
 
     public void clubs(String[] args) {

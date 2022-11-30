@@ -214,26 +214,6 @@ public class Main {
         });
     }
 
-    private static void tests() {
-        testsInvertedIndex();
-        testPlayers();
-        testClubs();
-    }
-
-    private static void testsInvertedIndex() {
-        ArrayList<Integer> list1 = new ArrayList<>(Arrays.asList(1, 3, 12, 23));
-        ArrayList<Integer> list2 = new ArrayList<>(Arrays.asList(1, 2, 3, 5, 10, 23));
-        ArrayList<Integer> list3 = new ArrayList<>(Arrays.asList(1, 2));
-
-        ArrayList<ArrayList<Integer>> lists1 = new ArrayList<>();
-        lists1.add(list1);
-        lists1.add(list2);
-        lists1.add(list3);
-
-        System.out.println(invertedIndex.intersect(list1, list2));
-        System.out.println(invertedIndex.intersect(lists1));
-    }
-
     private static void testPlayers() {
         ArrayList<Player> players = invertedIndex.getPlayers();
 
