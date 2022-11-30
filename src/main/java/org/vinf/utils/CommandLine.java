@@ -111,6 +111,12 @@ public final class CommandLine {
             return;
         }
 
+        boolean verbose = false;
+        if (args[0].equals("-v") || args[0].equals("--verbose")) {
+            verbose = true;
+            args = Arrays.copyOfRange(args, 1, args.length);
+        }
+
         String query = String.join(" ", args);
         ArrayList<Page> results = invertedIndex.search(query);
 
@@ -119,7 +125,7 @@ public final class CommandLine {
         } else {
             System.out.println("Found " + results.size() + " results:");
             for (Page page : results) {
-                System.out.println(page);
+                System.out.println(verbose ? page : page.getTitle());
             }
         }
     }

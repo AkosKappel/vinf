@@ -73,7 +73,7 @@ public class Club extends Page {
     }
 
     public boolean playedInSameLeague(Club club) {
-        return !league.isEmpty() && !club.getLeague().isEmpty() && league.equals(club.getLeague());
+        return league.equals(club.getLeague());
     }
 
     @Override
