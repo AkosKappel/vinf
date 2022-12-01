@@ -1,11 +1,9 @@
 package org.vinf;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.catalyst.expressions.GenericRowWithSchema;
 import org.apache.spark.sql.types.DataTypes;
@@ -17,8 +15,6 @@ import org.vinf.documents.*;
 import org.vinf.utils.*;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -27,7 +23,7 @@ public class Main {
 
     // Spark variables
     private static JavaSparkContext sc;
-    private static SQLContext sqlContext;
+    private static SparkSession spark;
     private static StructType wikipediaXMLSchema;
 
     // Index and UI
@@ -58,13 +54,13 @@ public class Main {
             return;
         }
 
-        if (sc == null || sqlContext == null) initSpark();
+        if (sc == null || spark == null) initSpark();
 
         // measure execution start time
         long startTime = System.nanoTime();
 
         // read XML file
-        JavaRDD<Row> df = sqlContext.read()
+        JavaRDD<Row> df = spark.read()
                 .format("com.databricks.spark.xml")
                 .option("rowTag", "page")
                 .schema(wikipediaXMLSchema)
@@ -100,9 +96,6 @@ public class Main {
         long duration = (endTime - startTime);
 
         System.out.println("Found " + invertedIndex.size() + " documents in " + duration / 1_000_000 + " ms");
-
-//        saveSpark(pages);
-//        loadSpark();
     }
 
     public static void runSpark(String[] fileNames) {
@@ -116,13 +109,10 @@ public class Main {
                     .setMaster(Settings.SPARK_MASTER)
                     .setAppName(Settings.APP_NAME);
             sc = new JavaSparkContext(sparkConfig);
-
-//            SparkSession spark = SparkSession.builder()
-//                    .config(sparkConfig)
-//                    .config("spark.jars.packages", "com.databricks:spark-xml_2.12:0.13.0")
-//                    .getOrCreate();
-
-            sqlContext = new SQLContext(sc);
+            spark = SparkSession
+                    .builder()
+                    .config(sparkConfig)
+                    .getOrCreate();
             wikipediaXMLSchema = getSchema();
         }
     }
@@ -132,7 +122,8 @@ public class Main {
             System.out.println("Stopping spark...");
             sc.close();
             sc = null;
-            sqlContext = null;
+            spark.close();
+            spark = null;
             wikipediaXMLSchema = null;
         }
     }
