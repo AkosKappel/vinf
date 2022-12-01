@@ -30,6 +30,11 @@ public class Main {
     private static final InvertedIndex invertedIndex = new InvertedIndex();
     private static final CommandLine cli = new CommandLine(invertedIndex);
 
+    /**
+     * Main entry point of the application.
+     *
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         // read all XML files
         invertedIndex.index(Settings.XML_FILES);
@@ -44,6 +49,15 @@ public class Main {
         exitSpark();
     }
 
+    /**
+     * Reads XML file into a JavaRDD object. Then, iterates over all pages
+     * using Spark's map() function. Each page is then searched and parsed
+     * for soccer players or clubs. If a player or club is found, it is added
+     * to the inverted index.
+     * The function also measures the time it takes to parse and index all pages.
+     *
+     * @param fileName XML file to read
+     */
     public static void runSpark(String fileName) {
         if (fileName == null) return;
 
@@ -98,10 +112,18 @@ public class Main {
         System.out.println("Found " + invertedIndex.size() + " documents in " + duration / 1_000_000 + " ms");
     }
 
+    /**
+     * Calls 'runSpark()' for every XML file.
+     *
+     * @param fileNames array of XML filenames to read
+     */
     public static void runSpark(String[] fileNames) {
         Arrays.stream(fileNames).forEach(Main::runSpark);
     }
 
+    /**
+     * Initializes Spark and the Wikipedia XML schema.
+     */
     public static void initSpark() {
         if (sc == null) {
             System.out.println("Initializing spark...");
@@ -117,6 +139,9 @@ public class Main {
         }
     }
 
+    /**
+     * Stops Spark.
+     */
     public static void exitSpark() {
         if (sc != null) {
             System.out.println("Stopping spark...");
@@ -128,6 +153,11 @@ public class Main {
         }
     }
 
+    /**
+     * Returns the Wikipedia pre-defined XML schema for english Wikipedia.
+     *
+     * @return the Wikipedia XML schema
+     */
     private static StructType getSchema() {
         // Creates schema for the wikipedia dump XML file
 

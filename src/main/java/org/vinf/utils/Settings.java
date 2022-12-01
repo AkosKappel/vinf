@@ -25,7 +25,6 @@ public final class Settings {
     }
 
     public static final String[] XML_FILES = {
-//            DATA_FOLDER + "soccer-player-exception.xml",
 //            SOCCER_PLAYERS_XML_FILE,
 //            SOCCER_CLUBS_XML_FILE,
 //            DAVID_BECKHAM_XML_FILE,

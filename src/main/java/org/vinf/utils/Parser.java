@@ -18,6 +18,16 @@ public class Parser {
         throw new UnsupportedOperationException("Cannot instantiate utils.Parser class");
     }
 
+    /**
+     * Parses wiki page into a Page object. The page is then searched for
+     * soccer players or clubs. If a valid player or club is found, it gets
+     * returned.
+     * This variant of the function is used only when using Spark.
+     *
+     * @param wikiTitle title of the wiki page to parse
+     * @param wikiText  text of the wiki page to parse
+     * @return a Player or Club object if a valid player or club is found, null otherwise
+     */
     public static Tuple2<Page, DocumentType> parsePage(String wikiTitle, String wikiText) {
         boolean isSoccerPlayer = false;
         boolean isSoccerClub = false;
@@ -79,6 +89,9 @@ public class Parser {
         return page != null && page.isValid() ? new Tuple2<>(page, type) : null;
     }
 
+    /**
+     * Reads XML file line by line and parses every relevant page.
+     */
     public static Map<String, ArrayList<Page>> parseXML(String filePath) {
         ArrayList<Page> clubs = new ArrayList<>();
         ArrayList<Page> players = new ArrayList<>();
@@ -140,6 +153,9 @@ public class Parser {
         return pages;
     }
 
+    /**
+     * Parses a soccer player from a wiki page.
+     */
     private static Player parsePlayer(StringBuilder page) throws IOException {
         try (BufferedReader reader = new BufferedReader(new StringReader(page.toString()))) {
             String title = "";
@@ -189,6 +205,9 @@ public class Parser {
         return null;
     }
 
+    /**
+     * Parses a soccer club from a wiki page.
+     */
     private static Club parseClub(StringBuilder page) throws IOException {
         try (BufferedReader reader = new BufferedReader(new StringReader(page.toString()))) {
             String title = "";

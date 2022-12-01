@@ -18,6 +18,9 @@ public abstract class Page implements Serializable {
         this.name = nameMatcher.find() ? nameMatcher.group(1).trim() : title;
     }
 
+    /**
+     * Checks if the page is considered a valid soccer player or club.
+     */
     public abstract boolean isValid();
 
     @Override
