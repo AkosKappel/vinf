@@ -16,6 +16,9 @@ public final class CommandLine {
         this.invertedIndex = invertedIndex;
     }
 
+    /**
+     * Starts the command line interface.
+     */
     public void run() {
         Scanner scanner = new Scanner(System.in);
 
@@ -87,6 +90,9 @@ public final class CommandLine {
         }
     }
 
+    /**
+     * Prints a list of all available commands.
+     */
     public void help() {
         System.out.println("Commands:");
         System.out.println("  help - show this message");
@@ -104,6 +110,12 @@ public final class CommandLine {
         System.out.println("  quit - exit the application");
     }
 
+    /**
+     * Searches for the given query in the inverted index.
+     *
+     * @param args query to search for
+     * @return a list of all pages containing the query
+     */
     public ArrayList<Page> search(String[] args) {
         if (args.length < 1) {
             System.out.println("Missing argument!");
@@ -132,6 +144,11 @@ public final class CommandLine {
         return results;
     }
 
+    /**
+     * Lists all the documents in the inverted index.
+     *
+     * @param args type of documents to list
+     */
     public void list(String[] args) {
         if (args.length < 1) {
             System.out.println("Missing argument!");
@@ -164,6 +181,11 @@ public final class CommandLine {
         }
     }
 
+    /**
+     * Displays the inverted index or the parsed documents.
+     *
+     * @param args type of data to display
+     */
     public void display(String[] args) {
         if (args.length < 1) {
             System.out.println("Missing argument!");
@@ -187,6 +209,9 @@ public final class CommandLine {
         }
     }
 
+    /**
+     * Shows the number of documents in the inverted index.
+     */
     public void showCounts() {
         int nDocs = invertedIndex.size();
         int nPlayers = invertedIndex.playersSize();
@@ -195,6 +220,11 @@ public final class CommandLine {
         System.out.println("Currently indexed " + nDocs + " documents (" + nPlayers + " players, " + nClubs + " clubs).");
     }
 
+    /**
+     * Prints whether two players played together.
+     *
+     * @param args names of the players separated by a comma
+     */
     public boolean teammates(String[] args) {
         ArrayList<Page> selectedPlayers = getSelectedPlayers(args, "teammates");
         if (selectedPlayers == null) return false;
@@ -225,6 +255,11 @@ public final class CommandLine {
         return wereTeammates;
     }
 
+    /**
+     * Prints whether two players played against each other.
+     *
+     * @param args names of the players separated by a comma
+     */
     public boolean opponents(String[] args) {
         ArrayList<Page> selectedPlayers = getSelectedPlayers(args, "opponents");
         if (selectedPlayers == null) return false;
@@ -243,6 +278,11 @@ public final class CommandLine {
         return playedAgainst;
     }
 
+    /**
+     * Prints whether two clubs played against each other.
+     *
+     * @param args names of the clubs separated by a comma
+     */
     public boolean clubs(String[] args) {
         ArrayList<Page> selectedClubs = getSelectedClubs(args);
         if (selectedClubs == null) return false;
@@ -269,6 +309,9 @@ public final class CommandLine {
         return wereOpponents;
     }
 
+    /**
+     * Saves the inverted index to a file.
+     */
     public void save(String[] args) {
         if (args.length < 1) {
             System.out.println("Missing argument!");
@@ -286,6 +329,9 @@ public final class CommandLine {
         }
     }
 
+    /**
+     * Loads the inverted index from a file.
+     */
     public void load(String[] args) {
         if (args.length < 1) {
             System.out.println("Missing argument!");
@@ -304,6 +350,9 @@ public final class CommandLine {
         }
     }
 
+    /**
+     * Parses the given XML files and adds them to the inverted index.
+     */
     public void parse(String[] args) {
         if (args.length < 1) {
             System.out.println("Missing argument!");
@@ -318,11 +367,17 @@ public final class CommandLine {
         }
     }
 
+    /**
+     * Tells the inverted index to clear its data.
+     */
     public void clear() {
         invertedIndex.clear();
         System.out.println("Cleared index.");
     }
 
+    /**
+     * Gets a list of soccer players based on a query.
+     */
     private ArrayList<Page> getSelectedPlayers(String[] args, String command) {
         if (args.length < 1) {
             System.out.println("Missing argument!");
@@ -380,6 +435,9 @@ public final class CommandLine {
         return selectedPlayers;
     }
 
+    /**
+     * Gets a list of soccer clubs based on a query.
+     */
     private ArrayList<Page> getSelectedClubs(String[] args) {
         if (args.length == 0) {
             System.out.println("Missing argument!");
@@ -437,6 +495,9 @@ public final class CommandLine {
         return selectedClubs;
     }
 
+    /**
+     * Asks the user to select a number from a list of options.
+     */
     private int getChoiceFromList(ArrayList<Page> options) {
         for (int j = 0; j < options.size(); j++) {
             System.out.println(j + 1 + " - " + options.get(j).getTitle());

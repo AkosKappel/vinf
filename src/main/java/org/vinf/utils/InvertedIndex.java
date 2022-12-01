@@ -37,6 +37,12 @@ public class InvertedIndex implements Serializable {
         return clubDocuments.size();
     }
 
+    /**
+     * Tokenizes a string by removing all special characters and splitting
+     * the string into words.
+     *
+     * @param text string to tokenize
+     */
     private String[] tokenize(String text) {
         return text
                 .replaceAll(Regex.specialCharacters, "")
@@ -44,6 +50,12 @@ public class InvertedIndex implements Serializable {
                 .split(" ");
     }
 
+    /**
+     * Normalizes a string by replacing non english characters with their
+     * english equivalent. For example, "á" is replaced with "a".
+     *
+     * @param text string to normalize
+     */
     private String normalize(String text) {
         return Normalizer
                 .normalize(text, Normalizer.Form.NFD)
@@ -52,12 +64,18 @@ public class InvertedIndex implements Serializable {
                 .trim();
     }
 
+    /**
+     * Adds parsed wikipedia pages into the inverted index.
+     */
     public void addDocuments(ArrayList<? extends Page> documents, DocumentType type) {
         for (Page document : documents) {
             addDocument(document, type);
         }
     }
 
+    /**
+     * Adds a parsed wikipedia page into the inverted index based on its type.
+     */
     public void addDocument(Page document, DocumentType type) {
         int docId = DOCUMENT_ID++;
 
@@ -87,6 +105,9 @@ public class InvertedIndex implements Serializable {
         }
     }
 
+    /**
+     * Adds a parsed wikipedia pages into the inverted index.
+     */
     public void addDocument(Page document) {
         if (document instanceof Player) {
             addDocument(document, DocumentType.PLAYER);
@@ -97,6 +118,12 @@ public class InvertedIndex implements Serializable {
         }
     }
 
+    /**
+     * Returns a list of pages that contain a given query.
+     *
+     * @param query query to search for
+     * @return list of pages from the inverted index that contain the given words
+     */
     public ArrayList<Page> search(String query) {
         ArrayList<Page> results = new ArrayList<>();
         ArrayList<Integer> intersection = processQuery(query);
@@ -114,6 +141,12 @@ public class InvertedIndex implements Serializable {
         return results;
     }
 
+    /**
+     * Returns a list of soccer players that contain a given query.
+     *
+     * @param query query to search for
+     * @return list of players from the inverted index whose name contains the given words
+     */
     public ArrayList<Page> searchPlayers(String query) {
         ArrayList<Page> results = new ArrayList<>();
         ArrayList<Integer> intersection = processQuery(query);
@@ -129,6 +162,12 @@ public class InvertedIndex implements Serializable {
         return results;
     }
 
+    /**
+     * Returns a list of soccer clubs that contain a given query.
+     *
+     * @param query query to search for
+     * @return list of clubs from the inverted index whose title contains the given words
+     */
     public ArrayList<Page> searchClubs(String query) {
         ArrayList<Page> results = new ArrayList<>();
         ArrayList<Integer> intersection = processQuery(query);
@@ -297,6 +336,12 @@ public class InvertedIndex implements Serializable {
         return players;
     }
 
+    /**
+     * Serializes the inverted index to a file.
+     *
+     * @param filename The name of the file to serialize to.
+     * @throws IOException If an I/O error occurs.
+     */
     public void save(String filename) throws IOException {
         if (!filename.endsWith(".dat")) filename += ".dat";
 
@@ -315,6 +360,13 @@ public class InvertedIndex implements Serializable {
         }
     }
 
+    /**
+     * Deserializes an inverted index from a file.
+     *
+     * @param filename The name of the file to deserialize from.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be found.
+     */
     public void load(String filename) throws IOException, ClassNotFoundException {
         if (!filename.endsWith(".dat")) filename += ".dat";
         // deserialize index
@@ -326,6 +378,12 @@ public class InvertedIndex implements Serializable {
         }
     }
 
+    /**
+     * Parse and index a XML file.
+     *
+     * @param xmlFile  The XML file to parse and index.
+     * @param useSpark Whether to use Spark's distributed computing.
+     */
     public void index(String xmlFile, boolean useSpark) {
         if (!xmlFile.endsWith(".xml")) xmlFile += ".xml";
 
@@ -344,16 +402,29 @@ public class InvertedIndex implements Serializable {
         }
     }
 
+    /**
+     * Calls 'index' with useSpark from the settings.
+     *
+     * @param xmlFile The XML filename to parse and index.
+     */
     public void index(String xmlFile) {
         index(xmlFile, Settings.USE_DISTRIBUTED);
     }
 
+    /**
+     * Calls 'index' for every given XML file.
+     *
+     * @param xmlFiles Array of XML filenames to parse and index.
+     */
     public void index(String[] xmlFiles) {
         for (String xmlFile : xmlFiles) {
             index(xmlFile);
         }
     }
 
+    /**
+     * Empties the inverted index.
+     */
     public void clear() {
         index.clear();
         clubDocuments.clear();
