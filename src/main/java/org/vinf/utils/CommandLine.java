@@ -104,11 +104,11 @@ public final class CommandLine {
         System.out.println("  quit - exit the application");
     }
 
-    public void search(String[] args) {
+    public ArrayList<Page> search(String[] args) {
         if (args.length < 1) {
             System.out.println("Missing argument!");
             System.out.println("  Usage: search [names...]");
-            return;
+            return null;
         }
 
         boolean verbose = false;
@@ -128,6 +128,8 @@ public final class CommandLine {
                 System.out.println(verbose ? page : page.getTitle());
             }
         }
+
+        return results;
     }
 
     public void list(String[] args) {
@@ -137,16 +139,22 @@ public final class CommandLine {
             return;
         }
 
+        boolean verbose = false;
+        if (args[0].equals("-v") || args[0].equals("--verbose")) {
+            verbose = true;
+            args = Arrays.copyOfRange(args, 1, args.length);
+        }
+
         for (String type : args) {
             switch (type) {
                 case "p":
                 case "players":
-                    invertedIndex.printPlayers();
+                    invertedIndex.printPlayers(verbose);
                     System.out.println("Found " + invertedIndex.playersSize() + " players.");
                     break;
                 case "c":
                 case "clubs":
-                    invertedIndex.printClubs();
+                    invertedIndex.printClubs(verbose);
                     System.out.println("Found " + invertedIndex.clubsSize() + " clubs.");
                     break;
                 default:
@@ -180,8 +188,11 @@ public final class CommandLine {
     }
 
     public void showCounts() {
-        System.out.println("Currently indexed " + invertedIndex.size() + " documents (" +
-                invertedIndex.playersSize() + " players, " + invertedIndex.clubsSize() + " clubs).");
+        int nDocs = invertedIndex.size();
+        int nPlayers = invertedIndex.playersSize();
+        int nClubs = invertedIndex.clubsSize();
+
+        System.out.println("Currently indexed " + nDocs + " documents (" + nPlayers + " players, " + nClubs + " clubs).");
     }
 
     public boolean teammates(String[] args) {
@@ -232,9 +243,9 @@ public final class CommandLine {
         return playedAgainst;
     }
 
-    public void clubs(String[] args) {
+    public boolean clubs(String[] args) {
         ArrayList<Page> selectedClubs = getSelectedClubs(args);
-        if (selectedClubs == null) return;
+        if (selectedClubs == null) return false;
 
         Club club1 = (Club) selectedClubs.get(0);
         Club club2 = (Club) selectedClubs.get(1);
@@ -254,6 +265,8 @@ public final class CommandLine {
                     .append(club2.getLeague()).append(".");
         }
         System.out.println(sb);
+
+        return wereOpponents;
     }
 
     public void save(String[] args) {
@@ -470,7 +483,7 @@ public final class CommandLine {
             for (ClubHistory ch2 : clubs2) {
                 String name1 = ch1.getClubName();
                 String name2 = ch2.getClubName();
-                if (name1.equals(name2) || !Player.yearsOverlap(ch1, ch2)) continue;
+                if (name1 == null || name2 == null || name1.equals(name2) || !Player.yearsOverlap(ch1, ch2)) continue;
 
                 ArrayList<Page> matches1 = invertedIndex.searchClubs(name1);
                 if (matches1.size() < 1) continue;

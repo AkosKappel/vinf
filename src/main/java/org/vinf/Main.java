@@ -6,6 +6,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.catalyst.expressions.GenericRowWithSchema;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
@@ -45,33 +46,6 @@ public class Main {
 
         // stop Spark if it was used in the UI
         exitSpark();
-    }
-
-    public static void saveSpark(JavaRDD<Tuple2<Page, DocumentType>> pages) {
-        // delete output folder if exists
-        File outputFolder = new File(Settings.OUTPUT_FOLDER);
-        if (outputFolder.exists()) {
-            try {
-                FileUtils.deleteDirectory(outputFolder);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        // save spark output
-        pages.saveAsTextFile(Settings.OUTPUT_FOLDER);
-    }
-
-    public static void loadSpark() {
-        // load spark output
-        JavaRDD<String> output = sc.textFile(Settings.OUTPUT_FOLDER);
-        System.out.println("### Found " + output.count() + " documents");
-        output.foreach(str -> {
-            String[] parts = str.split(",");
-            if (parts.length < 1) return;
-            String title = parts[0];
-            System.out.println("### " + title);
-        });
     }
 
     public static void runSpark(String fileName) {
@@ -135,17 +109,25 @@ public class Main {
         Arrays.stream(fileNames).forEach(Main::runSpark);
     }
 
-    private static void initSpark() {
+    public static void initSpark() {
         if (sc == null) {
             System.out.println("Initializing spark...");
-            SparkConf config = new SparkConf().setMaster(Settings.SPARK_MASTER).setAppName(Settings.APP_NAME);
-            sc = new JavaSparkContext(config);
+            SparkConf sparkConfig = new SparkConf()
+                    .setMaster(Settings.SPARK_MASTER)
+                    .setAppName(Settings.APP_NAME);
+            sc = new JavaSparkContext(sparkConfig);
+
+//            SparkSession spark = SparkSession.builder()
+//                    .config(sparkConfig)
+//                    .config("spark.jars.packages", "com.databricks:spark-xml_2.12:0.13.0")
+//                    .getOrCreate();
+
             sqlContext = new SQLContext(sc);
             wikipediaXMLSchema = getSchema();
         }
     }
 
-    private static void exitSpark() {
+    public static void exitSpark() {
         if (sc != null) {
             System.out.println("Stopping spark...");
             sc.close();
@@ -214,61 +196,8 @@ public class Main {
         });
     }
 
-    private static void testPlayers() {
-        ArrayList<Player> players = invertedIndex.getPlayers();
-
-        Player p1 = players.get(10); // Míchel
-        Player p2 = players.get(11); // Emilio Butragueño
-        Player p3 = players.get(0); // Bobby Charlton
-
-        ClubHistory c1 = p1.getProfessionalClubs().get(0);
-        ClubHistory c2 = p2.getProfessionalClubs().get(0);
-        ClubHistory c3 = p3.getProfessionalClubs().get(0);
-
-        String ans = Player.yearsOverlap(c1, c2) ? "" : " don't";
-        System.out.println("Years " + c1.getYearStart() + "-" + c1.getYearEnd() + ans + " overlap with " + c2.getYearStart() + "-" + c2.getYearEnd());
-
-        ans = Player.yearsOverlap(c1, c3) ? "" : " don't";
-        System.out.println("Years " + c1.getYearStart() + "-" + c1.getYearEnd() + ans + " overlap with " + c3.getYearStart() + "-" + c3.getYearEnd());
-
-        cli.teammates(new String[]{p1.getName(), ",", p2.getName()});
-        cli.teammates(new String[]{p1.getName(), ",", p3.getName()});
-
-//        for (int i = 0; i < players.size(); i++) {
-//            System.out.println(players.get(i).getName() + " - " + i);
-//        }
-
-        Player p4 = players.get(67); // Brad Friedel
-        Player p5 = players.get(90); // Bruce Grobbelaar
-
-        cli.opponents(new String[]{p4.getName(), ",", p5.getName()});
-
-        Player p6 = players.get(68); // DaMarcus Beasley
-        Player p7 = players.get(91); // Colin Bell
-
-        cli.opponents(new String[]{p6.getName(), ",", p7.getName()});
-
-        Player p8 = players.get(2); // David Beckham
-        Player p9 = players.get(27); // Thierry Henry
-
-        cli.opponents(new String[]{p8.getName(), ",", p9.getName()});
-    }
-
-    private static void testClubs() {
-        ArrayList<Club> clubs = invertedIndex.getClubs();
-
-        Club c1 = clubs.get(0); // Arsenal F.C. (Premier League)
-        Club c2 = clubs.get(1); // AFC Ajax (Eredivisie)
-        Club c3 = clubs.get(2); // AZ Alkmaar (Eredivisie)
-        Club c4 = clubs.get(8); // Chelsea F.C. (Premier League)
-        Club c5 = clubs.get(56); // Rosenborg BK (Eliteserien (football))
-        Club c6 = clubs.get(57); // Tromsø IL (Eliteserien)
-
-        System.out.println(c1.playedInSameLeague(c2)); // false
-        System.out.println(c2.playedInSameLeague(c3)); // true
-        System.out.println(c3.playedInSameLeague(c4)); // false
-        System.out.println(c4.playedInSameLeague(c1)); // true
-        System.out.println(c5.playedInSameLeague(c6)); // true
+    public static JavaSparkContext getSparkContext() {
+        return sc;
     }
 
 }

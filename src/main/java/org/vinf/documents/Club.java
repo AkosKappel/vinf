@@ -33,7 +33,7 @@ public class Club extends Page {
                         // get league from infobox
                         Matcher leagueMatcher = Regex.leaguePattern.matcher(line);
                         if (league.isEmpty() && leagueMatcher.find()) {
-                            league = leagueMatcher.group(1);
+                            setLeague(leagueMatcher.group(1));
                         }
 
                         // read next line of infobox
@@ -54,7 +54,7 @@ public class Club extends Page {
                         // find out from the text, in what league does the club play
                         Matcher leagueMatcher = Regex.playsInPattern.matcher(line);
                         if (leagueMatcher.find()) {
-                            league = leagueMatcher.group(1);
+                            setLeague(leagueMatcher.group(1));
                             break;
                         }
                     }
@@ -73,7 +73,7 @@ public class Club extends Page {
     }
 
     public boolean playedInSameLeague(Club club) {
-        return league.equals(club.getLeague());
+        return !league.isEmpty() && !club.getLeague().isEmpty() && league.equals(club.getLeague());
     }
 
     @Override
@@ -86,7 +86,10 @@ public class Club extends Page {
     }
 
     public void setLeague(String league) {
-        league = league.replaceAll(Regex.bracketedText, "").trim();
+        league = league
+                .replaceAll(Regex.bracketedText, "")
+                .replaceAll(Regex.multiSpace, " ")
+                .trim();
         if (!league.isEmpty() && !title.equals(league)) {
             this.league = league;
         }

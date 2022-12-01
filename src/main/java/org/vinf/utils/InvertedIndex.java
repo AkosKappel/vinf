@@ -101,6 +101,8 @@ public class InvertedIndex implements Serializable {
         ArrayList<Page> results = new ArrayList<>();
         ArrayList<Integer> intersection = processQuery(query);
 
+        if (intersection == null) return results;
+
         for (Integer docId : intersection) {
             if (playerDocuments.containsKey(docId)) {
                 results.add(playerDocuments.get(docId));
@@ -116,6 +118,8 @@ public class InvertedIndex implements Serializable {
         ArrayList<Page> results = new ArrayList<>();
         ArrayList<Integer> intersection = processQuery(query);
 
+        if (intersection == null) return results;
+
         for (Integer docId : intersection) {
             if (playerDocuments.containsKey(docId)) {
                 results.add(playerDocuments.get(docId));
@@ -128,6 +132,8 @@ public class InvertedIndex implements Serializable {
     public ArrayList<Page> searchClubs(String query) {
         ArrayList<Page> results = new ArrayList<>();
         ArrayList<Integer> intersection = processQuery(query);
+
+        if (intersection == null) return results;
 
         for (Integer docId : intersection) {
             if (clubDocuments.containsKey(docId)) {
@@ -153,6 +159,8 @@ public class InvertedIndex implements Serializable {
             if (index.containsKey(word)) {
                 ArrayList<Integer> postingList = index.get(word);
                 postingLists.add(postingList);
+            } else {
+                return null; // one of the words is not in the index (no results, because AND operator)
             }
         }
 
@@ -246,15 +254,23 @@ public class InvertedIndex implements Serializable {
         }
     }
 
-    public void printPlayers() {
+    public void printPlayers(boolean verbose) {
         for (int id : playerDocuments.keySet()) {
-            System.out.println(id + "\n" + playerDocuments.get(id));
+            if (verbose) {
+                System.out.println(id + "\n" + playerDocuments.get(id));
+            } else {
+                System.out.println(id + " - " + playerDocuments.get(id).getTitle());
+            }
         }
     }
 
-    public void printClubs() {
+    public void printClubs(boolean verbose) {
         for (int id : clubDocuments.keySet()) {
-            System.out.println(id + "\n" + clubDocuments.get(id));
+            if (verbose) {
+                System.out.println(id + "\n" + clubDocuments.get(id));
+            } else {
+                System.out.println(id + " - " + clubDocuments.get(id).getTitle());
+            }
         }
     }
 
