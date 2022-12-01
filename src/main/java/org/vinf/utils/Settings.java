@@ -30,7 +30,7 @@ public final class Settings {
 //            SOCCER_CLUBS_XML_FILE,
 //            DAVID_BECKHAM_XML_FILE,
 //            MANCHESTER_UNITED_XML_FILE,
-//            ENWIKI_1_XML_FILE,
+//            ENWIKI_1GB_XML_FILE,
 //            ENWIKI_XML_FILE_PART(1),
 //            ENWIKI_XML_FILE_PART(2),
 //            ENWIKI_XML_FILE_PART(3),
