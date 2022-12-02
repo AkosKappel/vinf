@@ -284,13 +284,9 @@ public class InvertedIndex implements Serializable {
         }
     }
 
-    public void printDocuments() {
-        for (int id : playerDocuments.keySet()) {
-            System.out.println(id + "\n" + playerDocuments.get(id));
-        }
-        for (int id : clubDocuments.keySet()) {
-            System.out.println(id + "\n" + clubDocuments.get(id));
-        }
+    public void printDocuments(boolean verbose) {
+        printPlayers(verbose);
+        printClubs(verbose);
     }
 
     public void printPlayers(boolean verbose) {

@@ -43,11 +43,6 @@ public final class CommandLine {
                 case "list":
                     list(args);
                     break;
-                case "-d":
-                case "display":
-                case "show":
-                    display(args);
-                    break;
                 case "count":
                     showCounts();
                     break;
@@ -97,7 +92,7 @@ public final class CommandLine {
         System.out.println("Commands:");
         System.out.println("  help - show this message");
         System.out.println("  search [query...] - search between all the documents");
-        System.out.println("  list [players | clubs] - list all the documents containing the given type");
+        System.out.println("  list [index | players | clubs | documents] - show the index or all the documents of the given type");
         System.out.println("  display [index | documents] - print inverted index or parsed documents");
         System.out.println("  count - show the number of documents");
         System.out.println("  teammates [player1], [player2] - print whether two players played together");
@@ -152,7 +147,7 @@ public final class CommandLine {
     public void list(String[] args) {
         if (args.length < 1) {
             System.out.println("Missing argument!");
-            System.out.println("  Usage: list [players | clubs]");
+            System.out.println("  Usage: list [index | players | clubs | documents]");
             return;
         }
 
@@ -162,48 +157,33 @@ public final class CommandLine {
             args = Arrays.copyOfRange(args, 1, args.length);
         }
 
-        for (String type : args) {
-            switch (type) {
+        for (String arg : args) {
+            switch (arg) {
                 case "p":
+                case "player":
                 case "players":
                     invertedIndex.printPlayers(verbose);
                     System.out.println("Found " + invertedIndex.playersSize() + " players.");
                     break;
                 case "c":
+                case "club":
                 case "clubs":
                     invertedIndex.printClubs(verbose);
                     System.out.println("Found " + invertedIndex.clubsSize() + " clubs.");
                     break;
-                default:
-                    System.out.println("Unknown type: " + type);
-                    break;
-            }
-        }
-    }
-
-    /**
-     * Displays the inverted index or the parsed documents.
-     *
-     * @param args type of data to display
-     */
-    public void display(String[] args) {
-        if (args.length < 1) {
-            System.out.println("Missing argument!");
-            System.out.println("  Usage: display [index | documents]");
-            return;
-        }
-
-        for (String arg : args) {
-            switch (arg) {
+                case "i":
                 case "index":
                     invertedIndex.print();
                     break;
+                case "d":
                 case "docs":
+                case "document":
                 case "documents":
-                    invertedIndex.printDocuments();
+                    invertedIndex.printDocuments(verbose);
+                    System.out.println("Found " + invertedIndex.size() + " documents.");
                     break;
                 default:
-                    System.out.println("Unknown argument: " + arg);
+                    System.out.println("Unknown arg: " + arg);
                     break;
             }
         }
