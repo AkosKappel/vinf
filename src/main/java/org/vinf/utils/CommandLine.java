@@ -1,5 +1,6 @@
 package org.vinf.utils;
 
+import org.vinf.Main;
 import org.vinf.documents.*;
 
 import java.io.IOException;
@@ -64,8 +65,10 @@ public final class CommandLine {
                 case "load":
                     load(args);
                     break;
-                case "-i":
+                case "-p":
                 case "parse":
+                case "-i":
+                case "index":
                     parse(args);
                     break;
                 case "clear":
@@ -93,7 +96,6 @@ public final class CommandLine {
         System.out.println("  help - show this message");
         System.out.println("  search [query...] - search between all the documents");
         System.out.println("  list [index | players | clubs | documents] - show the index or all the documents of the given type");
-        System.out.println("  display [index | documents] - print inverted index or parsed documents");
         System.out.println("  count - show the number of documents");
         System.out.println("  teammates [player1], [player2] - print whether two players played together");
         System.out.println("  opponents [player1], [player2] - print whether two players played against each other");
@@ -345,6 +347,8 @@ public final class CommandLine {
             System.out.println("Indexed documents: " + invertedIndex.size() + " (" + invertedIndex.playersSize() +
                     " players, " + invertedIndex.clubsSize() + " clubs)");
         }
+
+        if (Settings.USE_DISTRIBUTED) Main.exitSpark();
     }
 
     /**

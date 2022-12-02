@@ -1,6 +1,7 @@
 import org.apache.spark.api.java.JavaSparkContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.vinf.Main;
 import org.vinf.documents.Club;
 import org.vinf.documents.ClubHistory;
