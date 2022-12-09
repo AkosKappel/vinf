@@ -16,12 +16,67 @@ public class Evaluator {
         cli.clearIndex();
         cli.load(new String[]{"enwiki"});
 
-        evaluateSearch();
-        evaluateTeammates();
-        evaluateOpponents();
+        int[] searchEval = evaluateSearch();
+        int searchHits = searchEval[0];
+        int numSearches = searchEval[1];
+
+        int[] teammateEval = evaluateTeammates();
+        int teammateTruePositives = teammateEval[0];
+        int teammateFalsePositives = teammateEval[1];
+        int teammateTrueNegatives = teammateEval[2];
+        int teammateFalseNegatives = teammateEval[3];
+        int numTeammateSearches = teammateEval[4];
+
+        int[] opponentEval = evaluateOpponents();
+        int opponentTruePositives = opponentEval[0];
+        int opponentFalsePositives = opponentEval[1];
+        int opponentTrueNegatives = opponentEval[2];
+        int opponentFalseNegatives = opponentEval[3];
+        int numOpponentSearches = opponentEval[4];
+
+        int truePositives = teammateTruePositives + opponentTruePositives;
+        int falsePositives = teammateFalsePositives + opponentFalsePositives;
+        int trueNegatives = teammateTrueNegatives + opponentTrueNegatives;
+        int falseNegatives = teammateFalseNegatives + opponentFalseNegatives;
+        int total = numTeammateSearches + numOpponentSearches;
+
+        int teammateAccuracy = (teammateTruePositives + teammateTrueNegatives) * 100 / numTeammateSearches;
+        int teammatePrecision = teammateTruePositives * 100 / (teammateTruePositives + teammateFalsePositives);
+        int teammateRecall = teammateTruePositives * 100 / (teammateTruePositives + teammateFalseNegatives);
+        int teammateF1 = 2 * teammatePrecision * teammateRecall / (teammatePrecision + teammateRecall);
+
+        int opponentAccuracy = (opponentTruePositives + opponentTrueNegatives) * 100 / numOpponentSearches;
+        int opponentPrecision = opponentTruePositives * 100 / (opponentTruePositives + opponentFalsePositives);
+        int opponentRecall = opponentTruePositives * 100 / (opponentTruePositives + opponentFalseNegatives);
+        int opponentF1 = 2 * opponentPrecision * opponentRecall / (opponentPrecision + opponentRecall);
+
+        int accuracy = (truePositives + trueNegatives) * 100 / total;
+        int precision = truePositives * 100 / (truePositives + falsePositives);
+        int recall = truePositives * 100 / (truePositives + falseNegatives);
+        int f1 = 2 * precision * recall / (precision + recall);
+
+        System.out.println("Search results: " + searchHits + "/" + numSearches);
+
+        System.out.println("Teammates evaluation:");
+        System.out.println("  Accuracy: " + teammateAccuracy + "%");
+        System.out.println("  Precision: " + teammatePrecision + "%");
+        System.out.println("  Recall: " + teammateRecall + "%");
+        System.out.println("  F1: " + teammateF1 + "%");
+
+        System.out.println("Opponents evaluation:");
+        System.out.println("  Accuracy: " + opponentAccuracy + "%");
+        System.out.println("  Precision: " + opponentPrecision + "%");
+        System.out.println("  Recall: " + opponentRecall + "%");
+        System.out.println("  F1: " + opponentF1 + "%");
+
+        System.out.println("Overall evaluation:");
+        System.out.println("  Accuracy: " + accuracy + "%");
+        System.out.println("  Precision: " + precision + "%");
+        System.out.println("  Recall: " + recall + "%");
+        System.out.println("  F1: " + f1 + "%");
     }
 
-    private void evaluateTeammates() {
+    private int[] evaluateTeammates() {
         String[][] teammateSearches = new String[][]{
                 new String[]{"Lionel Messi, Luis Suarez", "3"}, // FC Barcelona
                 new String[]{"Karim Benzema, Cristiano Ronaldo"}, // Real Madrid
@@ -45,6 +100,10 @@ public class Evaluator {
                 new String[]{"David Beckham, Andres Iniesta"},
                 new String[]{"Virgil van Dijk, Zlatan Ibrahimovic"},
                 new String[]{"Lionel Messi, David Beckham"},
+                new String[]{"Cristiano Ronaldo, Neymar"},
+                new String[]{"Kylian Mbappe, Cristiano Ronaldo"},
+                new String[]{"Cristiano Ronaldo, Zlatan Ibrahimovic"},
+                new String[]{"Thiago Silva, Sergio Ramos", "1"},
         };
 
         int truePositives = 0;
@@ -77,19 +136,10 @@ public class Evaluator {
             System.out.println(String.join(", ", search));
         }
 
-        int accuracy = (truePositives + trueNegatives) * 100 / numSearches;
-        int precision = truePositives * 100 / (truePositives + falsePositives);
-        int recall = truePositives * 100 / (truePositives + falseNegatives);
-        int f1 = 2 * precision * recall / (precision + recall);
-
-        System.out.println("Teammates evaluation:");
-        System.out.println("  Accuracy: " + accuracy + "%");
-        System.out.println("  Precision: " + precision + "%");
-        System.out.println("  Recall: " + recall + "%");
-        System.out.println("  F1: " + f1 + "%");
+        return new int[]{truePositives, falsePositives, trueNegatives, falseNegatives, numSearches};
     }
 
-    private void evaluateOpponents() {
+    private int[] evaluateOpponents() {
         String[][] opponentSearches = new String[][]{
                 new String[]{"Lionel Messi, Cristiano Ronaldo"}, // El Clásico
                 new String[]{"Radamel Falcao, Eden Hazard"}, // UEFA Champions League
@@ -145,19 +195,10 @@ public class Evaluator {
             System.out.println(String.join(", ", search));
         }
 
-        int accuracy = (truePositives + trueNegatives) * 100 / numSearches;
-        int precision = truePositives * 100 / (truePositives + falsePositives);
-        int recall = truePositives * 100 / (truePositives + falseNegatives);
-        int f1 = 2 * precision * recall / (precision + recall);
-
-        System.out.println("Opponents evaluation:");
-        System.out.println("  Accuracy: " + accuracy + "%");
-        System.out.println("  Precision: " + precision + "%");
-        System.out.println("  Recall: " + recall + "%");
-        System.out.println("  F1: " + f1 + "%");
+        return new int[]{truePositives, falsePositives, trueNegatives, falseNegatives, numSearches};
     }
 
-    private void evaluateSearch() {
+    private int[] evaluateSearch() {
         String[][] searches = new String[][]{
                 new String[]{"David Beckham"},
                 new String[]{"Manchester United"},
@@ -174,7 +215,7 @@ public class Evaluator {
             if (results != null && results.size() > 0) searchHits++;
         }
 
-        System.out.println("Search results: " + searchHits + "/" + numSearches);
+        return new int[]{searchHits, numSearches};
     }
 
 }
