@@ -11,10 +11,12 @@ import java.util.Scanner;
 public final class CommandLine {
 
     private final InvertedIndex invertedIndex;
+    private final Evaluator evaluator;
     private final String[] exitArgs = {"abort", "exit", "quit"};
 
     public CommandLine(InvertedIndex invertedIndex) {
         this.invertedIndex = invertedIndex;
+        this.evaluator = new Evaluator(this);
     }
 
     /**
@@ -32,20 +34,12 @@ public final class CommandLine {
             String[] args = Arrays.copyOfRange(input, 1, input.length);
 
             switch (command) {
-                case "-h":
-                case "help":
-                    help();
+                // Main commands
+                case "":
                     break;
                 case "-s":
                 case "search":
                     search(args);
-                    break;
-                case "-l":
-                case "list":
-                    list(args);
-                    break;
-                case "count":
-                    showCounts();
                     break;
                 case "-t":
                 case "teammates":
@@ -59,6 +53,24 @@ public final class CommandLine {
                 case "clubs":
                     clubs(args);
                     break;
+                // Helper commands
+                case "-h":
+                case "help":
+                    help();
+                    break;
+                case "-l":
+                case "list":
+                    list(args);
+                    break;
+                case "count":
+                    showCounts();
+                    break;
+                case "-q":
+                case "quit":
+                case "exit":
+                    running = false;
+                    break;
+                // Management commands
                 case "save":
                     save(args);
                     break;
@@ -71,15 +83,12 @@ public final class CommandLine {
                 case "index":
                     parse(args);
                     break;
+                case "eval":
+                case "evaluate":
+                    evaluator.evaluate();
+                    break;
                 case "clear":
-                    clear();
-                    break;
-                case "-q":
-                case "quit":
-                case "exit":
-                    running = false;
-                    break;
-                case "":
+                    clearIndex();
                     break;
                 default:
                     System.out.println("Unknown command: " + command);
@@ -92,19 +101,22 @@ public final class CommandLine {
      * Prints a list of all available commands.
      */
     public void help() {
-        System.out.println("Commands:");
-        System.out.println("  help - show this message");
+        System.out.println("Main commands:");
         System.out.println("  search [query...] - search between all the documents");
-        System.out.println("  list [index | players | clubs | documents] - show the index or all the documents of the given type");
-        System.out.println("  count - show the number of documents");
         System.out.println("  teammates [player1], [player2] - print whether two players played together");
         System.out.println("  opponents [player1], [player2] - print whether two players played against each other");
         System.out.println("  clubs [club1], [club2] - print whether two clubs played against each other");
+        System.out.println("Helper commands");
+        System.out.println("  help - show this message");
+        System.out.println("  list [index | players | clubs | documents] - show the index or all the documents of the given type");
+        System.out.println("  count - show the number of documents");
+        System.out.println("  quit - exit the application");
+        System.out.println("Management commands");
         System.out.println("  save [filename] - save the inverted index to a file");
         System.out.println("  load [filename] - load the inverted index from a file");
         System.out.println("  parse [filename...] - parse & index XML files");
+        System.out.println("  evaluate - run app evaluation on the entire english wikipedia");
         System.out.println("  clear - clear the inverted index");
-        System.out.println("  quit - exit the application");
     }
 
     /**
@@ -121,9 +133,19 @@ public final class CommandLine {
         }
 
         boolean verbose = false;
-        if (args[0].equals("-v") || args[0].equals("--verbose")) {
-            verbose = true;
-            args = Arrays.copyOfRange(args, 1, args.length);
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("-v") || args[i].equals("--verbose")) {
+                verbose = true;
+
+                String[] argsBefore = Arrays.copyOfRange(args, 0, i);
+                String[] argsAfter = Arrays.copyOfRange(args, i + 1, args.length);
+
+                args = new String[argsBefore.length + argsAfter.length];
+                System.arraycopy(argsBefore, 0, args, 0, argsBefore.length);
+                System.arraycopy(argsAfter, 0, args, argsBefore.length, argsAfter.length);
+
+                break;
+            }
         }
 
         String query = String.join(" ", args);
@@ -154,9 +176,19 @@ public final class CommandLine {
         }
 
         boolean verbose = false;
-        if (args[0].equals("-v") || args[0].equals("--verbose")) {
-            verbose = true;
-            args = Arrays.copyOfRange(args, 1, args.length);
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("-v") || args[i].equals("--verbose")) {
+                verbose = true;
+
+                String[] argsBefore = Arrays.copyOfRange(args, 0, i);
+                String[] argsAfter = Arrays.copyOfRange(args, i + 1, args.length);
+
+                args = new String[args.length - 1];
+                System.arraycopy(argsBefore, 0, args, 0, argsBefore.length);
+                System.arraycopy(argsAfter, 0, args, argsBefore.length, argsAfter.length);
+
+                break;
+            }
         }
 
         for (String arg : args) {
@@ -208,7 +240,10 @@ public final class CommandLine {
      * @param args names of the players separated by a comma
      */
     public boolean teammates(String[] args) {
-        ArrayList<Page> selectedPlayers = getSelectedPlayers(args, "teammates");
+        Integer[] choices = getNumbers(args);
+        args = removeNumbers(args);
+
+        ArrayList<Page> selectedPlayers = getSelectedPlayers(args, "teammates", choices);
         if (selectedPlayers == null) return false;
 
         Player player1 = (Player) selectedPlayers.get(0);
@@ -243,7 +278,10 @@ public final class CommandLine {
      * @param args names of the players separated by a comma
      */
     public boolean opponents(String[] args) {
-        ArrayList<Page> selectedPlayers = getSelectedPlayers(args, "opponents");
+        Integer[] choices = getNumbers(args);
+        args = removeNumbers(args);
+
+        ArrayList<Page> selectedPlayers = getSelectedPlayers(args, "opponents", choices);
         if (selectedPlayers == null) return false;
 
         Player player1 = (Player) selectedPlayers.get(0);
@@ -303,6 +341,7 @@ public final class CommandLine {
 
         String filename = args[0];
         try {
+            System.out.println("Saving to " + filename + "...");
             invertedIndex.save(filename);
             System.out.println("Saved " + invertedIndex.size() + " documents (" + invertedIndex.playersSize() +
                     " players, " + invertedIndex.clubsSize() + " clubs) into " + filename + ".");
@@ -324,6 +363,7 @@ public final class CommandLine {
         String filename = args[0];
         try {
             invertedIndex.clear();
+            System.out.println("Loading " + filename + "...");
             invertedIndex.load(filename);
             System.out.println("Loaded " + invertedIndex.size() + " documents (" + invertedIndex.playersSize() +
                     " players, " + invertedIndex.clubsSize() + " clubs) from " + filename + ".");
@@ -354,15 +394,55 @@ public final class CommandLine {
     /**
      * Tells the inverted index to clear its data.
      */
-    public void clear() {
+    public void clearIndex() {
         invertedIndex.clear();
         System.out.println("Cleared index.");
     }
 
     /**
+     * Extract all numbers from the given arguments.
+     *
+     * @param args arguments to extract numbers from
+     * @return array of numbers
+     */
+    private Integer[] getNumbers(String[] args) {
+        ArrayList<Integer> numbers = new ArrayList<>();
+
+        for (String arg : args) {
+            try {
+                numbers.add(Integer.parseInt(arg));
+            } catch (NumberFormatException ignored) {
+                // pass
+            }
+        }
+
+        return numbers.size() > 0 ? numbers.toArray(new Integer[0]) : null;
+    }
+
+    /**
+     * Removes all numbers from the given arguments.
+     *
+     * @param args arguments to remove numbers from
+     * @return array of arguments without numbers
+     */
+    private String[] removeNumbers(String[] args) {
+        ArrayList<String> newArgs = new ArrayList<>();
+
+        for (String arg : args) {
+            try {
+                Integer.parseInt(arg);
+            } catch (NumberFormatException e) {
+                newArgs.add(arg);
+            }
+        }
+
+        return newArgs.toArray(new String[0]);
+    }
+
+    /**
      * Gets a list of soccer players based on a query.
      */
-    private ArrayList<Page> getSelectedPlayers(String[] args, String command) {
+    private ArrayList<Page> getSelectedPlayers(String[] args, String command, Integer[] choices) {
         if (args.length < 1) {
             System.out.println("Missing argument!");
             System.out.println("  Usage: " + command + " [player1], [player2]");
@@ -392,18 +472,27 @@ public final class CommandLine {
 
         ArrayList<Page> selectedPlayers = new ArrayList<>();
 
-        for (int i = 0; i < allResults.size(); i++) {
+        for (int i = 0, choiceNum = 0; i < allResults.size(); i++) {
             ArrayList<Page> foundPlayers = allResults.get(i);
 
             if (foundPlayers.size() == 1) {
                 selectedPlayers.add(foundPlayers.get(0));
             } else {
                 // if multiple players are found, ask the user to select one
-                System.out.println("Multiple players found with name '" + playersQuery[i] + "'.");
-                System.out.println("Please select a player by typing in his number:");
-                int choice = getChoiceFromList(foundPlayers);
-                if (choice == -1) return null;
-                selectedPlayers.add(foundPlayers.get(choice));
+                if (choices == null) {
+                    System.out.println("Multiple players found with name '" + playersQuery[i] + "'.");
+                    System.out.println("Please select a player by typing in his number:");
+                    int choice = getChoiceFromList(foundPlayers);
+                    if (choice == -1) return null;
+                    selectedPlayers.add(foundPlayers.get(choice));
+                } else {
+                    int choice = choices[choiceNum++] - 1;
+                    if (choice < 0 || choice >= foundPlayers.size()) {
+                        System.out.println("Invalid choice '" + (choice + 1) + "' in query!");
+                        return null;
+                    }
+                    selectedPlayers.add(foundPlayers.get(choice));
+                }
             }
         }
 
@@ -483,8 +572,8 @@ public final class CommandLine {
      * Asks the user to select a number from a list of options.
      */
     private int getChoiceFromList(ArrayList<Page> options) {
-        for (int j = 0; j < options.size(); j++) {
-            System.out.println(j + 1 + " - " + options.get(j).getTitle());
+        for (int i = 0; i < options.size(); i++) {
+            System.out.println(i + 1 + " - " + options.get(i).getTitle());
         }
 
         // ask user for input until a valid number is entered

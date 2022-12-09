@@ -44,6 +44,7 @@ public class Main {
         // start command line interface
         cli.help();
         cli.run();
+        cli.clearIndex();
 
         // stop Spark if it was used in the UI
         exitSpark();
