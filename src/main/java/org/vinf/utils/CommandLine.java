@@ -332,11 +332,11 @@ public final class CommandLine {
     /**
      * Saves the inverted index to a file.
      */
-    public void save(String[] args) {
+    public boolean save(String[] args) {
         if (args.length < 1) {
             System.out.println("Missing argument!");
             System.out.println("  Usage: save [filename]");
-            return;
+            return false;
         }
 
         String filename = args[0];
@@ -345,19 +345,21 @@ public final class CommandLine {
             invertedIndex.save(filename);
             System.out.println("Saved " + invertedIndex.size() + " documents (" + invertedIndex.playersSize() +
                     " players, " + invertedIndex.clubsSize() + " clubs) into " + filename + ".");
+            return true;
         } catch (IOException e) {
             System.err.println("Error saving to file: " + e.getMessage());
         }
+        return false;
     }
 
     /**
      * Loads the inverted index from a file.
      */
-    public void load(String[] args) {
+    public boolean load(String[] args) {
         if (args.length < 1) {
             System.out.println("Missing argument!");
             System.out.println("  Usage: load [filename]");
-            return;
+            return false;
         }
 
         String filename = args[0];
@@ -367,9 +369,11 @@ public final class CommandLine {
             invertedIndex.load(filename);
             System.out.println("Loaded " + invertedIndex.size() + " documents (" + invertedIndex.playersSize() +
                     " players, " + invertedIndex.clubsSize() + " clubs) from " + filename + ".");
+            return true;
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error loading from file: " + e.getMessage());
         }
+        return false;
     }
 
     /**

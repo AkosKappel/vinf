@@ -14,7 +14,7 @@ public class Evaluator {
 
     public void evaluate() {
         cli.clearIndex();
-        cli.load(new String[]{"enwiki"});
+        if (!cli.load(new String[]{"enwiki"})) return;
 
         int[] searchEval = evaluateSearch();
         int searchHits = searchEval[0];
